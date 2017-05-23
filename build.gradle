@@ -1,0 +1,30 @@
+plugins {
+    id'java'
+    id'application'
+    id'com.github.johnrengelman.shadow' version '1.2.4'
+}
+
+mainClassName = 'me.savvy.rixa.Rixa'
+version '1.0'
+
+jar {
+    baseName = project.name
+    manifest {
+        attributes 'Implementation-Version': version
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'net.dv8tion:JDA:3.1.0_204'
+    compile 'mysql:mysql-connector-java:5.1.38'
+    compile 'com.sedmelluq:lavaplayer:1.2.39'
+}
+
+compileJava.options.encoding = 'UTF-8'
