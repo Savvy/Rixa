@@ -2,6 +2,7 @@ package me.savvy.rixa.commands.general;
 
 import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
+import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
@@ -34,8 +35,8 @@ public class HelpCommand implements CommandExec {
                 .addField("3 - Music Commands", "Reveals usable commands to configure Rixa for your discord!", false)
                 .setColor(event.getMember().getColor());
         Message message = event.getAuthor().openPrivateChannel().complete().sendMessage(embedBuilder.build()).complete();
-        event.getChannel().sendMessage(event.getMember().getAsMention()
-                + ", the help menu has been private messaged to you!").queue();
+        new MessageBuilder(event.getMember().getAsMention()
+                + ", the help menu has been private messaged to you!").setColor(event.getMember().getColor()).queue(event.getChannel());
         try {
             message.addReaction("\u0031\u20E3").queue();
             message.addReaction("\u0032\u20E3").queue();

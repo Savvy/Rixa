@@ -1,9 +1,15 @@
 package me.savvy.rixa;
 
+import me.savvy.rixa.commands.admin.BatchMoveCommand;
 import me.savvy.rixa.commands.general.HelpCommand;
 import me.savvy.rixa.commands.general.InfoCommand;
+import me.savvy.rixa.commands.general.PingCommand;
 import me.savvy.rixa.commands.general.ServerInfoCommand;
+import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandHandler;
+import me.savvy.rixa.commands.mod.DeleteMessagesCommand;
+import me.savvy.rixa.commands.mod.PurgeCommand;
+import me.savvy.rixa.events.BotEvent;
 import me.savvy.rixa.events.MessageEvent;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.modules.reactions.react.HelpReaction;
@@ -32,26 +38,34 @@ public class Rixa {
     public static void main(String[] args) throws LoginException, InterruptedException, RateLimitedException {
         instance = new Rixa();
         shardsList = new LinkedList<>();
-        int shards = 4;
-        for(int i = 1; i < shards; i++){
+        int shards = 3;
+        for(int i = 0; i < shards; i++) {
             Logger.getLogger("Rixa").info("Loading shard #" + i);
             JDABuilder jda = new JDABuilder(AccountType.BOT)
-                    .setToken("MjkxNTM5Njg2NTEyNTI1MzMy.C6r1OA.-hRemXk-b3nP5GvT9kjh2V7RXDo")
+                    .setToken("MjkxNTM5Njg2NTEyNTI1MzMy.DAZKfQ.kIHSmuCJHhklyC3gBAi0c_VKp-w")
                     .setEventManager(new AnnotatedEventManager())
                     .addEventListener(new MessageEvent())
+                    .addEventListener(new BotEvent())
                     .setGame(Game.of("Rixa 1.0 | In Dev", "http://rixa.io"))
                     .setAutoReconnect(true)
                     .setStatus(OnlineStatus.ONLINE)
                     .setAudioEnabled(true)
                     .useSharding(i, shards);
             shardsList.add(jda.buildBlocking());
-            Logger.getLogger("Rixa").info("Shard #" + i + " has been loaded");
+            getInstance().getLogger().info("Shard #" + i + " has been loaded");
         }
         timeUp = System.currentTimeMillis();
-        CommandHandler.registerCommand(new InfoCommand());
-        CommandHandler.registerCommand(new ServerInfoCommand());
-        CommandHandler.registerCommand(new HelpCommand());
+        register(new CommandExec[] {
+                new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
+                new DeleteMessagesCommand(), new PingCommand(), new PurgeCommand(),
+                new BatchMoveCommand() });
         ReactionManager.registerReaction(new HelpReaction());
+    }
+
+    private static void register(CommandExec commandExecs[]) {
+        for (CommandExec command: commandExecs) {
+            CommandHandler.registerCommand(command);
+        }
     }
 
     public static Rixa getInstance() {
@@ -60,5 +74,9 @@ public class Rixa {
 
     public long getTimeUp() {
         return timeUp;
+    }
+
+    public Logger getLogger() {
+        return Logger.getLogger("Rixa");
     }
 }

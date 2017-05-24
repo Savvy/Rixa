@@ -1,7 +1,8 @@
 package me.savvy.rixa.modules.reactions.react;
 
-import com.lunaticdev.rixa.commands.handler.CommandHandler;
-import com.lunaticdev.rixa.commands.handler.CommandType;
+import me.savvy.rixa.commands.handlers.CommandHandler;
+import me.savvy.rixa.commands.handlers.CommandType;
+import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -23,6 +24,8 @@ public class HelpReaction implements React {
             return;
         }
         Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
+        String prefix = (event.getChannel().getType() != ChannelType.PRIVATE) ?
+                RixaManager.getGuild(event.getGuild()).getGuildSettings().getPrefix() : "/";
         EmbedBuilder embedBuilder;
         try {
             switch(event.getReaction().getEmote().getName()) {
@@ -39,9 +42,10 @@ public class HelpReaction implements React {
                             "Click a number below for information about other commands.";
                     embedBuilder.setTitle("Help", "http://rixa.io");
                     embedBuilder.setDescription(stringBuilder);
-                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getType() == CommandType.USER)
-                            .forEach(cmd -> embedBuilder.addField("/"/*prefix*/ + cmd.getPrefix(), cmd.getDescription(), false));
-                    message.editMessage(embedBuilder.build()).queue();// = event.getChannel().sendMessage(embedBuilder.build()).complete();
+                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getCommandAnnotation().type() == CommandType.USER)
+                            .forEach(cmd -> embedBuilder.addField(prefix + cmd.getCommandAnnotation().mainCommand(),
+                                    cmd.getCommandAnnotation().description(), false));
+                    message.editMessage(embedBuilder.build()).queue();
                     break;
                 case "\u0032\u20E3": // two emoji
                     embedBuilder = new EmbedBuilder();
@@ -51,8 +55,9 @@ public class HelpReaction implements React {
                             "Click a number below for information about other commands.";
                     embedBuilder.setTitle("Help", "http://rixa.io");
                     embedBuilder.setDescription(stringBuilder);
-                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getType() == CommandType.ADMIN || cmd.getType() == CommandType.MOD)
-                            .forEach(cmd -> embedBuilder.addField("/"/*prefix*/ + cmd.getPrefix(), cmd.getDescription(), false));
+                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getCommandAnnotation().type() == CommandType.ADMIN
+                            || cmd.getCommandAnnotation().type() == CommandType.MOD)
+                            .forEach(cmd -> embedBuilder.addField(prefix, cmd.getCommandAnnotation().description(), false));
                     message.editMessage(embedBuilder.build()).queue();
                     break;
                 case "\u0033\u20E3": // three emoji
@@ -63,7 +68,6 @@ public class HelpReaction implements React {
                             "Click a number below for information about other commands.";
                     embedBuilder.setTitle("Help", "http://rixa.io");
                     embedBuilder.setDescription(stringBuilder);
-                    String prefix = "/";
                     embedBuilder.addField(prefix + "music join [name]", "Joins a voice channel that has the provided name", false)
                             .addField(prefix + "music join [id]", "Joins a voice channel based on the provided id.", false)
                             .addField(prefix + "music leave", "Leaves the voice channel that the bot is currently in.", false)

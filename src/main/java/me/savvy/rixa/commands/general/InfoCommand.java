@@ -1,9 +1,9 @@
 package me.savvy.rixa.commands.general;
 
 import me.savvy.rixa.Rixa;
-import com.lunaticdev.rixa.commands.handler.CommandType;
 import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
+import me.savvy.rixa.commands.handlers.CommandType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.User;
