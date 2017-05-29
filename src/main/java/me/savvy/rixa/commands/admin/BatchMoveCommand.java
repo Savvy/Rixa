@@ -13,6 +13,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,13 +38,17 @@ public class BatchMoveCommand implements CommandExec {
         Role old_role = event.getMessage().getMentionedRoles().get(0);
         Role new_role = event.getMessage().getMentionedRoles().get(1);
         List<Member> userWithRole = event.getGuild().getMembersWithRoles(old_role);
+        if(userWithRole.size() == 0) {
+            new MessageBuilder("There are no users with the role " + old_role.getAsMention()).setColor(old_role.getColor()).queue(event.getChannel());
+            return;
+        }
         new MessageBuilder("Moving **" + userWithRole.size() + "** users with role: " + old_role.getAsMention()
                 + " to " + new_role.getAsMention()).setColor(old_role.getColor()).queue(event.getChannel());
         int success = 0;
         for(Member member: userWithRole) {
             try {
-                event.getGuild().getController().removeRolesFromMember(member, old_role).queue();
-                event.getGuild().getController().addRolesToMember(member, new_role).queue();
+                event.getGuild().getController().modifyMemberRoles
+                        (member, Collections.singletonList(new_role), Collections.singletonList(old_role)).queue();
                 success++;
             } catch(PermissionException ex) {
                 new MessageBuilder("I do not have permission to modify " + member.getAsMention() + "'s role").setColor(Color.RED).queue(event.getChannel());

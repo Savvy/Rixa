@@ -8,4 +8,6 @@ public interface RixaModule {
     String getName();
 
     String getDescription();
+
+    boolean isEnabled();
 }

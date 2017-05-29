@@ -31,6 +31,11 @@ public class MessageBuilder {
         return this;
     }
 
+    public MessageBuilder addField(String name, String value, boolean inLine) {
+        builder.addField(name, value, inLine);
+        return this;
+    }
+
     public EmbedBuilder getBuilder() {
         return builder;
     }

@@ -20,8 +20,12 @@ public class BotEvent {
 
     @SubscribeEvent
     public void onReady(ReadyEvent event) {
-        Rixa.getInstance().getLogger().info("Successfully loaded...");
-        event.getJDA().getGuilds().forEach(RixaGuild::new);
+        try {
+            Rixa.getInstance().getLogger().info("Successfully loaded...");
+            event.getJDA().getGuilds().forEach(RixaGuild::new);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @SubscribeEvent

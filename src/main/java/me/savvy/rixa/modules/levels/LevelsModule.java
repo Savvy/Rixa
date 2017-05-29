@@ -15,4 +15,9 @@ public class LevelsModule implements RixaModule {
     public String getDescription() {
         return "";
     }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Implementation-Version: 1.0
-Main-Class: me.savvy.RixaMC
+Main-Class: me.savvy.rixa.Rixa
 

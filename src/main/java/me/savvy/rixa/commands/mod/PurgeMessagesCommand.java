@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Created by Timber on 5/23/2017.
  */
-public class PurgeCommand implements CommandExec {
+public class PurgeMessagesCommand implements CommandExec {
 
     @Override
     @Command(mainCommand = "purge",
