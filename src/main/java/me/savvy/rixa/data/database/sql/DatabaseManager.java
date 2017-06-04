@@ -1,7 +1,7 @@
-package me.savvy.rixa.database;
+package me.savvy.rixa.data.database.sql;
 
 import me.savvy.rixa.Rixa;
-import me.savvy.rixa.database.mysql.mysql.MySQL;
+import me.savvy.rixa.data.database.sql.mysql.mysql.MySQL;
 import me.savvy.rixa.enums.Result;
 
 import java.sql.Connection;
@@ -69,6 +69,15 @@ public class DatabaseManager {
         } else {
             return null;
         }
+    }
+
+    public ResultSet getObject(PreparedStatement ps) throws SQLException {
+        checkConnection();
+        ResultSet rs = ps.executeQuery();
+        if(rs.next()) {
+            return rs;
+        }
+        return null;
     }
 
     public ResultSet executeQuery(String query) {

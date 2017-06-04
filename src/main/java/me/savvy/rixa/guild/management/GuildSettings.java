@@ -1,7 +1,12 @@
 package me.savvy.rixa.guild.management;
 
+import me.savvy.rixa.Rixa;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Created by Timber on 5/23/2017.
@@ -9,16 +14,31 @@ import net.dv8tion.jda.core.entities.TextChannel;
 public class GuildSettings {
 
     private Guild guild;
-    private String prefix = ".", defaultRole, joinMessage, quitMessage, joinPrivateMessage;
+    private boolean enlisted;
+    private String prefix = ".", defaultRole, joinMessage, quitMessage, joinPrivateMessage, description;
     private TextChannel joinMessageChannel, quitMessageChannel;
 
     public GuildSettings(Guild guild) {
         this.guild = guild;
-        load();
+        try {
+            load();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void load() {
-
+    private void load() throws SQLException {
+        PreparedStatement ps = Rixa.getInstance().getDbManager()
+                .getConnection().prepareStatement("SELECT * FROM `settings` WHERE `guild_id` = ?");
+        ps.setString(1, guild.getId());
+        ResultSet set = Rixa.getInstance().getDbManager().getObject(ps);
+        setPrefix(set.getString("prefix"));
+        setDefaultRole(set.getString("defaultRole"));
+        setJoinMessage(set.getString("joinMessage"));
+        setQuitMessage(set.getString("quitMessage"));
+        setJoinPrivateMessage(set.getString("joinPM"));
+        setDescription((String)Rixa.getInstance().getData().get("guild_id", guild.getId(), "description", "core"));
+        setEnlisted((boolean) Rixa.getInstance().getData().get("guild_id", guild.getId(), "enlisted", "core"));
     }
 
     public void unload() {
@@ -83,5 +103,21 @@ public class GuildSettings {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isEnlisted() {
+        return enlisted;
+    }
+
+    public void setEnlisted(boolean enlisted) {
+        this.enlisted = enlisted;
     }
 }

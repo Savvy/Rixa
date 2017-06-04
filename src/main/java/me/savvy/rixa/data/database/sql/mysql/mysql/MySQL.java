@@ -1,6 +1,6 @@
-package me.savvy.rixa.database.mysql.mysql;
+package me.savvy.rixa.data.database.sql.mysql.mysql;
 
-import me.savvy.rixa.database.mysql.Database;
+import me.savvy.rixa.data.database.sql.mysql.Database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,4 +1,4 @@
-package me.savvy.rixa.database.mysql;
+package me.savvy.rixa.data.database.sql.mysql;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
