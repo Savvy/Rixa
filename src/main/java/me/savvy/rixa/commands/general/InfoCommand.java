@@ -42,7 +42,7 @@ public class InfoCommand implements CommandExec {
                                 "roles on user join, music module, levels, and more. Rixa was created to bring ease and simplicity to managing discord" +
                                 " servers, it has since then grown into much more than just a bot used for moderation.")
                         .addField("Created", event.getJDA().getSelfUser().getCreationTime().format(formatter), true)
-                        .addField("Bot Uptime ", "Online For: " + day + " days " + hours + " hours " + minute + " minutes " + second + " seconds.", true)
+                        .addField("Bot Uptime ", "Uptime: " + day + " days " + hours + " hours " + minute + " minutes " + second + " seconds.", true)
                         .addField("Total Guilds", event.getJDA().getGuilds().size() + "", true)
                         .addField("Total Users", event.getJDA().getUsers().size() + "", true)
                         .addField("Rixa Developer", botOwner.getName() + "#" + botOwner.getDiscriminator(), true)

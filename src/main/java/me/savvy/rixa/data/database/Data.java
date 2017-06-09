@@ -2,6 +2,7 @@ package me.savvy.rixa.data.database;
 
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.data.database.sql.DatabaseManager;
+import me.savvy.rixa.enums.Result;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -23,7 +24,7 @@ public class Data {
     public Object get(String key, String value, String objToGet, String table) throws SQLException {
         switch (dataType) {
             case SQL:
-                // SELECT guild FROM table WHERE key = value.
+                // SELECT objToGet FROM table WHERE key = value.
                 PreparedStatement ps =
                         db.getConnection().prepareStatement("SELECT `" + objToGet + "` FROM `" + table + "` WHERE `" + key + "` = ?");
                 ps.setString(1, value);
@@ -35,19 +36,36 @@ public class Data {
 
     public void put(String key, String value) {
         switch (dataType) {
-
         }
     }
 
-    public void update(String key, String value) {
+    public Result update(String table, String setting, String key, Object placeholder, Object placeholder2) {
         switch (dataType) {
-
+            case SQL:
+                try {
+                    PreparedStatement ps = db.getConnection().prepareStatement("UPDATE `" + table +"` SET `" + setting + "` = ? WHERE `" + key + "` = ?;");
+                    ps.setObject(1, placeholder);
+                    ps.setObject(2, placeholder2);
+                    return db.executeUpdate(ps);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    return Result.ERROR;
+                }
         }
+        return Result.FALSE;
     }
 
     public void delete(String key, String value) {
         switch (dataType) {
 
         }
+    }
+
+    public Result exists(String check) {
+        switch(dataType) {
+            case SQL:
+                return db.checkExists(check);
+        }
+        return Result.FALSE;
     }
 }

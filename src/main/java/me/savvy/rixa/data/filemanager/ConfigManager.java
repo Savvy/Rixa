@@ -5,7 +5,9 @@ import me.savvy.rixa.data.thunderbolt.exceptions.FileLoadException;
 import me.savvy.rixa.data.thunderbolt.io.ThunderFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +34,7 @@ public class ConfigManager {
     }
 
     private void addDefaults() throws IOException {
+        List<String> botAdmins = new ArrayList<>();
         Map<String, String> map = new HashMap<>();
         map.put("hostName", "localhost");
         map.put("password", "password");
@@ -39,7 +42,10 @@ public class ConfigManager {
         map.put("userName", "rixa_users");
         map.put("portNumber", "3306");
         tf.set("sql", map);
-
+        botAdmins.add("YOUR_USER_ID_HERE");
+        botAdmins.add("OTHER_ADMINS");
+        botAdmins.add("REMOVE_IF_YOU_DONT_WANT");
+        tf.set("botAdmins", botAdmins);
         tf.set("secretToken", "YOUR_TOKEN_HERE");
         tf.set("botGame", "Rixa 2.0 | http://rixa.io/invite");
         tf.save();

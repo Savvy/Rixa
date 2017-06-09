@@ -12,10 +12,11 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 public class PingCommand implements CommandExec {
     @Override
     @Command(mainCommand = "ping",
-            aliases = "",
             description = "Check your ping!",
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
-        new MessageBuilder("Pong!").setColor(event.getMember().getColor()).queue(event.getChannel());
+        new MessageBuilder("Pong!").setColor(event.getMember().getColor()).complete(event.getChannel());
+        /*RixaAudioReceiveHandler handle = new RixaAudioReceiveHandler();
+        handle.start(event.getGuild(), event.getMember().getVoiceState().getChannel());*/
     }
 }

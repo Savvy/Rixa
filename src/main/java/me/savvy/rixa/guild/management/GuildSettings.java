@@ -14,8 +14,8 @@ import java.sql.SQLException;
 public class GuildSettings {
 
     private Guild guild;
-    private boolean enlisted;
-    private String prefix = ".", defaultRole, joinMessage, quitMessage, joinPrivateMessage, description;
+    private boolean enlisted, joinVerification;
+    private String prefix = "/", defaultRole, muteRole, joinMessage, quitMessage, joinPrivateMessage, description;
     private TextChannel joinMessageChannel, quitMessageChannel;
 
     public GuildSettings(Guild guild) {
@@ -37,6 +37,8 @@ public class GuildSettings {
         setJoinMessage(set.getString("joinMessage"));
         setQuitMessage(set.getString("quitMessage"));
         setJoinPrivateMessage(set.getString("joinPM"));
+        setMuteRole(set.getString("muteRole"));
+        setJoinVerification(set.getBoolean("joinVerification"));
         setDescription((String)Rixa.getInstance().getData().get("guild_id", guild.getId(), "description", "core"));
         setEnlisted((boolean) Rixa.getInstance().getData().get("guild_id", guild.getId(), "enlisted", "core"));
     }
@@ -119,5 +121,21 @@ public class GuildSettings {
 
     public void setEnlisted(boolean enlisted) {
         this.enlisted = enlisted;
+    }
+
+    public String getMuteRole() {
+        return muteRole;
+    }
+
+    public void setMuteRole(String muteRole) {
+        this.muteRole = muteRole;
+    }
+
+    public boolean isJoinVerification() {
+        return joinVerification;
+    }
+
+    public void setJoinVerification(boolean joinVerification) {
+        this.joinVerification = joinVerification;
     }
 }

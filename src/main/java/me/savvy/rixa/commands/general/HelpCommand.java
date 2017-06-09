@@ -17,8 +17,7 @@ public class HelpCommand implements CommandExec {
 
     @Command(usage = "%phelp",
     channelType = ChannelType.TEXT,
-    description = "Receive information about the server!",
-    aliases = "", mainCommand = "help")
+    description = "Receive information about the server!", mainCommand = "help", aliases = "h")
     public void execute(GuildMessageReceivedEvent event) {
         try {
             event.getMessage().delete().complete();

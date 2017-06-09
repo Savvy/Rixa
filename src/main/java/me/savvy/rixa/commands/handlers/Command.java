@@ -16,7 +16,7 @@ public @interface Command {
 
     String mainCommand();
 
-    String[] aliases();
+    String[] aliases() default {};
 
     String description() default "";
 

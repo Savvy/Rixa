@@ -1,13 +1,12 @@
 package me.savvy.rixa;
 
 import me.savvy.rixa.commands.admin.BatchMoveCommand;
-import me.savvy.rixa.commands.general.HelpCommand;
-import me.savvy.rixa.commands.general.InfoCommand;
-import me.savvy.rixa.commands.general.PingCommand;
-import me.savvy.rixa.commands.general.ServerInfoCommand;
+import me.savvy.rixa.commands.admin.ConfigCommand;
+import me.savvy.rixa.commands.general.*;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.mod.DeleteMessagesCommand;
+import me.savvy.rixa.commands.mod.MuteCommand;
 import me.savvy.rixa.commands.mod.PurgeMessagesCommand;
 import me.savvy.rixa.data.database.Data;
 import me.savvy.rixa.data.database.DataType;
@@ -84,7 +83,8 @@ public class Rixa {
         register(new CommandExec[] {
                 new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
-                new BatchMoveCommand() });
+                new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
+                new ConfigCommand()});
         ReactionManager.registerReaction(new HelpReaction());
         data = new Data(DataType.SQL);
     }
@@ -125,5 +125,9 @@ public class Rixa {
 
     public Logger getLogger() {
         return Logger.getLogger("Rixa");
+    }
+
+    public ConfigManager getConfig() {
+        return config;
     }
 }

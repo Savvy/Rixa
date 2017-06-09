@@ -27,7 +27,7 @@ public class BatchMoveCommand implements CommandExec {
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
          RixaGuild rixaGuild = RixaManager.getGuild(event.getGuild());
-        if(!rixaGuild.hasPermission(event.getMember(), RixaPermission.CLEAR_CHAT)) {
+        if(!rixaGuild.hasPermission(event.getMember(), RixaPermission.BATCH_MOVE)) {
             new MessageBuilder(event.getMember().getAsMention() + ", you do not have permission for this command.").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
