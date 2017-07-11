@@ -22,7 +22,6 @@ import java.util.Collections;
 public class MuteCommand implements CommandExec {
     @Override
     @Command(mainCommand = "mute",
-            aliases = "",
             description = "Mute a member.",
             type = CommandType.MOD,
             channelType = ChannelType.TEXT)

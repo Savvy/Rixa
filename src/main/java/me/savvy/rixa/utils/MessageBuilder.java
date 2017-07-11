@@ -23,7 +23,7 @@ public class MessageBuilder {
     }
 
     public MessageBuilder setTitle(String title) {
-        setTitle(title, "http://rixa.io/");
+        builder.setTitle(title);
         return this;
     }
 
@@ -34,6 +34,11 @@ public class MessageBuilder {
 
     public MessageBuilder addField(String name, String value, boolean inLine) {
         builder.addField(name, value, inLine);
+        return this;
+    }
+
+    public MessageBuilder addThumbnail(String url) {
+        builder.setThumbnail(url);
         return this;
     }
 

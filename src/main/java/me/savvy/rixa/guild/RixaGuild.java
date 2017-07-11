@@ -3,8 +3,10 @@ package me.savvy.rixa.guild;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.data.database.sql.DatabaseManager;
+import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.management.GuildSettings;
 import me.savvy.rixa.modules.music.MusicModule;
+import me.savvy.rixa.modules.twitter.TwitterModule;
 import net.dv8tion.jda.core.entities.*;
 
 import java.sql.PreparedStatement;
@@ -22,6 +24,7 @@ public class RixaGuild {
     private DatabaseManager db;
     private GuildSettings guildSettings;
     private MusicModule musicModule;
+    private TwitterModule twitterModule;
     private List<String> mutedMembers = new ArrayList<>();
 
     public RixaGuild(Guild guild) {
@@ -32,7 +35,13 @@ public class RixaGuild {
     }
 
     private void load() {
-        if(check()) return;
+        if(!(checkExists())) {
+            Rixa.getInstance().getDbManager()
+                    .insert("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`, `icon`) VALUES ('%id%', '%name%', 'Description not set.', 'No Keywords Found.', '%icon%')"
+                            .replace("%id%", guild.getId())
+                            .replace("%name%", guild.getName().replace("'", "\\'"))
+                            .replace("%icon%", guild.getIconId()));
+        }
         setGuildSettings(new GuildSettings(this.guild));
         RixaManager.addGuild(this);
     }
@@ -45,11 +54,9 @@ public class RixaGuild {
         this.guildSettings = guildSettings;
     }
 
-    /**
-     * TODO: Check if Guild exists in database if not create new instance;
-     */
-    public boolean check() {
-        return guildSettings == null;
+    private boolean checkExists() {
+        Result r = Rixa.getInstance().getDbManager().checkExists("SELECT `guild_name` FROM `core` WHERE `guild_id` = '" + guild.getId() + "';");
+        return r == Result.TRUE;
     }
 
     public Guild getGuild() {
@@ -100,6 +107,7 @@ public class RixaGuild {
             ps.setBoolean(1, value);
             ps.setString(2, guild.getId());
             ps.setString(3, role.getId());
+            ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -135,5 +143,13 @@ public class RixaGuild {
 
     public void setMusicModule(MusicModule musicModule) {
         this.musicModule = musicModule;
+    }
+
+    public TwitterModule getTwitterModule() {
+        return twitterModule;
+    }
+
+    public void setTwitterModule(TwitterModule twitterModule) {
+        this.twitterModule = twitterModule;
     }
 }

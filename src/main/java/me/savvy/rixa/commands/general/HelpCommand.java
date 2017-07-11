@@ -27,7 +27,7 @@ public class HelpCommand implements CommandExec {
                 " **Help**" +
                 "\n" +
                 "Click the corresponding number for more information about the command menu.";
-        embedBuilder.setTitle("Help", "http://rixa.io")
+        embedBuilder.setTitle(String.format("Help: %s", event.getGuild().getId()))
                 .setDescription(stringBuilder)
                 .addField("1 - General Commands", "Reveals usable commands intended for `everyone`", false)
                 .addField("2 - Staff Commands", "Reveals usable commands intended for `staff` use only", false)

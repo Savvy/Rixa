@@ -28,11 +28,9 @@ public class MusicModule implements RixaModule {
     }
 
     public void load() {
-        System.out.println("Testing " + guild.getName());
         if(!checkExists()) {
             db.insert("INSERT INTO `music` (`guild_id`, `music_role`, `enabled`)" +
                     " VALUES ('" + guild.getId() + "', 'default_value', '0');");
-            return;
         }
         try {
             PreparedStatement ps = db.getConnection().prepareStatement
@@ -67,7 +65,7 @@ public class MusicModule implements RixaModule {
     }
 
     public boolean isRoleRequired() {
-        return (musicRole.equalsIgnoreCase("default_value") && guild.getRolesByName(musicRole, true).size() > 0);
+        return (!musicRole.equalsIgnoreCase("default_value"));
     }
 
     public String getMusicRole() {
@@ -84,6 +82,8 @@ public class MusicModule implements RixaModule {
     }
 
     public boolean checkExists() {
-        return Rixa.getInstance().getData().exists("SELECT `enabled` FROM `music` WHERE `guild_id` = '" + guild.getId() + "'") == Result.TRUE;
+        Result r = Rixa.getInstance().getDbManager().checkExists("SELECT `guild_id` FROM `music` WHERE `guild_id` = '" +
+                        guild.getId() + "';");
+        return r == Result.TRUE;
     }
 }

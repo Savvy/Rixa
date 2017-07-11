@@ -117,7 +117,6 @@ public class DatabaseManager {
                 return Result.FALSE;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return Result.ERROR;
         }
     }

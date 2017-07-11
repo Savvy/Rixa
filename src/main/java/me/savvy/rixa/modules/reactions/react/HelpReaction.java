@@ -2,6 +2,7 @@ package me.savvy.rixa.modules.reactions.react;
 
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandType;
+import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
@@ -24,8 +25,9 @@ public class HelpReaction implements React {
             return;
         }
         Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
-        String prefix = (event.getChannel().getType() != ChannelType.PRIVATE) ?
-                RixaManager.getGuild(event.getGuild()).getGuildSettings().getPrefix() : "/";
+        String title = message.getEmbeds().get(0).getTitle().split(": ")[1];
+        RixaGuild rixaGuild = RixaManager.getGuild(event.getJDA().getGuildById(title));
+        String prefix = rixaGuild.getGuildSettings().getPrefix();
         EmbedBuilder embedBuilder;
         try {
             switch(event.getReaction().getEmote().getName()) {
@@ -40,7 +42,7 @@ public class HelpReaction implements React {
                             " **General Commands Help**" +
                             "\n" +
                             "Click a number below for information about other commands.";
-                    embedBuilder.setTitle("Help", "http://rixa.io");
+                    embedBuilder.setTitle(String.format("Help: %s", title));
                     embedBuilder.setDescription(stringBuilder);
                     CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getCommandAnnotation().type() == CommandType.USER)
                             .forEach(cmd -> embedBuilder.addField(prefix + cmd.getCommandAnnotation().mainCommand(),
@@ -53,11 +55,11 @@ public class HelpReaction implements React {
                             " **Staff Commands Help**" +
                             "\n" +
                             "Click a number below for information about other commands.";
-                    embedBuilder.setTitle("Help", "http://rixa.io");
+                    embedBuilder.setTitle(String.format("Help: %s", title));
                     embedBuilder.setDescription(stringBuilder);
                     CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getCommandAnnotation().type() == CommandType.ADMIN
                             || cmd.getCommandAnnotation().type() == CommandType.MOD)
-                            .forEach(cmd -> embedBuilder.addField(prefix, cmd.getCommandAnnotation().description(), false));
+                            .forEach(cmd -> embedBuilder.addField(prefix + cmd.getCommandAnnotation().mainCommand(), cmd.getCommandAnnotation().description(), false));
                     message.editMessage(embedBuilder.build()).queue();
                     break;
                 case "\u0033\u20E3": // three emoji
@@ -66,14 +68,14 @@ public class HelpReaction implements React {
                             " **Music Commands Help**" +
                             "\n" +
                             "Click a number below for information about other commands.";
-                    embedBuilder.setTitle("Help", "http://rixa.io");
+                    embedBuilder.setTitle(String.format("Help: %s", title));
                     embedBuilder.setDescription(stringBuilder);
                     embedBuilder.addField(prefix + "music join [name]", "Joins a voice channel that has the provided name", false)
                             .addField(prefix + "music join [id]", "Joins a voice channel based on the provided id.", false)
                             .addField(prefix + "music leave", "Leaves the voice channel that the bot is currently in.", false)
                             .addField(prefix + "music play", "Plays songs from the current queue. Starts playing again if it was previously paused", false)
                             .addField(prefix + "music play [url]", "Adds a new song to the queue and starts playing if it wasn't playing already", false)
-                            .addField(prefix + "music pplay", "Adds a playlist to the queue and starts playing if not already playing", false)
+                            .addField(prefix + "music playlist", "Adds a playlist to the queue and starts playing if not already playing", false)
                             .addField(prefix + "music pause", "Pauses audio playback", false)
                             .addField(prefix + "music stop", "Completely stops audio playback, skipping the current song.", false)
                             .addField(prefix + "music skip", "Skips the current song, automatically starting the next", false)

@@ -14,8 +14,11 @@ import me.savvy.rixa.data.database.sql.DatabaseManager;
 import me.savvy.rixa.data.filemanager.ConfigManager;
 import me.savvy.rixa.data.filemanager.LanguageManager;
 import me.savvy.rixa.events.BotEvent;
+import me.savvy.rixa.events.MemberEvent;
 import me.savvy.rixa.events.MessageEvent;
+import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
+import me.savvy.rixa.modules.reactions.react.ConfigReaction;
 import me.savvy.rixa.modules.reactions.react.HelpReaction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -60,7 +63,7 @@ public class Rixa {
         dbManager.createTable();
         getInstance().setLanguageManager(new LanguageManager());
         try {
-            int shards = 3;
+            int shards = 5;
             for(int i = 0; i < shards; i++) {
                 Logger.getLogger("Rixa").info("Loading shard #" + i);
                 JDABuilder jda = new JDABuilder(AccountType.BOT)
@@ -68,6 +71,7 @@ public class Rixa {
                         .setEventManager(new AnnotatedEventManager())
                         .addEventListener(new MessageEvent())
                         .addEventListener(new BotEvent())
+                        .addEventListener(new MemberEvent())
                         .setGame(Game.of(config.getConfig().getString("botGame")))
                         .setAutoReconnect(true)
                         .setStatus(OnlineStatus.ONLINE)
@@ -84,8 +88,8 @@ public class Rixa {
                 new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
-                new ConfigCommand()});
-        ReactionManager.registerReaction(new HelpReaction());
+                new ConfigCommand(), new UrbanDictionaryCommand(), /*new InviteCommand()*/});
+        register(new React[] {new HelpReaction(), new ConfigReaction()});
         data = new Data(DataType.SQL);
     }
 
@@ -115,6 +119,12 @@ public class Rixa {
         }
     }
 
+    private static void register(React react[]) {
+        for (React reaction: react) {
+            ReactionManager.registerReaction(reaction);
+        }
+    }
+
     public static Rixa getInstance() {
         return instance;
     }
@@ -129,5 +139,9 @@ public class Rixa {
 
     public ConfigManager getConfig() {
         return config;
+    }
+
+    public List<JDA> getShardsList() {
+        return shardsList;
     }
 }

@@ -35,6 +35,7 @@ public class ServerInfoCommand implements CommandExec {
                 .addField("Voice Channels", String.valueOf(event.getGuild().getVoiceChannels().size()), true)
                 .addField("Roles", String.valueOf(event.getGuild().getRoles().size()), true)
                 .addField("Owner", owner.getName() + "#" + owner.getDiscriminator(), true)
+                .addField("Enlisted", String.valueOf(rixaGuild.getGuildSettings().isEnlisted()), true)
                 .setThumbnail(event.getGuild().getIconUrl())
                 .setFooter("ServerID: " + event.getGuild().getId(), event.getGuild().getIconUrl());
         event.getChannel().sendMessage(messageEmbed.build()).queue();

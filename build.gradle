@@ -24,11 +24,11 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:3.1.1_212'
+    compile 'net.dv8tion:JDA:3.1.1_215'
     compile 'mysql:mysql-connector-java:5.1.38'
-    compile 'com.sedmelluq:lavaplayer:1.2.39'
-    compile group: 'edu.cmu.sphinx', name: 'sphinx4-core',  version:'5prealpha-SNAPSHOT'
-    compile group: 'edu.cmu.sphinx', name: 'sphinx4-data',  version:'5prealpha-SNAPSHOT'
+    compile 'com.sedmelluq:lavaplayer:1.2.42'
+    compile 'org.twitter4j:twitter4j-core:4.0.3'
+    compile 'org.twitter4j:twitter4j-stream:4.0.6'
 }
 
 compileJava.options.encoding = 'UTF-8'

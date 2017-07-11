@@ -59,8 +59,7 @@ public class MusicCommand implements CommandExec {
         musicManagers = new HashMap<>();
     }
 
-    @Command(aliases = {},
-            description = "Play music in your voice chat.",
+    @Command(description = "Play music in your voice chat.",
             type = CommandType.USER,
             channelType = ChannelType.TEXT,
             usage = "%pmusic", mainCommand = "music")
@@ -73,7 +72,13 @@ public class MusicCommand implements CommandExec {
         }
         if(rixaGuild.getMusicModule().isRoleRequired()) {
             Role role = event.getGuild().getRoleById(rixaGuild.getMusicModule().getMusicRole());
-            if(!event.getMember().getRoles().contains(role)) {
+            boolean hasRole = false;
+            for (Role roleItem : event.getMember().getRoles()) {
+                if (roleItem.getId().equalsIgnoreCase(role.getId())) {
+                    hasRole = true;
+                }
+            }
+            if(!hasRole) {
                 new MessageBuilder("You must have the " + role.getName() + " role to use the music module.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
@@ -232,7 +237,7 @@ public class MusicCommand implements CommandExec {
                         }
                     }
                 }
-            } else if(message[1].equalsIgnoreCase("play") || message[1].equalsIgnoreCase("pplay")) {
+            } else if(message[1].equalsIgnoreCase("play") || message[1].equalsIgnoreCase("playlist")) {
                 loadAndPlay(mng, event.getChannel(), message[2], false);
             } else  if(message[1].equalsIgnoreCase("vol") || message[1].equalsIgnoreCase("volume")) {
                 try {
@@ -254,7 +259,6 @@ public class MusicCommand implements CommandExec {
                 String msg = "Adding to queue: " + track.getInfo().title;
                 mng.scheduler.queue(track);
                 new MessageBuilder(msg).setColor(Color.decode("#4CC276")).queue(channel);
-                channel.sendMessage(msg).queue();
             }
 
             @Override

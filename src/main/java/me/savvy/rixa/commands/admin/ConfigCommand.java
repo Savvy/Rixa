@@ -10,6 +10,7 @@ import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.EnumUtils;
 
@@ -22,7 +23,9 @@ import java.util.List;
 public class ConfigCommand implements CommandExec {
 
     private List<String> config;
+    private static ConfigCommand instance;
     public ConfigCommand() {
+        instance = this;
         config = Arrays.asList(
                 "%pconfig set greetings ; Set channel where greeting messages are announced!",
                 "%pconfig set farewell ; Set channel where farewell messages are announced!",
@@ -33,6 +36,7 @@ public class ConfigCommand implements CommandExec {
                 "%pconfig joinMessage <joinMessage> ; Set the greetings message for when a user joins the server!",
                 "%pconfig quitMessage <quitMessage> ; Set the quit message for when a user leaves the server!",
                 "%pconfig joinPm <joinPm> ; Set the message to be private messaged when a user joins!",
+                "%pconfig description <description> ; Set your server description!",
                 "%pconfig addPerm <role> <permission> ; Give a role permission to access a command!",
                 "%pconfig removePerm <role> <permission> ; Remove a role's permission to access a command!",
                 "%pconfig enable <module> ; Enabled a Rixa Module!",
@@ -40,7 +44,6 @@ public class ConfigCommand implements CommandExec {
     }
     @Override
     @Command(mainCommand = "config",
-            aliases = {},
             description = "Configure Rixa to your liking!",
             type = CommandType.ADMIN,
             channelType = ChannelType.TEXT)
@@ -57,35 +60,59 @@ public class ConfigCommand implements CommandExec {
             try {
                 try {
                     page = Integer.parseInt(messages[1]);
-                    sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix());
+                    sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix()).sendUser(event.getAuthor()).addReaction("\u2B05").addReaction("\u27A1");
+                    event.getMessage().delete().complete();
+                    new MessageBuilder(event.getMember().getAsMention() + ", the configuration menu has been private messaged to you").setColor(event.getMember().getColor()).queue(event.getChannel());
                 } catch(NumberFormatException ex) {
-                    sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix());
-                    ex.printStackTrace();
+                    sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix()).sendUser(event.getAuthor()).addReaction("\u2B05").addReaction("\u27A1");
                 }
             } catch (IllegalArgumentException ex){
-                sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix());
-                ex.printStackTrace();
+                sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix()).sendUser(event.getAuthor()).addReaction("\u2B05").addReaction("\u27A1");
+                event.getMessage().delete().complete();
+                new MessageBuilder(event.getMember().getAsMention() + ", the configuration menu has been private messaged to you").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
             return;
         }else if (messages.length < 3) {
-            sendHelp(event.getMember(), 0, rixaGuild.getGuildSettings().getPrefix());
+            sendHelp(event.getMember(), 0, rixaGuild.getGuildSettings().getPrefix()).sendUser(event.getAuthor()).addReaction("\u2B05").addReaction("\u27A1");
+            event.getMessage().delete().complete();
+            new MessageBuilder(event.getMember().getAsMention() + ", the configuration menu has been private messaged to you").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
         String message;
         if (messages[1].equalsIgnoreCase("joinmessage")) {
             message = getMessage(messages, 2);
+            if(event.getMessage().getMentionedChannels().size() > 0) {
+                for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
+                    message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
+                }
+            }
             rixaGuild.getGuildSettings().setJoinMessage(message);
             new MessageBuilder("Successfully set Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
                     .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
         } else if (messages[1].equalsIgnoreCase("quitmessage")) {
             message = getMessage(messages, 2);
+            if(event.getMessage().getMentionedChannels().size() > 0) {
+                for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
+                    message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
+                }
+            }
             rixaGuild.getGuildSettings().setQuitMessage(message);
             new MessageBuilder("Successfully set Quit Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
                     .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
         } else if (messages[1].equalsIgnoreCase("joinpm")) {
             message = getMessage(messages, 2);
+            if(event.getMessage().getMentionedChannels().size() > 0) {
+                for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
+                    message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
+                }
+            }
             rixaGuild.getGuildSettings().setJoinPrivateMessage(message);
             new MessageBuilder("Successfully set Private Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
+                    .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
+        } else if (messages[1].equalsIgnoreCase("description")) {
+            message = getMessage(messages, 2);
+            rixaGuild.getGuildSettings().setDescription(message);
+            new MessageBuilder("Successfully set Server Description to\n" + message.replace("{0}", event.getMember().getUser().getName())
                     .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
         } else if (messages[1].equalsIgnoreCase("set")) {
             if (messages[2].equalsIgnoreCase("greetings")) {
@@ -211,24 +238,32 @@ public class ConfigCommand implements CommandExec {
             new MessageBuilder("Successfully removed the permission " + perm.name() + " from the role " + role.getName() + "!").setColor(event.getMember().getColor()).queue(event.getChannel());
         } else {
             int page = 0;
-            sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix());
+            sendHelp(event.getMember(), page, rixaGuild.getGuildSettings().getPrefix()).sendUser(event.getAuthor()).addReaction("\u2B05").addReaction("\u27A1");
+            event.getMessage().delete().complete();
+            new MessageBuilder(event.getMember().getAsMention() + ", the configuration menu has been private messaged to you").setColor(event.getMember().getColor()).queue(event.getChannel());
         }
     }
 
-    private void sendHelp(Member member, int page, String prefix) {
+    public MessageBuilder sendHelp(Member member, int page, String prefix) {
         int sizePerPage = 4;
         int maxPages = config.size() / sizePerPage + (config.size() % sizePerPage > 0 ? 1 : 0);
-        int from = Math.max(0, (page + 1 )* sizePerPage);
+        if(page < 0) {
+            page = 0;
+        }
+        if(page > maxPages - 2) {
+            page = maxPages - 3;
+        }
+        int from = Math.max(0, page * sizePerPage);
         int to = Math.min(config.size(), (page + 2) * sizePerPage);
         List<String> configList = config.subList(from, to);
         MessageBuilder builder = new MessageBuilder("\u2699" + " **Config**" +
                 "\n" +
                 "Click the back or forward reactions to switch between pages.");
         configList.forEach(object -> {
-            builder.addField(object.split(" ; ")[0].replace("%p", prefix), object.split(" ; ")[1], true);
+            builder.addField(object.split(" ; ")[0].replace("%p", prefix), object.split(" ; ")[1], false);
         });
         builder.footer("Page: (" + page + " / " + (maxPages - 2) + ")", member.getGuild().getIconUrl());
-        builder.setColor(member.getColor()).sendUser(member.getUser()).setTitle("Config").addReaction("\u2B05").addReaction("\u27A1");
+        return builder.setColor(member.getColor()).setTitle(String.format("Config: %s", member.getGuild().getId()));
     }
 
     private String getMessage(String[] messages, int argToBegin) {
@@ -237,5 +272,9 @@ public class ConfigCommand implements CommandExec {
             builder.append(messages[i]).append(" ");
         }
         return builder.toString().trim();
+    }
+
+    public static ConfigCommand getInstance() {
+        return instance;
     }
 }
