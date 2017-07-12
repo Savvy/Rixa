@@ -1,5 +1,7 @@
 package me.savvy.rixa.data.database.sql.mysql;
 
+import lombok.Getter;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,7 +15,8 @@ import java.sql.Statement;
  * @author tips48
  */
 public abstract class Database {
-
+    
+    @Getter
 	protected Connection connection;
 
 	/**
@@ -47,15 +50,7 @@ public abstract class Database {
 		return connection != null && !connection.isClosed();
 	}
 
-	/**
-	 * Gets the connection with the database
-	 * 
-	 * @return Connection with the database, null if none
-	 */
-	public Connection getConnection() {
-		return connection;
-	}
-
+	
 	/**
 	 * Closes the connection with the database
 	 * 

@@ -1,5 +1,6 @@
 package me.savvy.rixa.data.thunderbolt.io;
 
+import lombok.Getter;
 import me.savvy.rixa.data.thunderbolt.json.JSONArray;
 import me.savvy.rixa.data.thunderbolt.json.JSONObject;
 import me.savvy.rixa.data.thunderbolt.utils.Validator;
@@ -15,8 +16,10 @@ import java.util.*;
  */
 public class ThunderFile {
 	
+    @Getter
 	private final String name, path;
 	private JSONObject jo = new JSONObject();
+	@Getter
 	private File f;
 	
 	/**
@@ -52,24 +55,7 @@ public class ThunderFile {
 		this(name, path);
 		jo = new JSONObject(jsonData);
 	}
-	
-	/**
-	 * Get the name of the file
-	 * 
-	 * @return The name of the File
-	 */
-	public String getName(){
-		return name;
-	}
-	
-	/**
-	 * Get the path to the file
-	 * 
-	 * @return The path to the file
-	 */
-	public String getPath(){
-		return path;
-	}
+    
 	
 	/**
 	 * Set an object in the file's map. This works like any old Map.
@@ -390,9 +376,5 @@ public class ThunderFile {
 			set.add(jo.get(i.next()));
 		}
 		return set;
-	}
-
-	public File getFile() {
-		return f;
 	}
 }

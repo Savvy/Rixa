@@ -4,6 +4,8 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -14,6 +16,7 @@ import java.util.Queue;
  * Created by Timber on 6/13/2017.
  */
 public class TrackScheduler extends AudioEventAdapter {
+        @Getter @Setter
         private boolean repeating = false;
         final AudioPlayer player;
         public final Queue<AudioTrack> queue;
@@ -68,15 +71,7 @@ public class TrackScheduler extends AudioEventAdapter {
             }
 
         }
-
-        public boolean isRepeating() {
-            return repeating;
-        }
-
-        public void setRepeating(boolean repeating) {
-            this.repeating = repeating;
-        }
-
+    
         public void shuffle() {
             Collections.shuffle((List<?>) queue);
         }

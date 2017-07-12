@@ -1,5 +1,7 @@
 package me.savvy.rixa.guild;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.data.database.sql.DatabaseManager;
@@ -19,12 +21,17 @@ import java.util.List;
  * Created by Timber on 5/23/2017.
  */
 public class RixaGuild {
-
+    
+    @Getter
     private Guild guild;
     private DatabaseManager db;
+    @Setter
     private GuildSettings guildSettings;
+    @Getter @Setter
     private MusicModule musicModule;
+    @Getter @Setter
     private TwitterModule twitterModule;
+    @Getter
     private List<String> mutedMembers = new ArrayList<>();
 
     public RixaGuild(Guild guild) {
@@ -49,20 +56,12 @@ public class RixaGuild {
     public GuildSettings getGuildSettings() {
         return (guildSettings == null) ? this.guildSettings = new GuildSettings(getGuild()) : guildSettings;
     }
-
-    public void setGuildSettings(GuildSettings guildSettings) {
-        this.guildSettings = guildSettings;
-    }
-
+    
     private boolean checkExists() {
         Result r = Rixa.getInstance().getDbManager().checkExists("SELECT `guild_name` FROM `core` WHERE `guild_id` = '" + guild.getId() + "';");
         return r == Result.TRUE;
     }
-
-    public Guild getGuild() {
-        return guild;
-    }
-
+    
     public boolean hasPermission(Member member, RixaPermission permission) {
         if(Rixa.getInstance().getConfig().getConfig().getStringList("botAdmins").contains(member.getUser().getId()) ||
                 member.getUser().getId().equals(guild.getOwner().getUser().getId())) {
@@ -136,20 +135,5 @@ public class RixaGuild {
         if(!isUserMuted(user))
         mutedMembers.add(user.getId());
     }
-
-    public MusicModule getMusicModule() {
-        return musicModule;
-    }
-
-    public void setMusicModule(MusicModule musicModule) {
-        this.musicModule = musicModule;
-    }
-
-    public TwitterModule getTwitterModule() {
-        return twitterModule;
-    }
-
-    public void setTwitterModule(TwitterModule twitterModule) {
-        this.twitterModule = twitterModule;
-    }
+    
 }

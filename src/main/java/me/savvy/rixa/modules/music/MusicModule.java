@@ -1,5 +1,6 @@
 package me.savvy.rixa.modules.music;
 
+import lombok.Getter;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.data.database.sql.DatabaseManager;
 import me.savvy.rixa.enums.Result;
@@ -15,8 +16,11 @@ import java.sql.SQLException;
  */
 public class MusicModule implements RixaModule {
     private DatabaseManager db;
+    @Getter
     private boolean enabled;
+    @Getter
     private String musicRole;
+    @Getter
     private Guild guild;
 
     public MusicModule(Guild guild) {
@@ -53,11 +57,7 @@ public class MusicModule implements RixaModule {
     public String getDescription() {
         return "Listen to music in your voice channel.";
     }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
+    
 
     public Result setEnabled(boolean val) {
         this.enabled = val;
@@ -67,20 +67,13 @@ public class MusicModule implements RixaModule {
     public boolean isRoleRequired() {
         return (!musicRole.equalsIgnoreCase("default_value"));
     }
-
-    public String getMusicRole() {
-        return musicRole;
-    }
+    
 
     public Result setRole(String newRole) {
         this.musicRole = newRole;
         return Rixa.getInstance().getData().update("music", "music_role", "guild_id", newRole, guild.getId());
     }
-
-    public Guild getGuild() {
-        return guild;
-    }
-
+    
     public boolean checkExists() {
         Result r = Rixa.getInstance().getDbManager().checkExists("SELECT `guild_id` FROM `music` WHERE `guild_id` = '" +
                         guild.getId() + "';");

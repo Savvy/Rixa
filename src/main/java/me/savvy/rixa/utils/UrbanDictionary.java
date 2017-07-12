@@ -1,5 +1,6 @@
 package me.savvy.rixa.utils;
 
+import lombok.Getter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,9 +14,12 @@ import java.util.Scanner;
  * Created by savit on 6/24/2017.
  */
 public class UrbanDictionary {
-
+    
+    @Getter
     private String wordToSearch;
+    @Getter
     private String definition;
+    @Getter
     private String permaLink;
     public UrbanDictionary(String wordToSearch) {
         this.wordToSearch = wordToSearch;
@@ -42,16 +46,5 @@ public class UrbanDictionary {
             return false;
         }
     }
-
-    public String getPermaLink() {
-        return permaLink;
-    }
-
-    public String getWordToSearch() {
-        return wordToSearch;
-    }
-
-    public String getDefinition() {
-        return definition;
-    }
+    
 }

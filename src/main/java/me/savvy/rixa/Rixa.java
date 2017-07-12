@@ -1,5 +1,7 @@
 package me.savvy.rixa;
 
+import lombok.Getter;
+import lombok.Setter;
 import me.savvy.rixa.commands.admin.BatchMoveCommand;
 import me.savvy.rixa.commands.admin.ConfigCommand;
 import me.savvy.rixa.commands.general.*;
@@ -37,13 +39,20 @@ import java.util.logging.Logger;
  * Created by Timber on 5/7/2017.
  */
 public class Rixa {
-
+    
+    @Getter
     private static Data data;
+    @Getter
     private static long timeUp;
+    @Getter
     private static Rixa instance;
+    @Getter
     private static List<JDA> shardsList;
+    @Getter
     private static ConfigManager config;
+    @Getter @Setter
     private static DatabaseManager dbManager;
+    @Getter @Setter
     private LanguageManager languageManager;
     // String search = event.getMessage().getContent().substring(event.getMessage().getContent().indexOf(" ") + 1);
     public static void main(String[] args) {
@@ -92,27 +101,7 @@ public class Rixa {
         register(new React[] {new HelpReaction(), new ConfigReaction()});
         data = new Data(DataType.SQL);
     }
-
-    public Data getData() {
-        return data;
-    }
-
-    public DatabaseManager getDbManager() {
-        return dbManager;
-    }
-
-    public void setDbManager(DatabaseManager dbManager) {
-        Rixa.dbManager = dbManager;
-    }
-
-    public LanguageManager getLanguageManager() {
-        return languageManager;
-    }
-
-    private void setLanguageManager(LanguageManager languageManager) {
-        this.languageManager = languageManager;
-    }
-
+    
     private static void register(CommandExec commandExecs[]) {
         for (CommandExec command: commandExecs) {
             CommandHandler.registerCommand(command);
@@ -125,23 +114,8 @@ public class Rixa {
         }
     }
 
-    public static Rixa getInstance() {
-        return instance;
-    }
-
-    public long getTimeUp() {
-        return timeUp;
-    }
-
     public Logger getLogger() {
         return Logger.getLogger("Rixa");
     }
-
-    public ConfigManager getConfig() {
-        return config;
-    }
-
-    public List<JDA> getShardsList() {
-        return shardsList;
-    }
+    
 }

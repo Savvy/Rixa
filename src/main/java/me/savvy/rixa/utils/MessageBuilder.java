@@ -1,5 +1,6 @@
 package me.savvy.rixa.utils;
 
+import lombok.Getter;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.*;
 
@@ -11,7 +12,8 @@ import java.awt.*;
 public class MessageBuilder {
 
     private Message message;
-
+    
+    @Getter
     private EmbedBuilder builder;
     public MessageBuilder(String description) {
         this.builder = new EmbedBuilder().setDescription(description);
@@ -41,11 +43,7 @@ public class MessageBuilder {
         builder.setThumbnail(url);
         return this;
     }
-
-    public EmbedBuilder getBuilder() {
-        return builder;
-    }
-
+    
     public void queue(TextChannel channel) {
         channel.sendMessage(builder.build()).queue();
     }
