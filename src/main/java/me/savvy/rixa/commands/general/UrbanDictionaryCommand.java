@@ -16,7 +16,6 @@ import java.net.URLEncoder;
  */
 public class UrbanDictionaryCommand implements CommandExec {
 
-
     @Override
     @Command(mainCommand = "urbandictionary",
             aliases = {"ud"},

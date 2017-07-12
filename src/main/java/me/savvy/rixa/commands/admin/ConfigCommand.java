@@ -33,6 +33,13 @@ public class ConfigCommand implements CommandExec {
                 "%pconfig set defaultRole <role> ; Set role to be assigned when a user joins the server!",
                 "%pconfig set muteRole <role> ; Set role to be assigned when a user is muted!",
                 "%pconfig set musicRole <musicRole> ; Set role required to use the music functions! (Not required)",
+
+                "%pconfig set twitterCKey <key> ; Set Twitter Consumer Key!",
+                "%pconfig set twitterCSecret <key> ; Set Twitter Consumer Secret!",
+                "%pconfig set twitterAToken <key> ; Set Twitter Access Key!",
+                "%pconfig set twitterASecret <key> ; Set Twitter Access Secret!",
+                "%config set twitterChannel ; Set the channel for Twitter feed updates!",
+
                 "%pconfig joinMessage <joinMessage> ; Set the greetings message for when a user joins the server!",
                 "%pconfig quitMessage <quitMessage> ; Set the quit message for when a user leaves the server!",
                 "%pconfig joinPm <joinPm> ; Set the message to be private messaged when a user joins!",
@@ -40,7 +47,8 @@ public class ConfigCommand implements CommandExec {
                 "%pconfig addPerm <role> <permission> ; Give a role permission to access a command!",
                 "%pconfig removePerm <role> <permission> ; Remove a role's permission to access a command!",
                 "%pconfig enable <module> ; Enabled a Rixa Module!",
-                "%pconfig disable <module> ; Disable a Rixa Module!");
+                "%pconfig disable <module> ; Disable a Rixa Module!"
+                );
     }
     @Override
     @Command(mainCommand = "config",

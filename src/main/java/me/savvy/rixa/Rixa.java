@@ -2,6 +2,7 @@ package me.savvy.rixa;
 
 import me.savvy.rixa.commands.admin.BatchMoveCommand;
 import me.savvy.rixa.commands.admin.ConfigCommand;
+import me.savvy.rixa.commands.admin.InviteCommand;
 import me.savvy.rixa.commands.general.*;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandHandler;
@@ -88,7 +89,7 @@ public class Rixa {
                 new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
-                new ConfigCommand(), new UrbanDictionaryCommand(), /*new InviteCommand()*/});
+                new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand()});
         register(new React[] {new HelpReaction(), new ConfigReaction()});
         data = new Data(DataType.SQL);
     }

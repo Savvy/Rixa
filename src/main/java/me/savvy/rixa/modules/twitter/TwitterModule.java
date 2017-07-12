@@ -13,9 +13,14 @@ public class TwitterModule {
     private ConfigurationBuilder configurationBuilder;
     private Twitter twitter;
     private TwitterFactory twitterFactory;
-    private String consumerKey, consumerSecret, accessToken, accessTokenSecret;
+    private final RixaGuild rixaGuild;
+    private String consumerKey;
+    private String consumerSecret;
+    private String accessToken;
+    private String accessTokenSecret;
 
     public TwitterModule(RixaGuild rixaGuild, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+        this.rixaGuild = rixaGuild;
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
         this.accessToken = accessToken;
@@ -76,5 +81,9 @@ public class TwitterModule {
 
     public TwitterStream getTwitterStream() {
         return twitterStream;
+    }
+
+    public RixaGuild getRixaGuild() {
+        return rixaGuild;
     }
 }
