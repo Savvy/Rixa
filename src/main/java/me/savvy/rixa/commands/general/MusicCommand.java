@@ -24,12 +24,14 @@ import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.modules.music.MusicManager;
 import me.savvy.rixa.modules.music.TrackScheduler;
 import me.savvy.rixa.utils.MessageBuilder;
+import me.savvy.rixa.utils.YoutubeSearch;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.awt.*;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,7 +127,7 @@ public class MusicCommand implements CommandExec {
                     return;
                 }
                 new MessageBuilder("Track Name: " + player.getPlayingTrack().getInfo().title + "\n Track Link: " +
-                player.getPlayingTrack().getInfo().uri).setColor(event.getMember().getColor()).queue(event.getChannel());
+                        player.getPlayingTrack().getInfo().uri).setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if(message[1].equalsIgnoreCase("pause")) {
                 if (player.getPlayingTrack() == null) {
                     new MessageBuilder("There is no track currently playing.").setColor(event.getMember().getColor()).queue(event.getChannel());
@@ -134,9 +136,9 @@ public class MusicCommand implements CommandExec {
                 player.setPaused(!player.isPaused());
                 if (player.isPaused()) {
                     new MessageBuilder("The music player has been paused.").setColor(event.getMember().getColor()).queue(event.getChannel());
-            } else {
+                } else {
                     new MessageBuilder("There music player has resumed playing.").setColor(event.getMember().getColor()).queue(event.getChannel());
-            }
+                }
             } else if(message[1].equalsIgnoreCase("stop")) {
                 scheduler.queue.clear();
                 player.stopTrack();
@@ -249,6 +251,18 @@ public class MusicCommand implements CommandExec {
                     new MessageBuilder(message[2] + " is not a valid integer. Try a number between 10 and 100.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
             }
+        } // music youtube <query
+        if(message.length >= 3) {
+            if(message[1].equalsIgnoreCase("youtube") || message[1].equalsIgnoreCase("yt") || message[1].equalsIgnoreCase("search")
+                    || message[1].equalsIgnoreCase("ytsearch")) {
+                String search = getMessage(message, 2);
+                try {
+                    YoutubeSearch ytSearch = new YoutubeSearch(search);
+                    loadAndPlay(mng, event.getChannel(), ytSearch.getUrl(0), false);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -322,5 +336,13 @@ public class MusicCommand implements CommandExec {
     }
 
     private void sendHelp() {
+    }
+
+    private String getMessage(String[] messages, int argToBegin) {
+        StringBuilder builder = new StringBuilder();
+        for(int i = argToBegin; i < messages.length; i++) {
+            builder.append(messages[i]).append(" ");
+        }
+        return builder.toString().trim();
     }
 }

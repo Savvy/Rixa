@@ -44,7 +44,6 @@ public class MessageEvent {
         CommandRegistrar cmd = CommandHandler.get(splitContent[0]);
         Method m = cmd.getMethod();
         try {
-            Rixa.getInstance().getLogger().info("Invoking: " + cmd.getCommandAnnotation().mainCommand());
             m.invoke(cmd.getExecutor(), event);
         } catch (Exception e) {
             e.printStackTrace();
