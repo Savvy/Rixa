@@ -20,7 +20,6 @@ import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.modules.music.MusicManager;
 import me.savvy.rixa.modules.music.TrackScheduler;
 import me.savvy.rixa.utils.MessageBuilder;
@@ -67,7 +66,7 @@ public class MusicCommand implements CommandExec {
             usage = "%pmusic", mainCommand = "music")
     public void execute(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
-        RixaGuild rixaGuild = RixaManager.getGuild(guild);
+        RixaGuild rixaGuild = RixaGuild.getGuild(guild);
         if(!rixaGuild.getMusicModule().isEnabled()) {
             new MessageBuilder("Sorry music is not enabled on `" + guild.getName() + "`!").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
@@ -114,6 +113,10 @@ public class MusicCommand implements CommandExec {
                 } else if (scheduler.queue.isEmpty()) {
                     new MessageBuilder("The audio queue is empty! Add a track to the queue first!").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
+            } else if (message[1].equalsIgnoreCase("leave")) {
+                new MessageBuilder("Leaving voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                guild.getAudioManager().setSendingHandler(null);
+                guild.getAudioManager().closeAudioConnection();
             } else if(message[1].equalsIgnoreCase("skip")) {
                 AudioTrack track = scheduler.nextTrack();
                 if(track != null) {

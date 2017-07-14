@@ -1,5 +1,6 @@
 package me.savvy.rixa.guild;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.savvy.rixa.Rixa;
@@ -15,24 +16,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Timber on 5/23/2017.
  */
 public class RixaGuild {
     
-    @Getter
-    private Guild guild;
+    @Getter private Guild guild;
     private DatabaseManager db;
-    @Setter
-    private GuildSettings guildSettings;
-    @Getter @Setter
-    private MusicModule musicModule;
-    @Getter @Setter
-    private TwitterModule twitterModule;
-    @Getter
-    private List<String> mutedMembers = new ArrayList<>();
+    @Setter private GuildSettings guildSettings;
+    @Getter @Setter private MusicModule musicModule;
+    @Getter @Setter private TwitterModule twitterModule;
+    @Getter private List<String> mutedMembers = new ArrayList<>();
 
     public RixaGuild(Guild guild) {
         this.guild = guild;
@@ -50,7 +48,7 @@ public class RixaGuild {
                             .replace("%icon%", guild.getIconId()));
         }
         setGuildSettings(new GuildSettings(this.guild));
-        RixaManager.addGuild(this);
+        addGuild(this);
     }
 
     public GuildSettings getGuildSettings() {
@@ -134,6 +132,30 @@ public class RixaGuild {
     public void muteMember(User user) {
         if(!isUserMuted(user))
         mutedMembers.add(user.getId());
+    }
+
+    @Getter
+    private static Map<String, RixaGuild> guilds = new HashMap<>();
+
+    public static void addGuild(RixaGuild guild) {
+        if(check(guild.getGuild())) return;
+        guilds.put(guild.getGuild().getId(), guild);
+    }
+
+    public static RixaGuild getGuild(Guild guild) {
+        if(!check(guild)) {
+            addGuild(new RixaGuild(guild));
+        }
+        return guilds.get(guild.getId());
+    }
+
+    public static void removeGuild(RixaGuild guild) {
+        if(!check(guild.getGuild())) return;
+        guilds.remove(guild.getGuild().getId());
+    }
+
+    private static boolean check(Guild guild) {
+        return guilds.containsKey(guild.getId());
     }
     
 }

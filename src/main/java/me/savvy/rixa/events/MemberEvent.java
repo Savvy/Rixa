@@ -1,7 +1,6 @@
 package me.savvy.rixa.events;
 
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
@@ -22,7 +21,7 @@ public class MemberEvent {
 
     @SubscribeEvent
     public void onMember(GuildMemberJoinEvent event) {
-        RixaGuild rixaGuild = RixaManager.getGuild(event.getGuild());
+        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
         if(rixaGuild.getGuildSettings().getJoinMessageChannel() != null) {
             try {
                 new MessageBuilder(rixaGuild.getGuildSettings().getJoinMessage()

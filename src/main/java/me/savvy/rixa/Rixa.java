@@ -19,6 +19,7 @@ import me.savvy.rixa.data.filemanager.LanguageManager;
 import me.savvy.rixa.events.BotEvent;
 import me.savvy.rixa.events.MemberEvent;
 import me.savvy.rixa.events.MessageEvent;
+import me.savvy.rixa.events.VoiceChannel;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.modules.reactions.react.ConfigReaction;
@@ -82,6 +83,7 @@ public class Rixa {
                         .addEventListener(new MessageEvent())
                         .addEventListener(new BotEvent())
                         .addEventListener(new MemberEvent())
+                        .addEventListener(new VoiceChannel())
                         .setGame(Game.of(config.getConfig().getString("botGame")))
                         .setAutoReconnect(true)
                         .setStatus(OnlineStatus.ONLINE)

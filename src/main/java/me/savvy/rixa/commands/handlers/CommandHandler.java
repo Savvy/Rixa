@@ -25,7 +25,7 @@ public class CommandHandler {
             return true;
         } else {
             for (CommandRegistrar commandRegistrar : getCommands().values()) {
-                for (String string : commandRegistrar.getCommandAnnotation().aliases()) {
+                for (String string : commandRegistrar.getAnnotation().aliases()) {
                     if (string.equalsIgnoreCase(s)) return true;
                 }
             }
@@ -38,7 +38,7 @@ public class CommandHandler {
             return getCommands().get(s);
         } else {
             for (CommandRegistrar commandRegistrar : getCommands().values()) {
-                for (String string : commandRegistrar.getCommandAnnotation().aliases()) {
+                for (String string : commandRegistrar.getAnnotation().aliases()) {
                     if (string.equalsIgnoreCase(s)) return commandRegistrar;
                 }
             }

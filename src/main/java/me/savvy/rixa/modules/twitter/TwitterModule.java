@@ -37,10 +37,10 @@ public class TwitterModule {
         this.accessToken = accessToken;
         this.accessTokenSecret = accessTokenSecret;
         configurationBuilder = new ConfigurationBuilder()
-                .setOAuthConsumerKey(getConsumerKey())
-                .setOAuthConsumerSecret(getConsumerSecret())
-                .setOAuthAccessToken(getAccessToken())
-                .setOAuthAccessTokenSecret(getAccessTokenSecret());
+                .setOAuthConsumerKey(consumerKey)
+                .setOAuthConsumerSecret(consumerSecret)
+                .setOAuthAccessToken(accessToken)
+                .setOAuthAccessTokenSecret(accessTokenSecret);
         twitterFactory = new TwitterFactory(configurationBuilder.build());
         twitterStream = new TwitterStreamFactory().getInstance();
         twitter = twitterFactory.getInstance();

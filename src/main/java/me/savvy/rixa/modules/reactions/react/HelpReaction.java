@@ -3,7 +3,7 @@ package me.savvy.rixa.modules.reactions.react;
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaManager;
+import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -26,7 +26,7 @@ public class HelpReaction implements React {
         }
         Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
         String title = message.getEmbeds().get(0).getTitle().split(": ")[1];
-        RixaGuild rixaGuild = RixaManager.getGuild(event.getJDA().getGuildById(title));
+        RixaGuild rixaGuild = RixaGuild.getGuild(event.getJDA().getGuildById(title));
         String prefix = rixaGuild.getGuildSettings().getPrefix();
         EmbedBuilder embedBuilder;
         try {
@@ -44,9 +44,9 @@ public class HelpReaction implements React {
                             "Click a number below for information about other commands.";
                     embedBuilder.setTitle(String.format("Help: %s", title));
                     embedBuilder.setDescription(stringBuilder);
-                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getCommandAnnotation().type() == CommandType.USER)
-                            .forEach(cmd -> embedBuilder.addField(prefix + cmd.getCommandAnnotation().mainCommand(),
-                                    cmd.getCommandAnnotation().description(), false));
+                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getAnnotation().type() == CommandType.USER)
+                            .forEach(cmd -> embedBuilder.addField(prefix + cmd.getAnnotation().mainCommand(),
+                                    cmd.getAnnotation().description(), false));
                     message.editMessage(embedBuilder.build()).queue();
                     break;
                 case "\u0032\u20E3": // two emoji
@@ -57,9 +57,9 @@ public class HelpReaction implements React {
                             "Click a number below for information about other commands.";
                     embedBuilder.setTitle(String.format("Help: %s", title));
                     embedBuilder.setDescription(stringBuilder);
-                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getCommandAnnotation().type() == CommandType.ADMIN
-                            || cmd.getCommandAnnotation().type() == CommandType.MOD)
-                            .forEach(cmd -> embedBuilder.addField(prefix + cmd.getCommandAnnotation().mainCommand(), cmd.getCommandAnnotation().description(), false));
+                    CommandHandler.getCommands().values().stream().filter(cmd -> cmd.getAnnotation().type() == CommandType.ADMIN
+                            || cmd.getAnnotation().type() == CommandType.MOD)
+                            .forEach(cmd -> embedBuilder.addField(prefix + cmd.getAnnotation().mainCommand(), cmd.getAnnotation().description(), false));
                     message.editMessage(embedBuilder.build()).queue();
                     break;
                 case "\u0033\u20E3": // three emoji

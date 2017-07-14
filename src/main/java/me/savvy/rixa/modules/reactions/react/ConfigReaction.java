@@ -1,19 +1,14 @@
 package me.savvy.rixa.modules.reactions.react;
 
 import me.savvy.rixa.commands.admin.ConfigCommand;
-import me.savvy.rixa.commands.handlers.CommandHandler;
-import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
 import me.savvy.rixa.utils.MessageBuilder;
-import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 
 /**
  * Created by Timber on 6/9/2017.
@@ -35,7 +30,7 @@ public class ConfigReaction implements React {
         if(guild == null) {
             return;
         }
-        RixaGuild rixaGuild = RixaManager.getGuild(guild);
+        RixaGuild rixaGuild = RixaGuild.getGuild(guild);
         String prefix = rixaGuild.getGuildSettings().getPrefix();
         MessageBuilder builder = null;
         int page = 500;

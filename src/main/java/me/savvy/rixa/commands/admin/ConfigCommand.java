@@ -5,7 +5,7 @@ import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaManager;
+import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
@@ -56,7 +56,7 @@ public class ConfigCommand implements CommandExec {
             type = CommandType.ADMIN,
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = RixaManager.getGuild(event.getGuild());
+        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
         if (!rixaGuild.hasPermission(event.getMember(), RixaPermission.ACCESS_CONFIG)) {
             new MessageBuilder(event.getMember().getAsMention() + ", you do not have permission for this command.")
                     .setColor(event.getMember().getColor()).queue(event.getChannel());
@@ -172,24 +172,24 @@ public class ConfigCommand implements CommandExec {
             }
         } else if (messages[1].equalsIgnoreCase("enable")) {
             if (messages[2].equalsIgnoreCase("music")) {
-                RixaManager.getGuild(event.getGuild()).getMusicModule().setEnabled(true);
+                RixaGuild.getGuild(event.getGuild()).getMusicModule().setEnabled(true);
                 new MessageBuilder("Successfully enabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } /*else if (messages[2].equalsIgnoreCase("levels")) {
                 GuildManager.getGuild(event.getGuild().getId()).getLevels().setEnabled(true);
                 event.getChannel().sendMessage("Successfully enabled the `Levels` module").queue();
             }*/ else if (messages[2].equalsIgnoreCase("joinverification")) {
-                RixaManager.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(true);
+                RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(true);
                 new MessageBuilder("Successfully enabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
         } else if (messages[1].equalsIgnoreCase("disable")) {
             if (messages[2].equalsIgnoreCase("music")) {
-                RixaManager.getGuild(event.getGuild()).getMusicModule().setEnabled(false);
+                RixaGuild.getGuild(event.getGuild()).getMusicModule().setEnabled(false);
                 new MessageBuilder("Successfully disabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }/* else if (messages[2].equalsIgnoreCase("levels")) {
                 GuildManager.getGuild(event.getGuild().getId()).getLevels().setEnabled(false);
                 event.getChannel().sendMessage("Successfully disabled the `Levels` module").queue();
             }*/ else if (messages[2].equalsIgnoreCase("joinverification")) {
-                RixaManager.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(false);
+                RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(false);
                 new MessageBuilder("Successfully disabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
         } else if (messages[1].equalsIgnoreCase("addperm") || messages[1].equalsIgnoreCase("addpermission") || messages[1].equalsIgnoreCase("aperm")) {

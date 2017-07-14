@@ -4,7 +4,6 @@ import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
@@ -26,7 +25,7 @@ public class BatchMoveCommand implements CommandExec {
             description = "Move users within one role to another!",
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
-         RixaGuild rixaGuild = RixaManager.getGuild(event.getGuild());
+         RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
         if(!rixaGuild.hasPermission(event.getMember(), RixaPermission.BATCH_MOVE)) {
             new MessageBuilder(event.getMember().getAsMention() + ", you do not have permission for this command.").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;

@@ -29,7 +29,7 @@ dependencies {
     compile 'com.sedmelluq:lavaplayer:1.2.42'
     compile 'org.twitter4j:twitter4j-core:4.0.3'
     compile 'org.twitter4j:twitter4j-stream:4.0.6'
-    compileOnly 'org.projectlombok:lombok:1.16.8'
+    compile 'org.projectlombok:lombok:1.16.18'
 }
 
 compileJava.options.encoding = 'UTF-8'

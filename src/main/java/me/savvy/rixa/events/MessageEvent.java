@@ -1,19 +1,15 @@
 package me.savvy.rixa.events;
 
 import com.mysql.jdbc.StringUtils;
-import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandRegistrar;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaManager;
 import me.savvy.rixa.modules.reactions.handlers.ReactRegistrar;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
@@ -32,7 +28,7 @@ public class MessageEvent {
     @SubscribeEvent
     public void handle(GuildMessageReceivedEvent event) {
         if (event.getGuild() == null) return;
-        RixaGuild rixaGuild = RixaManager.getGuild(event.getGuild());
+        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
         String prefix = rixaGuild
                 .getGuildSettings()
                 .getPrefix();
@@ -54,7 +50,7 @@ public class MessageEvent {
     public void onMemberJoin(PrivateMessageReceivedEvent event) {
         RixaGuild rixaGuild;
         if (MemberEvent.joinMembers.containsKey(event.getAuthor().getId())) {
-            rixaGuild = RixaManager.getGuild(MemberEvent.joinMembers.get(event.getAuthor().getId()));
+            rixaGuild = RixaGuild.getGuild(MemberEvent.joinMembers.get(event.getAuthor().getId()));
             if (event.getMessage().getContent().equalsIgnoreCase("I agree") ||
                     event.getMessage().getContent().equalsIgnoreCase("I accept")
                     || event.getMessage().getContent().equalsIgnoreCase("Yes")) {
