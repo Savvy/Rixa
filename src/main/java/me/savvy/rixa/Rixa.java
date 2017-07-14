@@ -33,6 +33,8 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 
 import javax.security.auth.login.LoginException;
+import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -60,17 +62,18 @@ public class Rixa {
     public static void main(String[] args) {
         instance = new Rixa();
         shardsList = new LinkedList<>();
-        config = new ConfigManager();
+    //    config = new ConfigManager();
+        config = new ConfigManager(new File("Rixa/config.json"));
         load();
     }
 
     private static void load() {
         dbManager = new DatabaseManager(
-                        String.valueOf(config.getConfig().getObjectinObj("sql", "hostName")),
-                        String.valueOf(config.getConfig().getObjectinObj("sql", "portNumber")),
-                        String.valueOf(config.getConfig().getObjectinObj("sql", "databaseName")),
-                        String.valueOf(config.getConfig().getObjectinObj("sql", "userName")),
-                        String.valueOf(config.getConfig().getObjectinObj("sql", "password")));
+                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")),
+                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("portNumber")),
+                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("databaseName")),
+                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("userName")),
+                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("password")));
         dbManager.createTable();
         getInstance().setLanguageManager(new LanguageManager());
         try {
@@ -78,13 +81,13 @@ public class Rixa {
             for(int i = 0; i < shards; i++) {
                 Logger.getLogger("Rixa").info("Loading shard #" + i);
                 JDABuilder jda = new JDABuilder(AccountType.BOT)
-                        .setToken(config.getConfig().getString("secretToken"))
+                        .setToken(config.getJsonObject().getString("secretToken"))
                         .setEventManager(new AnnotatedEventManager())
                         .addEventListener(new MessageEvent())
                         .addEventListener(new BotEvent())
                         .addEventListener(new MemberEvent())
                         .addEventListener(new VoiceChannel())
-                        .setGame(Game.of(config.getConfig().getString("botGame")))
+                        .setGame(Game.of(config.getJsonObject().getString("botGame")))
                         .setAutoReconnect(true)
                         .setStatus(OnlineStatus.ONLINE)
                         .setAudioEnabled(true)

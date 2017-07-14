@@ -1,57 +1,71 @@
 package me.savvy.rixa.data.filemanager;
 
-import me.savvy.rixa.data.thunderbolt.Thunderbolt;
-import me.savvy.rixa.data.thunderbolt.exceptions.FileLoadException;
-import me.savvy.rixa.data.thunderbolt.io.ThunderFile;
+import lombok.Getter;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Timber on 6/4/2017.
  */
 public class ConfigManager {
-    private ThunderFile tf;
 
-    public ConfigManager() {
-        tf = null;
-        try {
-            if(!Thunderbolt.load("config", "Rixa")) {
-                try {
-                    tf = Thunderbolt.get("config");
-                    addDefaults();
-                } catch (IOException e) {
-                    e.printStackTrace();
+    @Getter
+    private File file;
+    @Getter
+    private JSONObject jsonObject;
+
+    public ConfigManager(File file) {
+        this.file = file;
+        if (!(file.exists())) {
+            FileWriter fileWriter = null;
+            try {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+                jsonObject = new JSONObject();
+                jsonObject
+                        .put("secretKey", "YOUR_TOKEN_HERE")
+                        .put("botGame", "Rixa 2.0 | http://rixa.io/invite");
+                JSONObject obj = new JSONObject();
+                obj.put("hostName", "localhost")
+                        .put("password", "password")
+                        .put("databaseName", "rixa")
+                        .put("userName", "rixa_users")
+                        .put("portNumber", "3306");
+                jsonObject.put("sql", obj);
+                JSONArray botAdmins = new JSONArray();
+                botAdmins.put("YOUR_USER_ID_HERE")
+                        .put("OTHER_ADMINS")
+                        .put("REMOVE_IF_YOU_DONT_WANT");
+                obj.put("botAdmins", botAdmins);
+                fileWriter = new FileWriter(file);
+                fileWriter.write(jsonObject.toString());
+                System.out.println("Successfully generated configuration file.");
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } finally {
+                    if(fileWriter != null) {
+                        try {
+                        fileWriter.flush();
+                        fileWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-            tf = Thunderbolt.get("config");
-        } catch (FileLoadException | IOException e) {
+            return;
+        }
+        String jsonTxt = null;
+        try {
+            jsonTxt = IOUtils.toString(new FileReader(file));
+        } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void addDefaults() throws IOException {
-        List<String> botAdmins = new ArrayList<>();
-        Map<String, String> map = new HashMap<>();
-        map.put("hostName", "localhost");
-        map.put("password", "password");
-        map.put("databaseName", "rixa");
-        map.put("userName", "rixa_users");
-        map.put("portNumber", "3306");
-        tf.set("sql", map);
-        botAdmins.add("YOUR_USER_ID_HERE");
-        botAdmins.add("OTHER_ADMINS");
-        botAdmins.add("REMOVE_IF_YOU_DONT_WANT");
-        tf.set("botAdmins", botAdmins);
-        tf.set("secretToken", "YOUR_TOKEN_HERE");
-        tf.set("botGame", "Rixa 2.0 | http://rixa.io/invite");
-        tf.save();
-    }
-
-    public ThunderFile getConfig() {
-        return tf;
+        jsonObject = new JSONObject(jsonTxt);
     }
 }

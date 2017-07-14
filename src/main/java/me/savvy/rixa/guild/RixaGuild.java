@@ -34,18 +34,17 @@ public class RixaGuild {
 
     public RixaGuild(Guild guild) {
         this.guild = guild;
-        this.db = Rixa.getInstance().getDbManager();
+        this.db = Rixa.getDbManager();
         setMusicModule(new MusicModule(guild));
         load();
     }
 
     private void load() {
         if(!(checkExists())) {
-            Rixa.getInstance().getDbManager()
-                    .insert("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`, `icon`) VALUES ('%id%', '%name%', 'Description not set.', 'No Keywords Found.', '%icon%')"
+            Rixa.getDbManager()
+                    .insert("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`) VALUES ('%id%', '%name%', 'Description not set.', 'No Keywords Found.')"
                             .replace("%id%", guild.getId())
-                            .replace("%name%", guild.getName().replace("'", "\\'"))
-                            .replace("%icon%", guild.getIconId()));
+                            .replace("%name%", guild.getName().replace("'", "\\'")));
         }
         setGuildSettings(new GuildSettings(this.guild));
         addGuild(this);
@@ -56,12 +55,12 @@ public class RixaGuild {
     }
     
     private boolean checkExists() {
-        Result r = Rixa.getInstance().getDbManager().checkExists("SELECT `guild_name` FROM `core` WHERE `guild_id` = '" + guild.getId() + "';");
+        Result r = Rixa.getDbManager().checkExists("SELECT `guild_name` FROM `core` WHERE `guild_id` = '" + guild.getId() + "';");
         return r == Result.TRUE;
     }
     
     public boolean hasPermission(Member member, RixaPermission permission) {
-        if(Rixa.getInstance().getConfig().getConfig().getStringList("botAdmins").contains(member.getUser().getId()) ||
+        if(Rixa.getConfig().getJsonObject().getJSONArray("botAdmins").toList().contains(member.getUser().getId()) ||
                 member.getUser().getId().equals(guild.getOwner().getUser().getId())) {
             return true;
         }
