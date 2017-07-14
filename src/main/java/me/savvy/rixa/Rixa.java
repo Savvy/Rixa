@@ -2,9 +2,7 @@ package me.savvy.rixa;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.savvy.rixa.commands.admin.BatchMoveCommand;
-import me.savvy.rixa.commands.admin.ConfigCommand;
-import me.savvy.rixa.commands.admin.InviteCommand;
+import me.savvy.rixa.commands.admin.*;
 import me.savvy.rixa.commands.general.*;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandHandler;
@@ -75,7 +73,7 @@ public class Rixa {
                 String.valueOf(config.getJsonObject().getJSONObject("sql").getString("userName")),
                 String.valueOf(config.getJsonObject().getJSONObject("sql").getString("password")));
         dbManager.createTable();
-        getInstance().setLanguageManager(new LanguageManager());
+        getInstance().setLanguageManager(new LanguageManager(new File("Rixa/languages/language.json")));
         try {
             int shards = 5;
             for(int i = 0; i < shards; i++) {
@@ -103,7 +101,8 @@ public class Rixa {
                 new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
-                new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand()});
+                new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
+                new AddRoleCommand(), new RemoveRoleCommand()});
         register(new React[] {new HelpReaction(), new ConfigReaction()});
         data = new Data(DataType.SQL);
     }
