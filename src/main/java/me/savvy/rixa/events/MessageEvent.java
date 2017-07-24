@@ -8,6 +8,7 @@ import me.savvy.rixa.modules.reactions.handlers.ReactRegistrar;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -18,12 +19,19 @@ import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.awt.*;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Timber on 5/7/2017.
  */
 public class MessageEvent {
+
+    private final Pattern INVITE = Pattern.compile("discord(?:\\.gg|app.com\\/invite)\\/([A-Z0-9-]{2,16})",Pattern.CASE_INSENSITIVE);
+
 
     @SubscribeEvent
     public void handle(GuildMessageReceivedEvent event) {
@@ -32,7 +40,22 @@ public class MessageEvent {
         String prefix = rixaGuild
                 .getGuildSettings()
                 .getPrefix();
-        if (!event.getMessage().getContent().startsWith(prefix))  {return; }
+        checkMessage(event.getMessage());
+        if (!event.getMessage().getContent().startsWith(prefix))  {
+            if (!(rixaGuild.getLevelsModule().isEnabled())) {
+                return;
+            }
+            if(!event.getAuthor().getId().equalsIgnoreCase("202944101333729280") &&
+                    !event.getAuthor().getId().equalsIgnoreCase("207322957075185665")) {
+                return;
+            }
+            if(rixaGuild.getLevelsModule().getUserData(event.getAuthor().getId()).awardIfCan()) {
+                new MessageBuilder(event.getAuthor().getAsMention() + " has leveled up to level " +
+                        rixaGuild.getLevelsModule().getUserData(event.getAuthor().getId()).getLevel())
+                        .setColor(event.getMember().getColor()).queue(event.getChannel());
+            }
+            return;
+        }
 
         String[] splitContent = event.getMessage().getContent().replace(prefix, "").split(" ");
         if(!CommandHandler.hasCommand(splitContent[0])) {
@@ -43,6 +66,28 @@ public class MessageEvent {
             m.invoke(cmd.getExecutor(), event);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void checkMessage(Message message) {
+        List<String> invites = new ArrayList<>();
+        Matcher matcher = INVITE.matcher(message.getRawContent());
+        while(matcher.find()) {
+            invites.add(matcher.group(1));
+        }
+        if(invites.size() == 0) {
+            return;
+        }
+        for(String inviteCode : invites) {
+            Invite invite = null;
+            try {
+                invite = Invite.resolve(message.getJDA(), inviteCode).complete();
+            } catch(Exception e) {}
+            if(invite !=null && !invite.getGuild().getId().equals(message.getGuild().getId())) {
+                new MessageBuilder(String.format("Advertising is not allowed, %s!",
+                        message.getAuthor().getAsMention())).setColor(message.getMember().getColor()).queue(message.getTextChannel());
+                message.delete().reason("Advertising is not allowed!").queue();
+            }
         }
     }
 

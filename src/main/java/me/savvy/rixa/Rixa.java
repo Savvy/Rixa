@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 
@@ -102,7 +103,7 @@ public class Rixa {
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
-                new AddRoleCommand(), new RemoveRoleCommand()});
+                new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand()});
         register(new React[] {new HelpReaction(), new ConfigReaction()});
         data = new Data(DataType.SQL);
     }

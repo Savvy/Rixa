@@ -19,6 +19,10 @@ public class MessageBuilder {
         this.builder = new EmbedBuilder().setDescription(description);
     }
 
+    public MessageBuilder() {
+        this.builder = new EmbedBuilder();
+    }
+
     public MessageBuilder setTitle(String title, String url) {
         builder.setTitle(title, url);
         return this;
@@ -43,7 +47,12 @@ public class MessageBuilder {
         builder.setThumbnail(url);
         return this;
     }
-    
+
+    public MessageBuilder setAuthor(String name, String url, String iconURL) {
+        builder.setAuthor(name, url, iconURL);
+        return this;
+    }
+
     public void queue(TextChannel channel) {
         channel.sendMessage(builder.build()).queue();
     }

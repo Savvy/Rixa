@@ -2,11 +2,7 @@ package me.savvy.rixa.data.filemanager;
 
 import lombok.Getter;
 import me.savvy.rixa.data.locale.Language;
-import me.savvy.rixa.data.thunderbolt.Thunderbolt;
-import me.savvy.rixa.data.thunderbolt.exceptions.FileLoadException;
-import me.savvy.rixa.data.thunderbolt.io.ThunderFile;
 import org.apache.commons.io.IOUtils;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;

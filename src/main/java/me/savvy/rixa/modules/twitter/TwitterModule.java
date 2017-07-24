@@ -3,14 +3,16 @@ package me.savvy.rixa.modules.twitter;
 import lombok.Getter;
 import lombok.Setter;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.modules.RixaModule;
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * Created by savit on 7/9/2017.
  */
-public class TwitterModule {
-    
+public class TwitterModule implements RixaModule {
+
+    @Getter private boolean enabled;
     @Getter
     private final TwitterStream twitterStream;
     @Getter
@@ -45,5 +47,14 @@ public class TwitterModule {
         twitterStream = new TwitterStreamFactory().getInstance();
         twitter = twitterFactory.getInstance();
     }
-    
+
+    @Override
+    public String getName() {
+        return "Twitter";
+    }
+
+    @Override
+    public String getDescription() {
+        return "Twitter feed, tweet & more.";
+    }
 }

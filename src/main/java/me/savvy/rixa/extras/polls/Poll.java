@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.EmbedBuilder;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,14 +15,13 @@ import java.util.List;
  */
 public class Poll {
     
-    @Getter @Setter
-    private String name, description;
-    @Getter
-    private List<String> options;
+    @Getter @Setter private String name, description;
+    @Getter private int id;
+    @Getter private List<String> options;
 
     public Poll(String name) {
         this.name = name;
-        options = new ArrayList<>();
+        options = new LinkedList<>();
     }
     
     public boolean addOption(String s) {
@@ -36,7 +36,7 @@ public class Poll {
         if(options.size() <= 10) {
             return options.remove(i);
         }
-        return "";
+        return "Option Not Found.";
     }
 
     public EmbedBuilder getBuilder(Color color) {

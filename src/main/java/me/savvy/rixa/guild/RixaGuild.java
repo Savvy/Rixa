@@ -1,6 +1,5 @@
 package me.savvy.rixa.guild;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import me.savvy.rixa.Rixa;
@@ -8,9 +7,13 @@ import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.data.database.sql.DatabaseManager;
 import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.management.GuildSettings;
+import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.modules.music.MusicModule;
 import me.savvy.rixa.modules.twitter.TwitterModule;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,11 +34,13 @@ public class RixaGuild {
     @Getter @Setter private MusicModule musicModule;
     @Getter @Setter private TwitterModule twitterModule;
     @Getter private List<String> mutedMembers = new ArrayList<>();
+    @Getter @Setter private LevelsModule levelsModule;
 
     public RixaGuild(Guild guild) {
         this.guild = guild;
         this.db = Rixa.getDbManager();
         setMusicModule(new MusicModule(guild));
+        setLevelsModule(new LevelsModule(this));
         load();
     }
 
