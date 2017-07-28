@@ -218,18 +218,23 @@ public class MusicCommand implements CommandExec {
         } else if (message.length == 3) {
             if(message[1].equalsIgnoreCase("join")) {
                 VoiceChannel chan = null;
-                if (guild.getVoiceChannelsByName(message[2], true).size() >= 1) {
-                    chan = guild.getVoiceChannelsByName(message[2], true).get(0);
+                StringBuilder stringBuilder = new StringBuilder();
+                for (int i = 2; i < message.length; i++) {
+                    stringBuilder.append(message[i]).append(" ");
+                }
+                String channelName = stringBuilder.toString();
+                if (guild.getVoiceChannelsByName(channelName, true).size() >= 1) {
+                    chan = guild.getVoiceChannelsByName(channelName, true).get(0);
                 } else {
                     for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
-                        if (voiceChannel.getName().contains(message[2]) || voiceChannel.getId().equalsIgnoreCase(message[2])) {
+                        if (voiceChannel.getName().contains(channelName) || voiceChannel.getId().equalsIgnoreCase(channelName)) {
                             chan = voiceChannel;
                             break;
                         }
                     }
                 }
                 if (chan == null) {
-                    new MessageBuilder("Sorry I was unable to find the VoiceChannel: `" + message[2] + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    new MessageBuilder("Sorry I was unable to find the VoiceChannel: `" + channelName + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 } else {
                     guild.getAudioManager().setSendingHandler(mng.sendHandler);
                     try {
