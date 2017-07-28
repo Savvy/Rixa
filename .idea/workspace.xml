@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d884bc5a-63a1-4e03-b68b-617ebe9b8e2a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__commons_io_commons_io_2_5.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__commons_io_commons_io_2_5.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__net_sf_trove4j_trove4j_3_0_3.xml" afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_sf_trove4j_trove4j_3_0_3.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/Rixa_main.iml" afterPath="$PROJECT_DIR$/.idea/modules/Rixa_main.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules/Rixa_test.iml" afterPath="$PROJECT_DIR$/.idea/modules/Rixa_test.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/me/savvy/rixa/commands/general/MusicCommand.java" afterPath="$PROJECT_DIR$/src/main/java/me/savvy/rixa/commands/general/MusicCommand.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/me/savvy/rixa/data/database/sql/DatabaseManager.java" afterPath="$PROJECT_DIR$/src/main/java/me/savvy/rixa/data/database/sql/DatabaseManager.java" />
     </list>
     <ignored path="Rixa.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -110,8 +105,8 @@
       <file leaf-file-name="MusicCommand.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/me/savvy/rixa/commands/general/MusicCommand.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="778">
-              <caret line="258" column="17" lean-forward="true" selection-start-line="258" selection-start-column="17" selection-end-line="258" selection-end-column="17" />
+            <state relative-caret-position="149">
+              <caret line="221" column="36" lean-forward="false" selection-start-line="221" selection-start-column="36" selection-end-line="221" selection-end-column="36" />
               <folding />
             </state>
           </provider>
@@ -1415,6 +1410,14 @@
       <workItem from="1497113281627" duration="647000" />
       <workItem from="1497198013633" duration="1383000" />
     </task>
+    <task id="LOCAL-00001" summary="Argument support for joining channels (untested) resultseta and preparedstatements closing">
+      <created>1501261410126</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1501261410126</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
@@ -1532,6 +1535,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Argument support for joining channels (untested) resultseta and preparedstatements closing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Argument support for joining channels (untested) resultseta and preparedstatements closing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1872,8 +1879,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/me/savvy/rixa/commands/general/MusicCommand.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="778">
-          <caret line="258" column="17" lean-forward="true" selection-start-line="258" selection-start-column="17" selection-end-line="258" selection-end-column="17" />
+        <state relative-caret-position="149">
+          <caret line="221" column="36" lean-forward="false" selection-start-line="221" selection-start-column="36" selection-end-line="221" selection-end-column="36" />
           <folding />
         </state>
       </provider>

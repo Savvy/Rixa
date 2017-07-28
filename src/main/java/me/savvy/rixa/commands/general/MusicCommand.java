@@ -219,7 +219,7 @@ public class MusicCommand implements CommandExec {
             if(message[1].equalsIgnoreCase("join")) {
                 VoiceChannel chan = null;
                 StringBuilder stringBuilder = new StringBuilder();
-                for (int i = 2; i < message.length; i++) {
+                for (int i = 2; i != message.length; i++) {
                     stringBuilder.append(message[i]).append(" ");
                 }
                 String channelName = stringBuilder.toString();
