@@ -40,7 +40,7 @@ public class MessageEvent {
         String prefix = rixaGuild
                 .getGuildSettings()
                 .getPrefix();
-        checkMessage(event.getMessage());
+        //checkMessage(event.getMessage());
         if (!event.getMessage().getContent().startsWith(prefix))  {
             if (!(rixaGuild.getLevelsModule().isEnabled())) {
                 return;

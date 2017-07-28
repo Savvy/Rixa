@@ -116,11 +116,11 @@ public class MusicCommand implements CommandExec {
             } else if (message[1].equalsIgnoreCase("leave")) {
                 new MessageBuilder("Leaving voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 guild.getAudioManager().setSendingHandler(null);
-                guild.getAudioManager().closeAudioConnection();
-            } else if(message[1].equalsIgnoreCase("skip")) {
+
                 AudioTrack track = scheduler.nextTrack();
                 if(track != null) {
-                    new MessageBuilder("The current track has been skipped. Now Playing: " + track.getInfo().title).setColor(event.getMember().getColor()).queue(event.getChannel());
+                    new MessageBuilder("The current track has been skipped. Now Playiguild.getAudioManager().closeAudioConnection();\n" +
+                            "            } else if(message[1].equalsIgnoreCase(\"skip\")) {ng: " + track.getInfo().title).setColor(event.getMember().getColor()).queue(event.getChannel());
                 } else {
                     new MessageBuilder("Track Skipped. Queue Complete").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
@@ -205,7 +205,6 @@ public class MusicCommand implements CommandExec {
                         }
                         sb.append("\n").append("Total Queue Time Length: ").append(getTimestamp(queueLength));
                         new MessageBuilder(sb.toString().trim()).setColor(event.getMember().getColor()).queue(event.getChannel());
-                        event.getChannel().sendMessage(sb.toString()).queue();
                     }
                 }
             } else if(message[1].equalsIgnoreCase("shuffle")) {
