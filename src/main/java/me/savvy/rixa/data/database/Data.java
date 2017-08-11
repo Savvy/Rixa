@@ -18,7 +18,7 @@ public class Data {
     private DatabaseManager db;
     public Data(DataType dataType) {
         this.dataType = dataType;
-        this.db = Rixa.getInstance().getDbManager();
+        this.db = Rixa.getDbManager();
     }
 
     public Object get(String key, String value, String objToGet, String table) throws SQLException {
@@ -64,7 +64,11 @@ public class Data {
     public Result exists(String check) {
         switch(dataType) {
             case SQL:
-                return db.checkExists(check);
+                try {
+                    return db.checkExists(check);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
         }
         return Result.FALSE;
     }

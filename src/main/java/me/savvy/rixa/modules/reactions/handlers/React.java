@@ -7,5 +7,5 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
  */
 public interface React {
 
-    public void reactionTrigger(MessageReactionAddEvent event);
+    void reactionTrigger(MessageReactionAddEvent event);
 }

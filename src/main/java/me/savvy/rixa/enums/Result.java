@@ -8,5 +8,5 @@ public enum Result {
     SUCCESS,
     TRUE,
     FALSE,
-    ERROR;
+    ERROR
 }

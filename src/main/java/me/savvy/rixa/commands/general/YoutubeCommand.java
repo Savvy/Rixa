@@ -21,7 +21,7 @@ public class YoutubeCommand implements CommandExec {
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
         String[] message = event.getMessage().getContent().split(" ");
-        String search = getMessage(message, 1);
+        String search = getMessage(message);
         try {
             YoutubeSearch ytSearch = new YoutubeSearch(search);
             new MessageBuilder(ytSearch.getUrl(0))
@@ -31,9 +31,9 @@ public class YoutubeCommand implements CommandExec {
         }
     }
 
-    private String getMessage(String[] messages, int argToBegin) {
+    private String getMessage(String[] messages) {
         StringBuilder builder = new StringBuilder() ;
-        for(int i = argToBegin; i < messages.length; i++) {
+        for(int i = 1; i < messages.length; i++) {
             builder.append(messages[i]).append(" ");
         }
         return builder.toString().trim();

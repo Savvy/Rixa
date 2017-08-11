@@ -60,7 +60,12 @@ public class RixaGuild {
     }
     
     private boolean checkExists() {
-        Result r = Rixa.getDbManager().checkExists("SELECT `guild_name` FROM `core` WHERE `guild_id` = '" + guild.getId() + "';");
+        Result r = Result.ERROR;
+        try {
+            r = Rixa.getDbManager().checkExists("SELECT `guild_name` FROM `core` WHERE `guild_id` = '" + guild.getId() + "';");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return r == Result.TRUE;
     }
     
@@ -141,7 +146,7 @@ public class RixaGuild {
     @Getter
     private static Map<String, RixaGuild> guilds = new HashMap<>();
 
-    public static void addGuild(RixaGuild guild) {
+    private static void addGuild(RixaGuild guild) {
         if(check(guild.getGuild())) return;
         guilds.put(guild.getGuild().getId(), guild);
     }

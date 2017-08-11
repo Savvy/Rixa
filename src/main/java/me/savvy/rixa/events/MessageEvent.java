@@ -36,6 +36,7 @@ public class MessageEvent {
     @SubscribeEvent
     public void handle(GuildMessageReceivedEvent event) {
         if (event.getGuild() == null) return;
+        if (event.getAuthor().isBot()) return;
         RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
         String prefix = rixaGuild
                 .getGuildSettings()

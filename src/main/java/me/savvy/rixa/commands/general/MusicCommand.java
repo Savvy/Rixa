@@ -42,7 +42,7 @@ import java.util.logging.Level;
  */
 public class MusicCommand implements CommandExec {
 
-    public final int DEFAULT_VOLUME = 35; //(0 - 150, where 100 is default max volume)
+    private final int DEFAULT_VOLUME = 35; //(0 - 150, where 100 is default max volume)
     private final AudioPlayerManager playerManager;
     private final Map<String, MusicManager> musicManagers;
     public MusicCommand() {
@@ -216,18 +216,20 @@ public class MusicCommand implements CommandExec {
         } else if (message.length == 3) {
             if(message[1].equalsIgnoreCase("join")) {
                 VoiceChannel chan = null;
-                if (guild.getVoiceChannelsByName(message[2], true).size() >= 1) {
-                    chan = guild.getVoiceChannelsByName(message[2], true).get(0);
+                String channelName = message[2];//getMessage(message, 2).trim();
+                if (guild.getVoiceChannelsByName(channelName, true).size() >= 1) {
+                    chan = guild.getVoiceChannelsByName(channelName, true).get(0);
                 } else {
                     for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
-                        if (voiceChannel.getName().contains(message[2]) || voiceChannel.getId().equalsIgnoreCase(message[2])) {
+                        if (voiceChannel.getName().contains(channelName) || voiceChannel.getName().equalsIgnoreCase(channelName) ||
+                                voiceChannel.getId().equalsIgnoreCase(channelName)) {
                             chan = voiceChannel;
                             break;
                         }
                     }
                 }
                 if (chan == null) {
-                    new MessageBuilder("Sorry I was unable to find the VoiceChannel: `" + message[2] + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    new MessageBuilder("Sorry I was unable to find the VoiceChannel: `" + channelName + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 } else {
                     guild.getAudioManager().setSendingHandler(mng.sendHandler);
                     try {
@@ -271,7 +273,8 @@ public class MusicCommand implements CommandExec {
                     chan = guild.getVoiceChannelsByName(channelName, true).get(0);
                 } else {
                     for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
-                        if (voiceChannel.getName().contains(channelName) || voiceChannel.getId().equalsIgnoreCase(channelName)) {
+                        if (voiceChannel.getName().contains(channelName) || voiceChannel.getId().equalsIgnoreCase(channelName)
+                            || voiceChannel.getName().equalsIgnoreCase(channelName)) {
                             chan = voiceChannel;
                             break;
                         }

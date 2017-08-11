@@ -83,8 +83,13 @@ public class LevelsModule implements RixaModule {
 
     private boolean checkExists() {
         String query = "SELECT `%s` FROM `%s` WHERE `%s` = '%s';";
-        Result r = Rixa.getDbManager().checkExists(String.format
-                (query, "guild_id", "modules", "guild_id", rixaGuild.getGuild().getId()));
+        Result r = Result.ERROR;
+        try {
+            r = Rixa.getDbManager().checkExists(String.format
+                    (query, "guild_id", "modules", "guild_id", rixaGuild.getGuild().getId()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return r == Result.TRUE;
     }
 
