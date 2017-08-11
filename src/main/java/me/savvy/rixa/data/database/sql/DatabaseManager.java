@@ -112,8 +112,10 @@ public class DatabaseManager {
             PreparedStatement ps = connection.prepareStatement(string);
             ResultSet rs = ps.executeQuery();
             if(rs.next()) {
+                rs.close();
                 return Result.TRUE;
             }else {
+                rs.close();
                 return Result.FALSE;
             }
         } catch (SQLException e) {

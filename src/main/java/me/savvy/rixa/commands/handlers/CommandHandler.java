@@ -25,6 +25,9 @@ public class CommandHandler {
             return true;
         } else {
             for (CommandRegistrar commandRegistrar : getCommands().values()) {
+                if (commandRegistrar.getAnnotation().mainCommand().equalsIgnoreCase(s)) {
+                    return true;
+                }
                 for (String string : commandRegistrar.getAnnotation().aliases()) {
                     if (string.equalsIgnoreCase(s)) return true;
                 }

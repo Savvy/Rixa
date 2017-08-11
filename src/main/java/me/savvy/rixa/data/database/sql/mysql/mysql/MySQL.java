@@ -73,7 +73,6 @@ public class MySQL extends Database {
 		}
 		
 		Class.forName("com.mysql.jdbc.Driver");
-	//	Class.forName("com.mysql.cj.jdbc.Driver");
 		connection = DriverManager.getConnection(connectionURL,
 				this.user, this.password);
 		return connection;

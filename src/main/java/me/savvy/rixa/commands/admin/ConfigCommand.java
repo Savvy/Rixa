@@ -12,6 +12,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.managers.GuildManager;
 import org.apache.commons.lang3.EnumUtils;
 
 import java.util.Arrays;
@@ -174,10 +175,10 @@ public class ConfigCommand implements CommandExec {
             if (messages[2].equalsIgnoreCase("music")) {
                 RixaGuild.getGuild(event.getGuild()).getMusicModule().setEnabled(true);
                 new MessageBuilder("Successfully enabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
-            } /*else if (messages[2].equalsIgnoreCase("levels")) {
-                GuildManager.getGuild(event.getGuild().getId()).getLevels().setEnabled(true);
-                event.getChannel().sendMessage("Successfully enabled the `Levels` module").queue();
-            }*/ else if (messages[2].equalsIgnoreCase("joinverification")) {
+            } else if (messages[2].equalsIgnoreCase("levels")) {
+                RixaGuild.getGuild(event.getGuild()).getLevelsModule().setEnabled(true);
+                event.getChannel().sendMessage("Successfully enabled the levels module").queue();
+            } else if (messages[2].equalsIgnoreCase("joinverification")) {
                 RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(true);
                 new MessageBuilder("Successfully enabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
@@ -185,10 +186,10 @@ public class ConfigCommand implements CommandExec {
             if (messages[2].equalsIgnoreCase("music")) {
                 RixaGuild.getGuild(event.getGuild()).getMusicModule().setEnabled(false);
                 new MessageBuilder("Successfully disabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
-            }/* else if (messages[2].equalsIgnoreCase("levels")) {
-                GuildManager.getGuild(event.getGuild().getId()).getLevels().setEnabled(false);
-                event.getChannel().sendMessage("Successfully disabled the `Levels` module").queue();
-            }*/ else if (messages[2].equalsIgnoreCase("joinverification")) {
+            } else if (messages[2].equalsIgnoreCase("levels")) {
+                RixaGuild.getGuild(event.getGuild()).getLevelsModule().setEnabled(false);
+                event.getChannel().sendMessage("Successfully disabled the levels module").queue();
+            } else if (messages[2].equalsIgnoreCase("joinverification")) {
                 RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(false);
                 new MessageBuilder("Successfully disabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
