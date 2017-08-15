@@ -156,7 +156,6 @@ public class MusicCommand implements CommandExec {
                 }
                 if (track != null) {
                     new MessageBuilder("Restarting Track: " + track.getInfo().title).setColor(event.getMember().getColor()).queue(event.getChannel());
-                    event.getChannel().sendMessage("Restarting track: " + track.getInfo().title).queue();
                     player.playTrack(track.makeClone());
                 } else {
                     new MessageBuilder("No track has been previously played.").setColor(event.getMember().getColor()).queue(event.getChannel());
