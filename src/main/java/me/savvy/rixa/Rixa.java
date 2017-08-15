@@ -103,8 +103,9 @@ public class Rixa {
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
-                new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand()});
-        register(new React[] {new HelpReaction(), new ConfigReaction()});
+                new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand(),
+                new LeaderboardCommand()});
+        register(new React[] {new HelpReaction(), new ConfigReaction() });
         data = new Data(DataType.SQL);
     }
     
