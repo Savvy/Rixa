@@ -23,18 +23,12 @@ public class DatabaseManager {
     }
 
     public void createTable() {
-        try {
-            connection = MYSQL.openConnection();
-            Rixa.getInstance().getLogger().info("Mysql database connected");
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        checkConnection();
         try {
             PreparedStatement ps = connection.prepareStatement(
                     "CREATE TABLE IF NOT EXISTS `core` (`guild_id` varchar(255) NOT NULL, `guild_name` varchar(255) NOT NULL, PRIMARY KEY (`guild_id`));");
             ps.executeUpdate();
             ps.close();
-            connection.close();
         } catch (SQLException e) {
             Rixa.getInstance().getLogger().severe("Could not check if table exists, stopping server.");
             e.printStackTrace();
@@ -46,6 +40,7 @@ public class DatabaseManager {
         try {
             if (!MYSQL.checkConnection()) {
                 connection = MYSQL.openConnection();
+                Rixa.getInstance().getLogger().info("Mysql database connected");
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -112,12 +107,18 @@ public class DatabaseManager {
 
     public Result checkExists(String string) throws SQLException {
         checkConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(string);
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            return Result.TRUE;
-        } else {
-            return Result.FALSE;
+        try {
+            PreparedStatement ps = connection.prepareStatement(string);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                rs.close();
+                return Result.TRUE;
+            } else {
+                rs.close();
+                return Result.FALSE;
+            }
+        } catch (SQLException e) {
+            return Result.ERROR;
         }
     }
 

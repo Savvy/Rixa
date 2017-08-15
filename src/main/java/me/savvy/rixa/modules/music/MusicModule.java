@@ -27,7 +27,7 @@ public class MusicModule implements RixaModule {
         this.guild = guild;
         this.enabled = false;
         this.musicRole = "default_value";
-        db = Rixa.getInstance().getDbManager();
+        db = Rixa.getDbManager();
         load();
     }
 
@@ -61,7 +61,7 @@ public class MusicModule implements RixaModule {
 
     public Result setEnabled(boolean val) {
         this.enabled = val;
-        return Rixa.getInstance().getData().update("music", "enabled", "guild_id", val, guild.getId());
+        return Rixa.getData().update("music", "enabled", "guild_id", val, guild.getId());
     }
 
     public boolean isRoleRequired() {
@@ -71,12 +71,17 @@ public class MusicModule implements RixaModule {
 
     public Result setRole(String newRole) {
         this.musicRole = newRole;
-        return Rixa.getInstance().getData().update("music", "music_role", "guild_id", newRole, guild.getId());
+        return Rixa.getData().update("music", "music_role", "guild_id", newRole, guild.getId());
     }
     
     public boolean checkExists() {
-        Result r = Rixa.getInstance().getDbManager().checkExists("SELECT `guild_id` FROM `music` WHERE `guild_id` = '" +
-                        guild.getId() + "';");
+        Result r = Result.ERROR;
+        try {
+            r = Rixa.getDbManager().checkExists("SELECT `guild_id` FROM `music` WHERE `guild_id` = '" +
+                            guild.getId() + "';");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return r == Result.TRUE;
     }
 }

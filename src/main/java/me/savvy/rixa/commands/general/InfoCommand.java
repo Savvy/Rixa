@@ -28,7 +28,7 @@ public class InfoCommand implements CommandExec {
         EmbedBuilder messageEmbed = new EmbedBuilder();
         User botOwner = event.getJDA().getUserById("202944101333729280");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
-        Date date1 = new Date(Rixa.getInstance().getTimeUp());
+        Date date1 = new Date(Rixa.getTimeUp());
         Date date2 = new Date();
         long difference = date2.getTime() - date1.getTime();
         long seconds = difference / 1000;
@@ -38,7 +38,7 @@ public class InfoCommand implements CommandExec {
         long second = TimeUnit.SECONDS.toSeconds(seconds) - (TimeUnit.SECONDS.toMinutes(seconds) *60);
         int guildCount = 0;
         int userCount = 0;
-        for(JDA jda: Rixa.getInstance().getShardsList()) {
+        for(JDA jda: Rixa.getShardsList()) {
             guildCount += jda.getGuilds().size();
             userCount += jda.getUsers().size();
         }

@@ -36,6 +36,7 @@ public class MessageEvent {
     @SubscribeEvent
     public void handle(GuildMessageReceivedEvent event) {
         if (event.getGuild() == null) return;
+        if (event.getAuthor().isBot()) return;
         RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
         String prefix = rixaGuild
                 .getGuildSettings()
@@ -45,10 +46,10 @@ public class MessageEvent {
             if (!(rixaGuild.getLevelsModule().isEnabled())) {
                 return;
             }
-            if(!event.getAuthor().getId().equalsIgnoreCase("202944101333729280") &&
+            /*if(!event.getAuthor().getId().equalsIgnoreCase("202944101333729280") &&
                     !event.getAuthor().getId().equalsIgnoreCase("207322957075185665")) {
                 return;
-            }
+            }*/
             if(rixaGuild.getLevelsModule().getUserData(event.getAuthor().getId()).awardIfCan()) {
                 new MessageBuilder(event.getAuthor().getAsMention() + " has leveled up to level " +
                         rixaGuild.getLevelsModule().getUserData(event.getAuthor().getId()).getLevel())

@@ -42,7 +42,7 @@ import java.util.logging.Level;
  */
 public class MusicCommand implements CommandExec {
 
-    public final int DEFAULT_VOLUME = 35; //(0 - 150, where 100 is default max volume)
+    private final int DEFAULT_VOLUME = 35; //(0 - 150, where 100 is default max volume)
     private final AudioPlayerManager playerManager;
     private final Map<String, MusicManager> musicManagers;
     public MusicCommand() {
@@ -92,7 +92,7 @@ public class MusicCommand implements CommandExec {
         if(message.length == 1) {
             sendHelp();
         } else if (message.length == 2) {
-            if(message[1].equalsIgnoreCase("join")) {
+            if(message[1].equalsIgnoreCase("join") || message[1].equalsIgnoreCase("summon") ) {
                 if (event.getMember().getVoiceState().getChannel() == null) {
                     new MessageBuilder("You must be in a voice channel to summon me!").setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
@@ -114,16 +114,14 @@ public class MusicCommand implements CommandExec {
                     new MessageBuilder("The audio queue is empty! Add a track to the queue first!").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
             } else if (message[1].equalsIgnoreCase("leave")) {
-                new MessageBuilder("Leaving voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());
-                guild.getAudioManager().setSendingHandler(null);
-
+                String desc = "";
                 AudioTrack track = scheduler.nextTrack();
                 if(track != null) {
-                    new MessageBuilder("The current track has been skipped. Now Playiguild.getAudioManager().closeAudioConnection();\n" +
-                            "            } else if(message[1].equalsIgnoreCase(\"skip\")) {ng: " + track.getInfo().title).setColor(event.getMember().getColor()).queue(event.getChannel());
-                } else {
-                    new MessageBuilder("Track Skipped. Queue Complete").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    desc += "Track skipped. ";
                 }
+                new MessageBuilder(desc + " Leaving voice channel...").setColor(event.getMember().getColor()).queue(event.getChannel());
+                guild.getAudioManager().setSendingHandler(null);
+                guild.getAudioManager().closeAudioConnection();
             } else if(message[1].equalsIgnoreCase("link")) {
                 if (player.getPlayingTrack() == null) {
                     new MessageBuilder("There is no track currently playing.").setColor(event.getMember().getColor()).queue(event.getChannel());
@@ -217,16 +215,13 @@ public class MusicCommand implements CommandExec {
         } else if (message.length == 3) {
             if(message[1].equalsIgnoreCase("join")) {
                 VoiceChannel chan = null;
-                StringBuilder stringBuilder = new StringBuilder();
-                for (int i = 2; i != message.length; i++) {
-                    stringBuilder.append(message[i]).append(" ");
-                }
-                String channelName = stringBuilder.toString();
+                String channelName = message[2];//getMessage(message, 2).trim();
                 if (guild.getVoiceChannelsByName(channelName, true).size() >= 1) {
                     chan = guild.getVoiceChannelsByName(channelName, true).get(0);
                 } else {
                     for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
-                        if (voiceChannel.getName().contains(channelName) || voiceChannel.getId().equalsIgnoreCase(channelName)) {
+                        if (voiceChannel.getName().contains(channelName) || voiceChannel.getName().equalsIgnoreCase(channelName) ||
+                                voiceChannel.getId().equalsIgnoreCase(channelName)) {
                             chan = voiceChannel;
                             break;
                         }
@@ -246,7 +241,18 @@ public class MusicCommand implements CommandExec {
                     }
                 }
             } else if(message[1].equalsIgnoreCase("play") || message[1].equalsIgnoreCase("playlist")) {
-                loadAndPlay(mng, event.getChannel(), message[2], false);
+                if (event.getMember().getVoiceState().getChannel() == null) {
+                    new MessageBuilder("You must be in a voice channel to summon me!").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    return;
+                }
+                try {
+                    guild.getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
+                    loadAndPlay(mng, event.getChannel(), message[2], false);
+                } catch (PermissionException e) {
+                    if (e.getPermission() == Permission.VOICE_CONNECT) {
+                        new MessageBuilder("I do not have permission to join the requested voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    }
+                }
             } else  if(message[1].equalsIgnoreCase("vol") || message[1].equalsIgnoreCase("volume")) {
                 try {
                     int newVolume = Math.max(10, Math.min(100, Integer.parseInt(message[2])));
@@ -258,8 +264,35 @@ public class MusicCommand implements CommandExec {
                 }
             }
         } // music youtube <query
-        if(message.length >= 3) {
-            if(message[1].equalsIgnoreCase("youtube") || message[1].equalsIgnoreCase("yt") || message[1].equalsIgnoreCase("search")
+        else if(message.length >= 3) {
+            if(message[1].equalsIgnoreCase("join")) {
+                VoiceChannel chan = null;
+                String channelName = getMessage(message, 2);
+                if (guild.getVoiceChannelsByName(channelName, true).size() >= 1) {
+                    chan = guild.getVoiceChannelsByName(channelName, true).get(0);
+                } else {
+                    for (VoiceChannel voiceChannel : guild.getVoiceChannels()) {
+                        if (voiceChannel.getName().contains(channelName) || voiceChannel.getId().equalsIgnoreCase(channelName)
+                            || voiceChannel.getName().equalsIgnoreCase(channelName)) {
+                            chan = voiceChannel;
+                            break;
+                        }
+                    }
+                }
+                if (chan == null) {
+                    new MessageBuilder("Sorry I was unable to find the VoiceChannel: `" + message[2] + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                } else {
+                    guild.getAudioManager().setSendingHandler(mng.sendHandler);
+                    try {
+                        new MessageBuilder("Entering Voice Channel: " + chan.getName()).setColor(event.getMember().getColor()).queue(event.getChannel());
+                        guild.getAudioManager().openAudioConnection(chan);
+                    } catch (PermissionException e) {
+                        if (e.getPermission() == Permission.VOICE_CONNECT) {
+                            new MessageBuilder("I do not have permission to join the requested voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                        }
+                    }
+                }
+            } else if(message[1].equalsIgnoreCase("youtube") || message[1].equalsIgnoreCase("yt") || message[1].equalsIgnoreCase("search")
                     || message[1].equalsIgnoreCase("ytsearch")) {
                 String search = getMessage(message, 2);
                 try {

@@ -104,9 +104,15 @@ public class UserData {
 
     private boolean checkExists() {
         String query = "SELECT `%s` FROM `%s` WHERE `%s` = '%s' AND `%s` = '%s';";
-        Result r = Rixa.getDbManager().checkExists(String.format
-                (query, "user_id", "levels", "guild_id", guild.getId(), "user_id", user.getId()));
+        Result r;
+        try {
+            r = Rixa.getDbManager().checkExists(String.format
+                    (query, "user_id", "levels", "guild_id", guild.getId(), "user_id", user.getId()));
         return r == Result.TRUE;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void insert() {
@@ -115,7 +121,7 @@ public class UserData {
                 .insert(String.format(query, "levels", "guild_id", "user_id", "experience", guild.getId(), user.getId(), 0));
     }
 
-    public void setExperience(int experience) {
+    private void setExperience(int experience) {
         this.experience = experience;
         String query = "UPDATE `%s` SET `%s` = '%s' WHERE `%s` = '%s' AND `%s` = '%s';";
         try {
@@ -129,7 +135,7 @@ public class UserData {
         }
     }
 
-    public int getRandom() {
+    private int getRandom() {
         int i = random.nextInt(25);
         return (i > 15 && i < 25 ? i : getRandom());
     }

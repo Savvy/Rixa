@@ -15,7 +15,6 @@ public class YoutubeSearch {
 
     private static final String API_KEY;
     private JSONArray items;
-    private final String YOUTUBE_WATCH_BASE_URL = "https://www.youtube.com/watch?v=";
 
     static {
         API_KEY = "AIzaSyD1wjRGbzKgvjqAU25pREy1dVio9WpcuS0";
@@ -83,6 +82,7 @@ public class YoutubeSearch {
     }
 
     public String getUrl(int index) {
+        String YOUTUBE_WATCH_BASE_URL = "https://www.youtube.com/watch?v=";
         return YOUTUBE_WATCH_BASE_URL + getVideoId(index);
     }
 

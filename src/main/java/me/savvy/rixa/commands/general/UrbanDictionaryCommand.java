@@ -23,7 +23,7 @@ public class UrbanDictionaryCommand implements CommandExec {
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
         String[] message = event.getMessage().getContent().split(" ");
-        String search = getMessage(message, 1);
+        String search = getMessage(message);
         UrbanDictionary ud = null;
         try {
             ud = new UrbanDictionary(URLEncoder.encode(search, "UTF-8"));
@@ -45,9 +45,9 @@ public class UrbanDictionaryCommand implements CommandExec {
                 .addThumbnail("https://s-media-cache-ak0.pinimg.com/originals/f2/aa/37/f2aa3712516cfd0cf6f215301d87a7c2.jpg").queue(event.getChannel());
     }
 
-    private String getMessage(String[] messages, int argToBegin) {
+    private String getMessage(String[] messages) {
         StringBuilder builder = new StringBuilder();
-        for(int i = argToBegin; i < messages.length; i++) {
+        for(int i = 1; i < messages.length; i++) {
             builder.append(messages[i]).append(" ");
         }
         return builder.toString().trim();

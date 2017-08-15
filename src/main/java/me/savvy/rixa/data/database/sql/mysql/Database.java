@@ -36,7 +36,7 @@ public abstract class Database {
 	 * @throws ClassNotFoundException
 	 *             if the driver cannot be found
 	 */
-	public abstract Connection openConnection() throws SQLException,
+	protected abstract Connection openConnection() throws SQLException,
 			ClassNotFoundException;
 
 	/**
@@ -88,9 +88,7 @@ public abstract class Database {
 
 		Statement statement = connection.createStatement();
 
-		ResultSet result = statement.executeQuery(query);
-
-		return result;
+        return statement.executeQuery(query);
 	}
 
 	/**
@@ -114,8 +112,6 @@ public abstract class Database {
 
 		Statement statement = connection.createStatement();
 
-		int result = statement.executeUpdate(query);
-
-		return result;
+        return statement.executeUpdate(query);
 	}
 }

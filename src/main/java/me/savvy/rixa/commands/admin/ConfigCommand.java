@@ -5,7 +5,6 @@ import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
@@ -88,7 +87,7 @@ public class ConfigCommand implements CommandExec {
         }
         String message;
         if (messages[1].equalsIgnoreCase("joinmessage")) {
-            message = getMessage(messages, 2);
+            message = getMessage(messages);
             if(event.getMessage().getMentionedChannels().size() > 0) {
                 for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
                     message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
@@ -98,7 +97,7 @@ public class ConfigCommand implements CommandExec {
             new MessageBuilder("Successfully set Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
                     .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
         } else if (messages[1].equalsIgnoreCase("quitmessage")) {
-            message = getMessage(messages, 2);
+            message = getMessage(messages);
             if(event.getMessage().getMentionedChannels().size() > 0) {
                 for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
                     message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
@@ -108,7 +107,7 @@ public class ConfigCommand implements CommandExec {
             new MessageBuilder("Successfully set Quit Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
                     .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
         } else if (messages[1].equalsIgnoreCase("joinpm")) {
-            message = getMessage(messages, 2);
+            message = getMessage(messages);
             if(event.getMessage().getMentionedChannels().size() > 0) {
                 for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
                     message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
@@ -118,7 +117,7 @@ public class ConfigCommand implements CommandExec {
             new MessageBuilder("Successfully set Private Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
                     .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
         } else if (messages[1].equalsIgnoreCase("description")) {
-            message = getMessage(messages, 2);
+            message = getMessage(messages);
             rixaGuild.getGuildSettings().setDescription(message);
             new MessageBuilder("Successfully set Server Description to\n" + message.replace("{0}", event.getMember().getUser().getName())
                     .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
@@ -174,10 +173,10 @@ public class ConfigCommand implements CommandExec {
             if (messages[2].equalsIgnoreCase("music")) {
                 RixaGuild.getGuild(event.getGuild()).getMusicModule().setEnabled(true);
                 new MessageBuilder("Successfully enabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
-            } /*else if (messages[2].equalsIgnoreCase("levels")) {
-                GuildManager.getGuild(event.getGuild().getId()).getLevels().setEnabled(true);
-                event.getChannel().sendMessage("Successfully enabled the `Levels` module").queue();
-            }*/ else if (messages[2].equalsIgnoreCase("joinverification")) {
+            } else if (messages[2].equalsIgnoreCase("levels")) {
+                RixaGuild.getGuild(event.getGuild()).getLevelsModule().setEnabled(true);
+                event.getChannel().sendMessage("Successfully enabled the levels module").queue();
+            } else if (messages[2].equalsIgnoreCase("joinverification")) {
                 RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(true);
                 new MessageBuilder("Successfully enabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
@@ -185,10 +184,10 @@ public class ConfigCommand implements CommandExec {
             if (messages[2].equalsIgnoreCase("music")) {
                 RixaGuild.getGuild(event.getGuild()).getMusicModule().setEnabled(false);
                 new MessageBuilder("Successfully disabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
-            }/* else if (messages[2].equalsIgnoreCase("levels")) {
-                GuildManager.getGuild(event.getGuild().getId()).getLevels().setEnabled(false);
-                event.getChannel().sendMessage("Successfully disabled the `Levels` module").queue();
-            }*/ else if (messages[2].equalsIgnoreCase("joinverification")) {
+            } else if (messages[2].equalsIgnoreCase("levels")) {
+                RixaGuild.getGuild(event.getGuild()).getLevelsModule().setEnabled(false);
+                event.getChannel().sendMessage("Successfully disabled the levels module").queue();
+            } else if (messages[2].equalsIgnoreCase("joinverification")) {
                 RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(false);
                 new MessageBuilder("Successfully disabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
@@ -274,9 +273,9 @@ public class ConfigCommand implements CommandExec {
         return builder.setColor(member.getColor()).setTitle(String.format("Config: %s", member.getGuild().getId()));
     }
 
-    private String getMessage(String[] messages, int argToBegin) {
+    private String getMessage(String[] messages) {
         StringBuilder builder = new StringBuilder();
-        for(int i = argToBegin; i < messages.length; i++) {
+        for(int i = 2; i < messages.length; i++) {
             builder.append(messages[i]).append(" ");
         }
         return builder.toString().trim();

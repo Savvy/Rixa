@@ -6,5 +6,5 @@ package me.savvy.rixa.data.database;
 public enum DataType {
 
     SQL,
-    FLAT_FILE;
+    FLAT_FILE
 }
