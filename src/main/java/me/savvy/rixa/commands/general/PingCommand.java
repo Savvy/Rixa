@@ -12,6 +12,7 @@ import java.time.temporal.ChronoUnit;
  * Created by Timber on 5/23/2017.
  */
 public class PingCommand implements CommandExec {
+
     @Override
     @Command(mainCommand = "ping",
             description = "Check your ping!",

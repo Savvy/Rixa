@@ -92,6 +92,8 @@ public class RixaGuild {
                             ("SELECT `" + permission.toString().toUpperCase() + "` FROM `permissions` WHERE `role_id` = ?");
             ps.setString(1, role.getId());
             ResultSet rs = db.getObject(ps);
+            ps.close();
+            rs.close();
             return rs.getBoolean(permission.toString().toUpperCase());
         } catch (SQLException e) {
             e.printStackTrace();

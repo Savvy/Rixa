@@ -8,12 +8,13 @@ import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.user.UserData;
 import me.savvy.rixa.modules.RixaModule;
+import me.savvy.rixa.utils.MessageBuilder;
+import net.dv8tion.jda.core.entities.Member;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Timber on 5/23/2017.
@@ -28,6 +29,32 @@ public class LevelsModule implements RixaModule {
         this.rixaGuild = rixaGuild;
         enabled = true;
         load();
+    }
+
+    public MessageBuilder leaderboard(Member member, int page) {
+        int sizePerPage = 4;
+        int maxPages = userData.size() / sizePerPage + (userData.size() % sizePerPage > 0 ? 1 : 0);
+        if(page < 0) {
+            page = 0;
+        }
+        if(page > maxPages - 2) {
+            page = maxPages - 3;
+        }
+        int from = Math.max(0, page * sizePerPage);
+        int to = Math.min(userData.size(), (page + 2) * sizePerPage);
+        List<UserData> userList = new ArrayList<>(userData.values()).subList(from, to);
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < userList.size(); i++) {
+            UserData user = userData.get(i);
+            stringBuilder.append(i)
+                    .append(1).append(" ").append(user.getUser().getName())
+                    .append("#").append(user.getUser().getDiscriminator())
+                    .append(" (Lvl. ").append(user.getLevel()).append(")")
+                    .append("\n");
+        }
+        MessageBuilder builder = new MessageBuilder(stringBuilder.toString());
+        builder.footer("Page: (" + page + " / " + (maxPages - 2) + ")", member.getGuild().getIconUrl());
+        return builder.setColor(member.getColor()).setTitle(String.format("Leaderboard: %s", member.getGuild().getName()));
     }
 
     @Override
@@ -101,6 +128,6 @@ public class LevelsModule implements RixaModule {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        Rixa.getData().update("modules", "enabled", "guild_id", enabled, rixaGuild.getGuild().getId());
+        Rixa.getData().update("modules", "levels", "guild_id", enabled, rixaGuild.getGuild().getId());
     }
 }
