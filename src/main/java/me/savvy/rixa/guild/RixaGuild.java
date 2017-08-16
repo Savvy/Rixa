@@ -86,19 +86,22 @@ public class RixaGuild {
         if(!permissionExists(role)) {
             return false;
         }
+
+        boolean b =  false;
         try {
             PreparedStatement ps =
                     db.getConnection().prepareStatement
                             ("SELECT `" + permission.toString().toUpperCase() + "` FROM `permissions` WHERE `role_id` = ?");
             ps.setString(1, role.getId());
             ResultSet rs = db.getObject(ps);
+
+            b = rs.getBoolean(permission.toString().toUpperCase());
             ps.close();
             rs.close();
-            return rs.getBoolean(permission.toString().toUpperCase());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return b;
     }
 
     public void setPermission(Role role, RixaPermission permission, boolean value) {
