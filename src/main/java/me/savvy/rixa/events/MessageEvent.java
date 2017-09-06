@@ -1,6 +1,8 @@
 package me.savvy.rixa.events;
 
+import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.mysql.jdbc.StringUtils;
+import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandRegistrar;
 import me.savvy.rixa.guild.RixaGuild;
@@ -12,6 +14,7 @@ import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -20,6 +23,7 @@ import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -37,6 +41,21 @@ public class MessageEvent {
     public void handle(GuildMessageReceivedEvent event) {
         if (event.getGuild() == null) return;
         if (event.getAuthor().isBot()) return;
+
+        if (event.getMessage().getContent().startsWith
+                ("@" +  event.getGuild().getSelfMember().getEffectiveName())) {
+            try {
+                String s = event.getMessage().getContent().replace
+                        ("@" + event.getGuild().getSelfMember().getEffectiveName()+ " ", "");
+                if (s.isEmpty()) return;
+                s = Rixa.getChatBotSession().think(s);
+                if (s.isEmpty()) return;
+                event.getChannel().sendMessage(s).queue();
+                return;
+            } catch (Exception ex) { ex.printStackTrace(); }
+        }
+
+
         RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
         String prefix = rixaGuild
                 .getGuildSettings()
@@ -60,7 +79,8 @@ public class MessageEvent {
 
         String[] splitContent = event.getMessage().getContent().replace(prefix, "").split(" ");
         if(!CommandHandler.hasCommand(splitContent[0])) {
-            return; }
+            return;
+        }
         CommandRegistrar cmd = CommandHandler.get(splitContent[0]);
         Method m = cmd.getMethod();
         try {
@@ -107,6 +127,7 @@ public class MessageEvent {
                                 .getMember(event.getAuthor()), Collections.singleton(rixaGuild.getGuild().getRoleById(rixaGuild.getGuildSettings().getDefaultRole()))).complete();
                         new MessageBuilder(String.format("You have been promoted on %s!", rixaGuild.getGuild().getName()))
                                 .setColor(rixaGuild.getGuild().getMember(event.getAuthor()).getColor()).send(event.getAuthor());
+                        rixaGuild.getGuildSettings().setLastJoin(System.currentTimeMillis());
                     } catch(PermissionException ex) {
                             new MessageBuilder(String.format("I do not have permission for %s in %s", ex.getPermission().getName(), rixaGuild.getGuild().getName()))
                                     .setColor(Color.RED).send(rixaGuild.getGuild().getOwner().getUser());
@@ -143,14 +164,36 @@ public class MessageEvent {
         MessageEmbed embed = message.getEmbeds().get(0);
         if(StringUtils.isNullOrEmpty(embed.getTitle())) return;
         String[] titleSplit = embed.getTitle().split(": ");
-         if(ReactionManager.getReactions().containsKey(titleSplit[0])) {
-             ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
-             Method m = reactRegistrar.getMethod();
-             try {
-                 m.invoke(reactRegistrar.getExecutor(), event);
-             } catch (Exception e) {
-                 e.printStackTrace();
-             }
-         }
+        if (titleSplit[0].equalsIgnoreCase("Leaderboard")) return;
+        if(!ReactionManager.getReactions().containsKey(titleSplit[0])) return;
+
+            ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
+            Method m = reactRegistrar.getMethod();
+            try {
+                m.invoke(reactRegistrar.getExecutor(), event);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+    @SubscribeEvent
+    public void onGuildReact(GuildMessageReactionAddEvent event) {
+        if (event.getGuild() == null) return;
+        if (event.getUser().isBot()) return;
+        Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
+        if(message == null || message.getEmbeds().size() != 1) return;
+        MessageEmbed embed = message.getEmbeds().get(0);
+        if(StringUtils.isNullOrEmpty(embed.getTitle())) return;
+        String[] titleSplit = embed.getTitle().split(": ");
+        System.out.println(Arrays.toString(titleSplit));
+        if(ReactionManager.getReactions().containsKey(titleSplit[0])) {
+            ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
+            Method m = reactRegistrar.getMethod();
+            try {
+                m.invoke(reactRegistrar.getExecutor(), event);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

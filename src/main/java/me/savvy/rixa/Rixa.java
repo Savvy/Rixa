@@ -1,5 +1,9 @@
 package me.savvy.rixa;
 
+import com.google.code.chatterbotapi.ChatterBot;
+import com.google.code.chatterbotapi.ChatterBotFactory;
+import com.google.code.chatterbotapi.ChatterBotSession;
+import com.google.code.chatterbotapi.ChatterBotType;
 import lombok.Getter;
 import lombok.Setter;
 import me.savvy.rixa.commands.admin.*;
@@ -9,6 +13,7 @@ import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.mod.DeleteMessagesCommand;
 import me.savvy.rixa.commands.mod.MuteCommand;
 import me.savvy.rixa.commands.mod.PurgeMessagesCommand;
+import me.savvy.rixa.commands.mod.RaidModeCommand;
 import me.savvy.rixa.data.database.Data;
 import me.savvy.rixa.data.database.DataType;
 import me.savvy.rixa.data.database.sql.DatabaseManager;
@@ -22,6 +27,7 @@ import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.modules.reactions.react.ConfigReaction;
 import me.savvy.rixa.modules.reactions.react.HelpReaction;
+import me.savvy.rixa.modules.reactions.react.LeaderboardReaction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -36,6 +42,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.logging.Logger;
 
 /**
@@ -55,8 +63,13 @@ public class Rixa {
     private static ConfigManager config;
     @Getter @Setter
     private static DatabaseManager dbManager;
+    private static ChatterBotFactory factory;
+    private static ChatterBotSession chatBotSession;
+    private static ChatterBot chatBot;
     @Getter @Setter
     private LanguageManager languageManager;
+    @Getter @Setter
+    private ScheduledExecutorService executorService;
     // String search = event.getMessage().getContent().substring(event.getMessage().getContent().indexOf(" ") + 1);
     public static void main(String[] args) {
         instance = new Rixa();
@@ -67,6 +80,7 @@ public class Rixa {
     }
 
     private static void load() {
+        getInstance().setExecutorService(Executors.newSingleThreadScheduledExecutor());
         dbManager = new DatabaseManager(
                 String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")),
                 String.valueOf(config.getJsonObject().getJSONObject("sql").getString("portNumber")),
@@ -104,9 +118,16 @@ public class Rixa {
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
                 new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand(),
-                new LeaderboardCommand()});
-        register(new React[] {new HelpReaction(), new ConfigReaction() });
+                new LeaderboardCommand(), new RaidModeCommand()});
+        register(new React[] {new HelpReaction(), new ConfigReaction(), new LeaderboardReaction() });
         data = new Data(DataType.SQL);
+        try {
+        factory = new ChatterBotFactory();
+            chatBot = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
+        chatBotSession = chatBot.createSession();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     private static void register(CommandExec commandExecs[]) {
@@ -119,6 +140,10 @@ public class Rixa {
         for (React reaction: react) {
             ReactionManager.registerReaction(reaction);
         }
+    }
+
+    public static ChatterBotSession getChatBotSession() {
+        return chatBotSession;
     }
 
     public Logger getLogger() {

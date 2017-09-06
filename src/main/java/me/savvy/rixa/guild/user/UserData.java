@@ -43,8 +43,8 @@ public class UserData {
             return;
         }
         String query = "SELECT * FROM `%s` WHERE `%s` = '%s' AND `%s` = '%s';";
-        PreparedStatement ps = null;
-            ResultSet rs = null;
+        PreparedStatement ps;
+            ResultSet rs;
             try {
                 ps = Rixa.getDbManager().getConnection().prepareStatement(String.format
                         (query, "levels", "guild_id",
@@ -107,7 +107,9 @@ public class UserData {
         Result r;
         try {
             r = Rixa.getDbManager().checkExists(String.format
-                    (query, "user_id", "levels", "guild_id", guild.getId(), "user_id", user.getId()));
+                    (query, "user_id", "levels", "guild_id",
+                            guild.getId(), "user_id",
+                            user.getId()));
         return r == Result.TRUE;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -118,7 +120,8 @@ public class UserData {
     private void insert() {
     String query = "INSERT INTO `%s` (`%s`,`%s`,`%s`) VALUES ('%s', '%s', '%s');";
         Rixa.getDbManager()
-                .insert(String.format(query, "levels", "guild_id", "user_id", "experience", guild.getId(), user.getId(), 0));
+                .insert(String.format(query, "levels", "guild_id", "user_id", "experience",
+                        guild.getId(), user.getId(), "0"));
     }
 
     private void setExperience(int experience) {

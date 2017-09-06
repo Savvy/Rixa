@@ -23,7 +23,7 @@ public class LeaderboardCommand implements CommandExec {
         }
         Message message = event.getChannel().sendMessage
                 (rixaGuild.getLevelsModule().leaderboard
-                        (event.getMember(), 0).getBuilder().build()).complete();
+                        (event.getMember(), 1).getBuilder().build()).complete();
         message.addReaction("\u2B05").complete();
                 message.addReaction("\u27A1").complete();
     }

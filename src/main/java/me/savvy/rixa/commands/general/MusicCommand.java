@@ -24,6 +24,7 @@ import me.savvy.rixa.modules.music.MusicManager;
 import me.savvy.rixa.modules.music.TrackScheduler;
 import me.savvy.rixa.utils.MessageBuilder;
 import me.savvy.rixa.utils.YoutubeSearch;
+import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -90,7 +91,7 @@ public class MusicCommand implements CommandExec {
         TrackScheduler scheduler = mng.scheduler;
         // music join <channel>
         if(message.length == 1) {
-            sendHelp();
+            sendHelp(event.getGuild().getId(), rixaGuild.getGuildSettings().getPrefix(), event.getAuthor(), event.getChannel());
         } else if (message.length == 2) {
             if(message[1].equalsIgnoreCase("join") || message[1].equalsIgnoreCase("summon") ) {
                 if (event.getMember().getVoiceState().getChannel() == null) {
@@ -104,7 +105,20 @@ public class MusicCommand implements CommandExec {
                         new MessageBuilder("I do not have permission to join the requested voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());
                     }
                 }
-            } else if(message[1].equalsIgnoreCase("play")) {
+            } else if (message[1].equalsIgnoreCase("reset")) {
+                synchronized (musicManagers) {
+                    scheduler.queue.clear();
+                    player.destroy();
+                    guild.getAudioManager().setSendingHandler(null);
+                    musicManagers.remove(guild.getId());
+                }
+                mng = getMusicManager(guild);
+                guild.getAudioManager().setSendingHandler(mng.sendHandler);
+                new MessageBuilder("The player has been completely reset!").setColor(event.getMember().getColor()).queue(event.getChannel());
+            } else if (message[1].equalsIgnoreCase("skip")) {
+                scheduler.nextTrack();
+                new MessageBuilder("Successfully skipped current track.").setColor(event.getMember().getColor()).queue(event.getChannel());
+            } else if(message[1].equalsIgnoreCase("play") || message[1].equalsIgnoreCase("resume")) {
                 if (player.isPaused()) {
                     player.setPaused(false);
                     new MessageBuilder("MusicPlayer resumed track: " + player.getPlayingTrack().getInfo().title).setColor(event.getMember().getColor()).queue(event.getChannel());
@@ -119,7 +133,7 @@ public class MusicCommand implements CommandExec {
                 if(track != null) {
                     desc += "Track skipped. ";
                 }
-                new MessageBuilder(desc + " Leaving voice channel...").setColor(event.getMember().getColor()).queue(event.getChannel());
+                new MessageBuilder(desc + "Leaving voice channel...").setColor(event.getMember().getColor()).queue(event.getChannel());
                 guild.getAudioManager().setSendingHandler(null);
                 guild.getAudioManager().closeAudioConnection();
             } else if(message[1].equalsIgnoreCase("link")) {
@@ -162,17 +176,6 @@ public class MusicCommand implements CommandExec {
             } else if(message[1].equalsIgnoreCase("repeat")) {
                 scheduler.setRepeating(!scheduler.isRepeating());
                 new MessageBuilder("Repeat on music play has been " + (scheduler.isRepeating() ? "enabled" : "disabled")).setColor(event.getMember().getColor()).queue(event.getChannel());
-            } else if(message[1].equalsIgnoreCase("restart")) {
-                synchronized (musicManagers) {
-                    scheduler.queue.clear();
-                    player.destroy();
-                    guild.getAudioManager().setSendingHandler(null);
-                    musicManagers.remove(guild.getId());
-                }
-
-                mng = getMusicManager(guild);
-                guild.getAudioManager().setSendingHandler(mng.sendHandler);
-                new MessageBuilder("The music player has been reset!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if(message[1].equalsIgnoreCase("np") || message[1].equalsIgnoreCase("nowplaying")) {
                 AudioTrack currentTrack = player.getPlayingTrack();
                 if (currentTrack != null) {
@@ -183,7 +186,7 @@ public class MusicCommand implements CommandExec {
                 } else {
                     new MessageBuilder("The music player is not playing anything!").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
-            } else if(message[1].equalsIgnoreCase("list")) {
+            } else if(message[1].equalsIgnoreCase("list") || message[1].equalsIgnoreCase("queue") || message[1].equalsIgnoreCase("q")) {
                 Queue<AudioTrack> queue = scheduler.queue;
                 synchronized (queue) {
                     if (queue.isEmpty()) {
@@ -212,6 +215,8 @@ public class MusicCommand implements CommandExec {
                 }
                 scheduler.shuffle();
                 new MessageBuilder("The queue has been shuffled!").setColor(event.getMember().getColor()).queue(event.getChannel());
+            } else {
+                sendHelp(event.getGuild().getId(), rixaGuild.getGuildSettings().getPrefix(), event.getAuthor(), event.getChannel());
             }
         } else if (message.length == 3) {
             if(message[1].equalsIgnoreCase("join")) {
@@ -241,14 +246,16 @@ public class MusicCommand implements CommandExec {
                         }
                     }
                 }
-            } else if(message[1].equalsIgnoreCase("play") || message[1].equalsIgnoreCase("playlist")) {
+            } else if(message[1].equalsIgnoreCase("play") || message[1].equalsIgnoreCase("playlist") || message[1].equalsIgnoreCase("pplay")) {
                 if (event.getMember().getVoiceState().getChannel() == null) {
                     new MessageBuilder("You must be in a voice channel to summon me!").setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
                 }
                 try {
                     guild.getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
-                    loadAndPlay(mng, event.getChannel(), message[2], false);
+                    loadAndPlay(mng, event.getChannel(), message[2], (message[2].toLowerCase().contains("playlist")
+                            || message[1].equalsIgnoreCase("playlist")
+                            || message[1].equalsIgnoreCase("pplay")));
                 } catch (PermissionException e) {
                     if (e.getPermission() == Permission.VOICE_CONNECT) {
                         new MessageBuilder("I do not have permission to join the requested voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());
@@ -263,6 +270,8 @@ public class MusicCommand implements CommandExec {
                 } catch (NumberFormatException e) {
                     new MessageBuilder(message[2] + " is not a valid integer. Try a number between 10 and 100.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
+            } else {
+                sendHelp(event.getGuild().getId(), rixaGuild.getGuildSettings().getPrefix(), event.getAuthor(), event.getChannel());
             }
         } // music youtube <query
         else if(message.length >= 3) {
@@ -302,7 +311,11 @@ public class MusicCommand implements CommandExec {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                sendHelp(event.getGuild().getId(), rixaGuild.getGuildSettings().getPrefix(), event.getAuthor(), event.getChannel());
             }
+        } else {
+            sendHelp(event.getGuild().getId(), rixaGuild.getGuildSettings().getPrefix(), event.getAuthor(), event.getChannel());
         }
     }
 
@@ -375,14 +388,40 @@ public class MusicCommand implements CommandExec {
             return String.format("%02d:%02d", minutes, seconds);
     }
 
-    private void sendHelp() {
-    }
-
     private String getMessage(String[] messages, int argToBegin) {
         StringBuilder builder = new StringBuilder();
         for(int i = argToBegin; i < messages.length; i++) {
             builder.append(messages[i]).append(" ");
         }
         return builder.toString().trim();
+    }
+
+    private void sendHelp(String title, String prefix, User user, TextChannel textChannel) {
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        String stringBuilder = "\u2753" +
+                " **Music Commands Help**" +
+                "\n" +
+                "Click a number below for information about other commands.";
+        embedBuilder.setTitle(String.format("Help: %s", title));
+        embedBuilder.setDescription(stringBuilder);
+        embedBuilder.addField(prefix + "music join [name]", "Joins a voice channel that has the provided name", false)
+                .addField(prefix + "music join [id]", "Joins a voice channel based on the provided id.", false)
+                .addField(prefix + "music leave", "Leaves the voice channel that the bot is currently in.", false)
+                .addField(prefix + "music play", "Plays songs from the current queue. Starts playing again if it was previously paused", false)
+                .addField(prefix + "music play [url]", "Adds a new song to the queue and starts playing if it wasn't playing already", false)
+                .addField(prefix + "music playlist", "Adds a playlist to the queue and starts playing if not already playing", false)
+                .addField(prefix + "music pause", "Pauses audio playback", false)
+                .addField(prefix + "music stop", "Completely stops audio playback, skipping the current song.", false)
+                .addField(prefix + "music skip", "Skips the current song, automatically starting the next", false)
+                .addField(prefix + "music nowplaying", "Prints information about the currently playing song (title, current time)", false)
+                .addField(prefix + "music np", "Alias for nowplaying", false)
+                .addField(prefix + "music list", "Lists the songs in the queue", false)
+                .addField(prefix + "music volume [vol]", "Sets the volume of the MusicPlayer [10 - 100]", false)
+                .addField(prefix + "music restart", "Restarts the current song or restarts the previous song if there is no current song playing.", false)
+                .addField(prefix + "music repeat", "Makes the player repeat the currently playing song", false)
+                .addField(prefix + "music reset", "Completely resets the player, fixing all errors and clearing the queue.", false)
+                .addField(prefix + "music shuffle", "Shuffle current music queue.", false);
+        user.openPrivateChannel().complete().sendMessage(embedBuilder.build()).queue();
+        new MessageBuilder(user.getAsMention() + ", help menu delivered in private messages.").setColor(Color.decode("#4CC276")).queue(textChannel);
     }
 }

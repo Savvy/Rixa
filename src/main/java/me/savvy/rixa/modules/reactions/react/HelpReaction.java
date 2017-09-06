@@ -85,7 +85,8 @@ public class HelpReaction implements React {
                             .addField(prefix + "music volume [vol]", "Sets the volume of the MusicPlayer [10 - 100]", false)
                             .addField(prefix + "music restart", "Restarts the current song or restarts the previous song if there is no current song playing.", false)
                             .addField(prefix + "music repeat", "Makes the player repeat the currently playing song", false)
-                            .addField(prefix + "music reset", "Completely resets the player, fixing all errors and clearing the queue.", false);
+                            .addField(prefix + "music reset", "Completely resets the player, fixing all errors and clearing the queue.", false)
+                            .addField(prefix + "music shuffle", "Shuffle current music queue.", false);
                     message.editMessage(embedBuilder.build()).queue();
                     break;
             }

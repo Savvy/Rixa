@@ -190,6 +190,10 @@ public class ConfigCommand implements CommandExec {
             } else if (messages[2].equalsIgnoreCase("joinverification")) {
                 RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(false);
                 new MessageBuilder("Successfully disabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
+            } else if (messages[2].equalsIgnoreCase("joinmessage")) {
+                RixaGuild.getGuild(event.getGuild()).getGuildSettings().setJoinMessageChannel("default_value");
+            } else if (messages[2].equalsIgnoreCase("quitmessage")) {
+                RixaGuild.getGuild(event.getGuild()).getGuildSettings().setQuitMessageChannel("default_value");
             }
         } else if (messages[1].equalsIgnoreCase("addperm") || messages[1].equalsIgnoreCase("addpermission") || messages[1].equalsIgnoreCase("aperm")) {
             String permission = "notFound";

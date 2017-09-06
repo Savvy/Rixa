@@ -1,6 +1,7 @@
 package me.savvy.rixa.guild.management;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.enums.Result;
 import net.dv8tion.jda.core.entities.Guild;
@@ -9,6 +10,9 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Timber on 5/23/2017.
@@ -22,6 +26,9 @@ public class GuildSettings {
     private String prefix = "/", defaultRole, muteRole, joinMessage, quitMessage, joinPrivateMessage, description;
     @Getter
     private TextChannel joinMessageChannel, quitMessageChannel;
+    @Getter @Setter Guild.VerificationLevel defaultVerificationLevel;
+    @Getter @Setter long lastJoin;
+    private boolean raidMode;
 
     public GuildSettings(Guild guild) {
         this.guild = guild;
@@ -63,6 +70,7 @@ public class GuildSettings {
         set = Rixa.getDbManager().getObject(ps);
         this.description = (set.getString("description"));
         this.enlisted = (set.getBoolean("enlisted"));
+        this.raidMode = false;
     }
 
     private boolean checkExists() {
@@ -92,15 +100,25 @@ public class GuildSettings {
         this.joinPrivateMessage = joinPrivateMessage;
         Rixa.getData().update("settings", "joinPM", "guild_id", joinPrivateMessage, guild.getId());
     }
-    
+
     public void setJoinMessageChannel(TextChannel joinMessageChannel) {
         this.joinMessageChannel = joinMessageChannel;
         Rixa.getData().update("settings", "greetings", "guild_id", joinMessageChannel.getId(), guild.getId());
+    }
+
+    public void setJoinMessageChannel(String joinMessageChannel) {
+        if (joinMessageChannel.equalsIgnoreCase("default_value"))this.joinMessageChannel = null;
+        Rixa.getData().update("settings", "greetings", "guild_id", joinMessageChannel, guild.getId());
     }
     
     public void setQuitMessageChannel(TextChannel quitMessageChannel) {
         this.quitMessageChannel = quitMessageChannel;
         Rixa.getData().update("settings", "farewell", "guild_id", quitMessageChannel.getId(), guild.getId());
+    }
+
+    public void setQuitMessageChannel(String quitMessageChannel) {
+        if (quitMessageChannel.equalsIgnoreCase("default_value"))this.quitMessageChannel = null;
+        Rixa.getData().update("settings", "greetings", "guild_id", quitMessageChannel, guild.getId());
     }
     
     public void setDefaultRole(String defaultRole) {
@@ -131,5 +149,35 @@ public class GuildSettings {
     public void setJoinVerification(boolean joinVerification) {
         this.joinVerification = joinVerification;
         Rixa.getData().update("settings", "joinVerification", "guild_id", joinVerification, guild.getId());
+    }
+
+    public void startRaidMode() {
+        this.raidMode = true;
+        setDefaultVerificationLevel(guild.getVerificationLevel());
+        guild.getManager().setVerificationLevel(Guild.VerificationLevel.HIGH).queue();
+        raidModeScheduler();
+    }
+
+    public void endRaidMode() {
+        this.raidMode = false;
+        guild.getManager().setVerificationLevel(getDefaultVerificationLevel()).queue();
+        setDefaultVerificationLevel(null);
+    }
+
+    public void raidModeScheduler() {
+        ScheduledExecutorService scheduler = Rixa.getInstance().getExecutorService();
+        scheduler.scheduleWithFixedDelay(new TimerTask() {
+            @Override
+            public void run() {
+                if (isRaidMode()) {
+                  endRaidMode();
+                }
+                this.cancel();
+            }
+        }, 0, 5, TimeUnit.MINUTES);
+    }
+
+    public boolean isRaidMode() {
+        return raidMode;
     }
 }

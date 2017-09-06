@@ -1,9 +1,8 @@
 package me.savvy.rixa.modules.levels;
 
 import lombok.Getter;
-import lombok.Setter;
 import me.savvy.rixa.Rixa;
-import me.savvy.rixa.commands.handlers.RixaPermission;
+import me.savvy.rixa.data.database.sql.DatabaseManager;
 import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.user.UserData;
@@ -31,29 +30,57 @@ public class LevelsModule implements RixaModule {
         load();
     }
 
+
+    private List<UserData> leaderboard(Member member) {
+        DatabaseManager db = Rixa.getDbManager();
+        ResultSet rs = db.executeQuery(String.format
+                ("SELECT * FROM `levels` WHERE `guild_id` = '%s' ORDER BY `experience` DESC;", member.getGuild().getId()));
+        List<UserData> userDataList = new LinkedList<>();
+        try {
+            while (rs.next()) {
+                if (member.getGuild().getMemberById(rs.getString("user_id")) == null) continue;
+                UserData userData = rixaGuild.getLevelsModule().getUserData(rs.getString("user_id"));
+                userDataList.add(userData);
+            }
+            rs.getStatement().close();
+            rs.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return userDataList;
+    }
+
     public MessageBuilder leaderboard(Member member, int page) {
-        int sizePerPage = 4;
+        int sizePerPage = 10;
+        if(page < 1) {
+            page = 1;
+        }
+        List<UserData> userData = leaderboard(member);
         int maxPages = userData.size() / sizePerPage + (userData.size() % sizePerPage > 0 ? 1 : 0);
-        if(page < 0) {
-            page = 0;
+        if (page > maxPages) {
+            return null;
         }
-        if(page > maxPages - 2) {
-            page = maxPages - 3;
-        }
-        int from = Math.max(0, page * sizePerPage);
-        int to = Math.min(userData.size(), (page + 2) * sizePerPage);
-        List<UserData> userList = new ArrayList<>(userData.values()).subList(from, to);
+        /*int from = Math.max(0, page * sizePerPage);
+        int to = Math.min(userData.size(), (page + 2) * sizePerPage);*/
+        int start = Math.min(Math.max(sizePerPage * (page - 1), 0), userData.size());
+        int end = Math.min(Math.max(sizePerPage * page, start), userData.size());
+        List<UserData> userList = userData.subList(start, end);
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < userList.size(); i++) {
-            UserData user = userData.get(i);
-            stringBuilder.append(i)
-                    .append(1).append(" ").append(user.getUser().getName())
+            UserData user = userList.get(i);
+            if (user == null) continue;
+            stringBuilder
+                    .append("`")
+                    .append( i + start + 1/*(page > 1) ? ((i + 1) * 10) : i + 1*/)
+                    .append(")` ")
+                    .append(
+                            user.getUser().getName())
                     .append("#").append(user.getUser().getDiscriminator())
                     .append(" (Lvl. ").append(user.getLevel()).append(")")
                     .append("\n");
         }
         MessageBuilder builder = new MessageBuilder(stringBuilder.toString());
-        builder.footer("Page: (" + page + " / " + (maxPages - 2) + ")", member.getGuild().getIconUrl());
+        builder.footer("Page: (" + page + " / " + maxPages + ")", member.getGuild().getIconUrl());
         return builder.setColor(member.getColor()).setTitle(String.format("Leaderboard: %s", member.getGuild().getName()));
     }
 

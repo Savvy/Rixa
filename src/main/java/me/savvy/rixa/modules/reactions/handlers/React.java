@@ -1,5 +1,6 @@
 package me.savvy.rixa.modules.reactions.handlers;
 
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 
 /**
@@ -8,4 +9,6 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 public interface React {
 
     void reactionTrigger(MessageReactionAddEvent event);
+
+    default void reactionGuildTrigger(GuildMessageReactionAddEvent event) { }
 }

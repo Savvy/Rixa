@@ -23,30 +23,32 @@ public class CommandHandler {
     public static boolean hasCommand(String s) {
         if(getCommands().containsKey(s)) {
             return true;
-        } else {
-            for (CommandRegistrar commandRegistrar : getCommands().values()) {
-                if (commandRegistrar.getAnnotation().mainCommand().equalsIgnoreCase(s)) {
-                    return true;
-                }
-                for (String string : commandRegistrar.getAnnotation().aliases()) {
-                    if (string.equalsIgnoreCase(s)) return true;
-                }
-            }
-            return false;
         }
+        for (CommandRegistrar commandRegistrar : getCommands().values()) {
+            if (commandRegistrar.getAnnotation().mainCommand().equalsIgnoreCase(s)) {
+                return true;
+            }
+            for (String string : commandRegistrar.getAnnotation().aliases()) {
+                if (string.equalsIgnoreCase(s)) return true;
+            }
+        }
+        return false;
     }
 
     public static CommandRegistrar get(String s) {
         if(getCommands().containsKey(s)) {
             return getCommands().get(s);
-        } else {
-            for (CommandRegistrar commandRegistrar : getCommands().values()) {
-                for (String string : commandRegistrar.getAnnotation().aliases()) {
-                    if (string.equalsIgnoreCase(s)) return commandRegistrar;
-                }
-            }
-            return null;
         }
+
+        for (CommandRegistrar commandRegistrar : getCommands().values()) {
+            if (commandRegistrar.getAnnotation().mainCommand().equalsIgnoreCase(s)) {
+                return commandRegistrar;
+            }
+            for (String string : commandRegistrar.getAnnotation().aliases()) {
+                if (string.equalsIgnoreCase(s)) return commandRegistrar;
+            }
+        }
+        return null;
     }
 
     public static Map<String, CommandRegistrar> getCommands() {

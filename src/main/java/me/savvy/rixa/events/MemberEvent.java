@@ -2,6 +2,7 @@ package me.savvy.rixa.events;
 
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.utils.MessageBuilder;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -22,6 +23,14 @@ public class MemberEvent {
     @SubscribeEvent
     public void onMember(GuildMemberJoinEvent event) {
         RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+
+      /*  if (rixaGuild.getGuildSettings().isRaidMode()) {
+            if(event.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {
+                new MessageBuilder("Sorry " + event.getGuild().getName() + " currently has raid mode enabled. Please rejoin at a later time. Sorry!").send(event.getUser());
+                        event.getGuild().getController().kick(event.getMember()).reason("Raid-Mode").queue();
+            }
+            return;
+        }*/
         if(rixaGuild.getGuildSettings().getJoinMessageChannel() != null) {
             try {
                 new MessageBuilder(rixaGuild.getGuildSettings().getJoinMessage()
@@ -42,12 +51,14 @@ public class MemberEvent {
             try {
                 Role role = event.getGuild().getRoleById(rixaGuild.getGuildSettings().getDefaultRole());
                 event.getGuild().getController().addRolesToMember(event.getMember(), Collections.singleton(role)).complete();
+                rixaGuild.getGuildSettings().setLastJoin(System.currentTimeMillis());
             } catch(PermissionException ex) {
                 new MessageBuilder(String.format("I do not have permission for %s in %s", ex.getPermission().getName(), rixaGuild.getGuild().getName()))
                         .setColor(event.getMember().getColor()).send(rixaGuild.getGuild().getOwner().getUser());
                 return;
             }
         }
+
         if(rixaGuild.getGuildSettings().getJoinPrivateMessage().equalsIgnoreCase("default")) {
             return;
         }
