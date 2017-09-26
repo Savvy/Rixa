@@ -6,7 +6,12 @@ import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
 import lombok.Getter;
 import lombok.Setter;
-import me.savvy.rixa.commands.admin.*;
+import me.majrly.database.Database;
+import me.majrly.database.statements.Update;
+import me.savvy.rixa.commands.admin.AddRoleCommand;
+import me.savvy.rixa.commands.admin.BatchMoveCommand;
+import me.savvy.rixa.commands.admin.ConfigCommand;
+import me.savvy.rixa.commands.admin.RemoveRoleCommand;
 import me.savvy.rixa.commands.general.*;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandHandler;
@@ -14,9 +19,6 @@ import me.savvy.rixa.commands.mod.DeleteMessagesCommand;
 import me.savvy.rixa.commands.mod.MuteCommand;
 import me.savvy.rixa.commands.mod.PurgeMessagesCommand;
 import me.savvy.rixa.commands.mod.RaidModeCommand;
-import me.savvy.rixa.data.database.Data;
-import me.savvy.rixa.data.database.DataType;
-import me.savvy.rixa.data.database.sql.DatabaseManager;
 import me.savvy.rixa.data.filemanager.ConfigManager;
 import me.savvy.rixa.data.filemanager.LanguageManager;
 import me.savvy.rixa.events.BotEvent;
@@ -33,13 +35,11 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Invite;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -48,11 +48,10 @@ import java.util.logging.Logger;
 
 /**
  * Created by Timber on 5/7/2017.
+ * Edited by Majr on 9/22/2017
  */
 public class Rixa {
-    
-    @Getter
-    private static Data data;
+
     @Getter
     private static long timeUp;
     @Getter
@@ -61,37 +60,44 @@ public class Rixa {
     private static List<JDA> shardsList;
     @Getter
     private static ConfigManager config;
-    @Getter @Setter
-    private static DatabaseManager dbManager;
+    @Getter
+    @Setter
+    private static Database database;
     private static ChatterBotFactory factory;
     private static ChatterBotSession chatBotSession;
     private static ChatterBot chatBot;
-    @Getter @Setter
+    @Getter
+    @Setter
     private LanguageManager languageManager;
-    @Getter @Setter
+    @Getter
+    @Setter
     private ScheduledExecutorService executorService;
+
     // String search = event.getMessage().getContent().substring(event.getMessage().getContent().indexOf(" ") + 1);
     public static void main(String[] args) {
         instance = new Rixa();
         shardsList = new LinkedList<>();
-    //    config = new ConfigManager();
+        //    config = new ConfigManager();
         config = new ConfigManager(new File("Rixa/config.json"));
         load();
     }
 
     private static void load() {
         getInstance().setExecutorService(Executors.newSingleThreadScheduledExecutor());
-        dbManager = new DatabaseManager(
-                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")),
-                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("portNumber")),
-                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("databaseName")),
-                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("userName")),
-                String.valueOf(config.getJsonObject().getJSONObject("sql").getString("password")));
-        dbManager.createTable();
+        database = Database.options()
+                .type("mysql")
+                .hostname(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")), Integer.valueOf(config.getJsonObject().getJSONObject("sql").getInt("portNumber")))
+                .database(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("databaseName")))
+                .auth(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("userName")), String.valueOf(config.getJsonObject().getJSONObject("sql").getString("password")))
+                .build();
+        Update update = new Update("CREATE TABLE IF NOT EXISTS `core` (`guild_id` varchar(255) NOT NULL, `guild_name` varchar(255) NOT NULL, PRIMARY KEY (`guild_id`));");
+        database.send(update);
+        Update modules = new Update("CREATE TABLE IF NOT EXISTS `modules` (`guild_id` varchar(255) NOT NULL, `levels` varchar(255) NOT NULL, `enabled` INT(11) NOT NULL, PRIMARY KEY (`guild_id`));");
+        database.send(modules);
         getInstance().setLanguageManager(new LanguageManager(new File("Rixa/languages/language.json")));
         try {
             int shards = 5;
-            for(int i = 0; i < shards; i++) {
+            for (int i = 0; i < shards; i++) {
                 Logger.getLogger("Rixa").info("Loading shard #" + i);
                 JDABuilder jda = new JDABuilder(AccountType.BOT)
                         .setToken(config.getJsonObject().getString("secretToken"))
@@ -112,32 +118,31 @@ public class Rixa {
             e.printStackTrace();
         }
         timeUp = System.currentTimeMillis();
-        register(new CommandExec[] {
+        register(new CommandExec[]{
                 new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
                 new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand(),
                 new LeaderboardCommand(), new RaidModeCommand()});
-        register(new React[] {new HelpReaction(), new ConfigReaction(), new LeaderboardReaction() });
-        data = new Data(DataType.SQL);
+        register(new React[]{new HelpReaction(), new ConfigReaction(), new LeaderboardReaction()});
         try {
-        factory = new ChatterBotFactory();
+            factory = new ChatterBotFactory();
             chatBot = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
-        chatBotSession = chatBot.createSession();
+            chatBotSession = chatBot.createSession();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    
+
     private static void register(CommandExec commandExecs[]) {
-        for (CommandExec command: commandExecs) {
+        for (CommandExec command : commandExecs) {
             CommandHandler.registerCommand(command);
         }
     }
 
     private static void register(React react[]) {
-        for (React reaction: react) {
+        for (React reaction : react) {
             ReactionManager.registerReaction(reaction);
         }
     }
@@ -149,5 +154,5 @@ public class Rixa {
     public Logger getLogger() {
         return Logger.getLogger("Rixa");
     }
-    
+
 }

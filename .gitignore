@@ -116,3 +116,8 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # End of https://www.gitignore.io/api/gradle,intellij,intellij+iml
+.idea/compiler.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/vcs.xml
+build.gradle
+build.gradle

@@ -2,14 +2,16 @@ package me.savvy.rixa.guild.management;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.majrly.database.statements.Query;
+import me.majrly.database.statements.Update;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.enums.Result;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,8 +28,12 @@ public class GuildSettings {
     private String prefix = "/", defaultRole, muteRole, joinMessage, quitMessage, joinPrivateMessage, description;
     @Getter
     private TextChannel joinMessageChannel, quitMessageChannel;
-    @Getter @Setter Guild.VerificationLevel defaultVerificationLevel;
-    @Getter @Setter long lastJoin;
+    @Getter
+    @Setter
+    Guild.VerificationLevel defaultVerificationLevel;
+    @Getter
+    @Setter
+    long lastJoin;
     private boolean raidMode;
 
     public GuildSettings(Guild guild) {
@@ -40,17 +46,20 @@ public class GuildSettings {
     }
 
     private void load() throws SQLException {
-        if(!checkExists()) {
-            Rixa.getDbManager().insert("INSERT INTO `settings` (`guild_id`, `log_enabled`, `log_channel`, `joinMessage`, `quitMessage`, `greetings`, `farewell`," +
+        if (!checkExists()) {
+            Update update = new Update("INSERT INTO `settings` (`guild_id`, `log_enabled`, `log_channel`, `joinMessage`, `quitMessage`, `greetings`, `farewell`," +
                     " `prefix`, `joinPm`, `joinVerification`, `defaultRole`, `muteRole`)" +
                     " VALUES ('" + guild.getId() + "', '0', 'default_value', 'default_value', 'default_value', 'default_value', 'default_value', '/'," +
                     " 'default', '0', 'default_value', 'default_value');");
+            Rixa.getDatabase().send(update);
             return;
         }
-        PreparedStatement ps = Rixa.getDbManager()
-                .getConnection().prepareStatement("SELECT * FROM `settings` WHERE `guild_id` = ?");
-        ps.setString(1, guild.getId());
-        ResultSet set = Rixa.getDbManager().getObject(ps);
+        Query query = new Query("SELECT * FROM `settings` WHERE `guild_id` = ?");
+        query.setString(guild.getId());
+        Optional<?> optional = Rixa.getDatabase().send(query);
+        if (!optional.isPresent()) return;
+        if (!(optional.get() instanceof ResultSet)) return;
+        ResultSet set = (ResultSet) optional.get();
         this.prefix = (set.getString("prefix"));
         this.defaultRole = (set.getString("defaultRole"));
         this.joinMessage = (set.getString("joinMessage"));
@@ -58,28 +67,44 @@ public class GuildSettings {
         this.joinPrivateMessage = (set.getString("joinPM"));
         this.muteRole = (set.getString("muteRole"));
         this.joinVerification = (set.getBoolean("joinVerification"));
-        if(!set.getString("greetings").equalsIgnoreCase("default_value")) {
+        if (!set.getString("greetings").equalsIgnoreCase("default_value")) {
             joinMessageChannel = guild.getTextChannelById(set.getString("greetings"));
         }
-        if(!set.getString("farewell").equalsIgnoreCase("default_value")) {
+        if (!set.getString("farewell").equalsIgnoreCase("default_value")) {
             quitMessageChannel = guild.getTextChannelById(set.getString("farewell"));
         }
-        ps = Rixa.getDbManager()
-                .getConnection().prepareStatement("SELECT * FROM `core` WHERE `guild_id` = ?");
-        ps.setString(1, guild.getId());
-        set = Rixa.getDbManager().getObject(ps);
+        query = new Query("SELECT * FROM `core` WHERE `guild_id` = ?");
+        query.setString(guild.getId());
+        optional = Rixa.getDatabase().send(query);
+        if (!optional.isPresent()) return;
+        if (!(optional.get() instanceof ResultSet)) return;
+        set = (ResultSet) optional.get();
         this.description = (set.getString("description"));
         this.enlisted = (set.getBoolean("enlisted"));
         this.raidMode = false;
     }
 
     private boolean checkExists() {
+        Result r = Result.FALSE;
         try {
-            return Rixa.getDbManager().checkExists("SELECT `guild_id` FROM `settings` WHERE `guild_id` = '" + guild.getId() + "'") == Result.TRUE;
+            Query query = new Query("SELECT `guild_id` FROM `settings` WHERE `guild_id` = '" + guild.getId() + "'");
+            Optional<?> optional = Rixa.getDatabase().send(query);
+            if (!optional.isPresent()) r = Result.ERROR;
+            if (!(optional.get() instanceof ResultSet)) r = Result.ERROR;
+            ResultSet set = (ResultSet) optional.get();
+            if (r != Result.ERROR) {
+                if (set.next()) {
+                    r = Result.TRUE;
+                } else {
+                    r = Result.FALSE;
+                }
+            }
+            set.close();
+            return r == Result.TRUE;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     public void unload() {
@@ -88,67 +113,74 @@ public class GuildSettings {
 
     public void setJoinMessage(String joinMessage) {
         this.joinMessage = joinMessage;
-        Rixa.getData().update("settings", "joinMessage", "guild_id", joinMessage, guild.getId());
+        update("settings", "joinMessage", "guild_id", joinMessage, guild.getId());
     }
-    
+
     public void setQuitMessage(String quitMessage) {
         this.quitMessage = quitMessage;
-        Rixa.getData().update("settings", "quitMessage", "guild_id", quitMessage, guild.getId());
+        update("settings", "quitMessage", "guild_id", quitMessage, guild.getId());
     }
-    
+
     public void setJoinPrivateMessage(String joinPrivateMessage) {
         this.joinPrivateMessage = joinPrivateMessage;
-        Rixa.getData().update("settings", "joinPM", "guild_id", joinPrivateMessage, guild.getId());
+        update("settings", "joinPM", "guild_id", joinPrivateMessage, guild.getId());
     }
 
     public void setJoinMessageChannel(TextChannel joinMessageChannel) {
         this.joinMessageChannel = joinMessageChannel;
-        Rixa.getData().update("settings", "greetings", "guild_id", joinMessageChannel.getId(), guild.getId());
+        update("settings", "greetings", "guild_id", joinMessageChannel.getId(), guild.getId());
     }
 
     public void setJoinMessageChannel(String joinMessageChannel) {
-        if (joinMessageChannel.equalsIgnoreCase("default_value"))this.joinMessageChannel = null;
-        Rixa.getData().update("settings", "greetings", "guild_id", joinMessageChannel, guild.getId());
+        if (joinMessageChannel.equalsIgnoreCase("default_value")) this.joinMessageChannel = null;
+        update("settings", "greetings", "guild_id", joinMessageChannel, guild.getId());
     }
-    
+
+    private void update(String table, String setting, String key, Object placeholder, Object placeholder2) {
+        Update update = new Update("UPDATE `" + table + "` SET `" + setting + "` = ? WHERE `" + key + "` = ?;");
+        update.setObject(placeholder);
+        update.setObject(placeholder2);
+        Rixa.getDatabase().send(update);
+    }
+
     public void setQuitMessageChannel(TextChannel quitMessageChannel) {
         this.quitMessageChannel = quitMessageChannel;
-        Rixa.getData().update("settings", "farewell", "guild_id", quitMessageChannel.getId(), guild.getId());
+        update("settings", "farewell", "guild_id", quitMessageChannel.getId(), guild.getId());
     }
 
     public void setQuitMessageChannel(String quitMessageChannel) {
-        if (quitMessageChannel.equalsIgnoreCase("default_value"))this.quitMessageChannel = null;
-        Rixa.getData().update("settings", "greetings", "guild_id", quitMessageChannel, guild.getId());
+        if (quitMessageChannel.equalsIgnoreCase("default_value")) this.quitMessageChannel = null;
+        update("settings", "greetings", "guild_id", quitMessageChannel, guild.getId());
     }
-    
+
     public void setDefaultRole(String defaultRole) {
         this.defaultRole = defaultRole;
-        Rixa.getData().update("settings", "defaultRole", "guild_id", defaultRole, guild.getId());
+        update("settings", "defaultRole", "guild_id", defaultRole, guild.getId());
     }
-    
+
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-        Rixa.getData().update("settings", "prefix", "guild_id", prefix, guild.getId());
+        update("settings", "prefix", "guild_id", prefix, guild.getId());
     }
-    
+
     public void setDescription(String description) {
         this.description = description;
-        Rixa.getData().update("core", "description", "guild_id", description, guild.getId());
+        update("core", "description", "guild_id", description, guild.getId());
     }
-    
+
     public void setEnlisted(boolean enlisted) {
         this.enlisted = enlisted;
-        Rixa.getData().update("core", "enlisted", "guild_id", enlisted, guild.getId());
+        update("core", "enlisted", "guild_id", enlisted, guild.getId());
     }
-    
+
     public void setMuteRole(String muteRole) {
         this.muteRole = muteRole;
-        Rixa.getData().update("settings", "muteRole", "guild_id", muteRole, guild.getId());
+        update("settings", "muteRole", "guild_id", muteRole, guild.getId());
     }
-    
+
     public void setJoinVerification(boolean joinVerification) {
         this.joinVerification = joinVerification;
-        Rixa.getData().update("settings", "joinVerification", "guild_id", joinVerification, guild.getId());
+        update("settings", "joinVerification", "guild_id", joinVerification, guild.getId());
     }
 
     public void startRaidMode() {
@@ -170,7 +202,7 @@ public class GuildSettings {
             @Override
             public void run() {
                 if (isRaidMode()) {
-                  endRaidMode();
+                    endRaidMode();
                 }
                 this.cancel();
             }
