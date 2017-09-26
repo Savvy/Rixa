@@ -19,6 +19,7 @@ import me.savvy.rixa.commands.mod.DeleteMessagesCommand;
 import me.savvy.rixa.commands.mod.MuteCommand;
 import me.savvy.rixa.commands.mod.PurgeMessagesCommand;
 import me.savvy.rixa.commands.mod.RaidModeCommand;
+import me.savvy.rixa.data.database.sql.other.DatabaseTables;
 import me.savvy.rixa.data.filemanager.ConfigManager;
 import me.savvy.rixa.data.filemanager.LanguageManager;
 import me.savvy.rixa.events.BotEvent;
@@ -40,6 +41,7 @@ import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -86,14 +88,11 @@ public class Rixa {
         getInstance().setExecutorService(Executors.newSingleThreadScheduledExecutor());
         database = Database.options()
                 .type("mysql")
-                .hostname(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")), Integer.valueOf(config.getJsonObject().getJSONObject("sql").getInt("portNumber")))
+                .hostname(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")), config.getJsonObject().getJSONObject("sql").getInt("portNumber"))
                 .database(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("databaseName")))
                 .auth(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("userName")), String.valueOf(config.getJsonObject().getJSONObject("sql").getString("password")))
                 .build();
-        Update update = new Update("CREATE TABLE IF NOT EXISTS `core` (`guild_id` varchar(255) NOT NULL, `guild_name` varchar(255) NOT NULL, PRIMARY KEY (`guild_id`));");
-        database.send(update);
-        Update modules = new Update("CREATE TABLE IF NOT EXISTS `modules` (`guild_id` varchar(255) NOT NULL, `levels` varchar(255) NOT NULL, `enabled` INT(11) NOT NULL, PRIMARY KEY (`guild_id`));");
-        database.send(modules);
+        Arrays.stream(DatabaseTables.values()).forEach(databaseTables -> database.send(new Update(databaseTables.getQuery())));
         getInstance().setLanguageManager(new LanguageManager(new File("Rixa/languages/language.json")));
         try {
             int shards = 5;
@@ -155,4 +154,14 @@ public class Rixa {
         return Logger.getLogger("Rixa");
     }
 
+    public void exit() {
+        try {
+            database.close();
+            getShardsList().forEach(JDA::shutdown);
+            Thread.sleep(5000);
+            System.exit(0);
+        } catch (InterruptedException ex) {
+            getLogger().severe("Could not shutdown Rixa instance.");
+        }
+    }
 }

@@ -84,8 +84,7 @@ public class LevelsModule implements RixaModule {
                     .append("`")
                     .append(i + start + 1/*(page > 1) ? ((i + 1) * 10) : i + 1*/)
                     .append(")` ")
-                    .append(
-                            user.getUser().getName())
+                    .append(user.getUser().getName())
                     .append("#").append(user.getUser().getDiscriminator())
                     .append(" (Lvl. ").append(user.getLevel()).append(")")
                     .append("\n");
@@ -132,8 +131,8 @@ public class LevelsModule implements RixaModule {
             insert();
         }
         String query = "SELECT `levels` FROM `modules` WHERE `guild_id` = ?;";
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+        PreparedStatement ps;
+        ResultSet rs;
         try {
             ps = Rixa.getDatabase().getConnection().get().prepareStatement(query);
             ps.setString(1, getRixaGuild().getGuild().getId());
