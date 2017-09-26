@@ -5,7 +5,7 @@ plugins {
 }
 
 mainClassName = 'me.savvy.rixa.Rixa'
-version '1.0'
+version '2.4'
 
 jar {
     baseName = project.name
@@ -38,4 +38,4 @@ compileJava.options.encoding = 'UTF-8'
 compileJava.options.fork = true
 
 // Change this if you are getting errors building
-compileJava.options.forkOptions.executable = 'C:\\Program Files\\Java\\jdk1.8.0_131\\bin\\javac.exe'
+compileJava.options.forkOptions.executable = 'C:\\Program Files\\Java\\jdk1.8.0_144\\bin\\javac.exe'

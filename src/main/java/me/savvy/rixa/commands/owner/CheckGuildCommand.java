@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CheckGuildCommand implements CommandExec {
@@ -34,11 +35,11 @@ public class CheckGuildCommand implements CommandExec {
             if (member.getUser().getId().equalsIgnoreCase(event.getAuthor().getId())) continue;
             try {
                 if (!(checkExists(member.getUser().getId()))) {
-                    PreparedStatement ps = Rixa.getDbManager().getConnection().prepareStatement("INSERT INTO `user` (`user_id`, `user_name`, `avatar_hash`) VALUES (?, ?, ?)");
+                    PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("INSERT INTO `user` (`user_id`, `user_name`, `avatar_hash`) VALUES (?, ?, ?)");
                     ps.setString(1, member.getUser().getId());
                     ps.setString(2, member.getUser().getName());
                     ps.setString(3, member.getUser().getAvatarId());
-                    Rixa.getDbManager().executeUpdate(ps);
+                    ps.executeUpdate();
                     updated++;
                 }
             } catch (SQLException e) {
@@ -50,12 +51,14 @@ public class CheckGuildCommand implements CommandExec {
     }
 
     private boolean checkExists(String userId) {
-        Result r = Result.ERROR;
         try {
-            r = Rixa.getDbManager().checkExists("SELECT `user_id` FROM `user` WHERE `user_id` = '" + userId + "';");
+            PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("SELECT `user_id` FROM `user` WHERE `user_id` = ?;");
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return r == Result.TRUE;
+        return false;
     }
 }

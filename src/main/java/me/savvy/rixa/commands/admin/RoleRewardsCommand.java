@@ -31,11 +31,11 @@ public class RoleRewardsCommand implements CommandExec {
                             setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
                 }
-                if (rixaGuild.getLevelsModule().getRoleRewards().containsKey(Integer.parseInt(args[2]))) {
+                /*if (rixaGuild.getLevelsModule().getRoleRewards().containsKey(Integer.parseInt(args[2]))) {
                     new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + args[0] + " <add/remove/list> [level] [role].").
                             setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
-                }
+                }*/
                 switch (args[1].toLowerCase()) {
                     case "add":
                         break;
@@ -51,9 +51,9 @@ public class RoleRewardsCommand implements CommandExec {
                 switch(args[1].toLowerCase()) {
                     case "list":
                         Map<Integer, String> rewards = new HashMap<>();
-                        rixaGuild.getLevelsModule().getRoleRewards().forEach((integer, s) -> {
+                       /* rixaGuild.getLevelsModule().getRoleRewards().forEach((integer, s) -> {
 
-                        });
+                        });*/
                         break;
                     default:
                         new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + args[0] + " <add/remove/list> [level] [role].").

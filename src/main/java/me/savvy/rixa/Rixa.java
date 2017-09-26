@@ -92,7 +92,11 @@ public class Rixa {
                 .database(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("databaseName")))
                 .auth(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("userName")), String.valueOf(config.getJsonObject().getJSONObject("sql").getString("password")))
                 .build();
-        Arrays.stream(DatabaseTables.values()).forEach(databaseTables -> database.send(new Update(databaseTables.getQuery())));
+        Arrays.stream(DatabaseTables.values()).forEach(databaseTables -> {
+            getInstance().getLogger().info("Checking database table (creating if needed): " + databaseTables.toString());
+            database.send(new Update(databaseTables.getQuery()));
+            getInstance().getLogger().info("Done checking " + databaseTables.toString());
+        });
         getInstance().setLanguageManager(new LanguageManager(new File("Rixa/languages/language.json")));
         try {
             int shards = 5;
