@@ -1,8 +1,8 @@
 package me.savvy.rixa.events;
 
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
-import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -22,7 +22,7 @@ public class MemberEvent {
 
     @SubscribeEvent
     public void onMember(GuildMemberJoinEvent event) {
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
 
       /*  if (rixaGuild.getGuildSettings().isRaidMode()) {
             if(event.getGuild().getSelfMember().hasPermission(Permission.KICK_MEMBERS)) {

@@ -25,7 +25,7 @@ public class GuildSettings {
     @Getter
     private boolean enlisted, joinVerification;
     @Getter
-    private String prefix = "/", defaultRole, muteRole, joinMessage, quitMessage, joinPrivateMessage, description;
+    private String prefix = "/", defaultRole, muteRole, joinMessage, quitMessage, joinPrivateMessage, description, currency;
     @Getter
     private TextChannel joinMessageChannel, quitMessageChannel;
     @Getter
@@ -48,9 +48,9 @@ public class GuildSettings {
     private void load() throws SQLException {
         if (!checkExists()) {
             Update update = new Update("INSERT INTO `settings` (`guild_id`, `log_enabled`, `log_channel`, `joinMessage`, `quitMessage`, `greetings`, `farewell`," +
-                    " `prefix`, `joinPm`, `joinVerification`, `defaultRole`, `muteRole`)" +
+                    " `prefix`, `joinPm`, `joinVerification`, `defaultRole`, `muteRole`, `currency`)" +
                     " VALUES ('" + guild.getId() + "', '0', 'default_value', 'default_value', 'default_value', 'default_value', 'default_value', '/'," +
-                    " 'default', '0', 'default_value', 'default_value');");
+                    " 'default', '0', 'default_value', 'default_value', ' tokens');");
             Rixa.getDatabase().send(update);
             return;
         }

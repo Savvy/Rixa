@@ -1,11 +1,12 @@
 package me.savvy.rixa.events;
 
-import com.google.code.chatterbotapi.ChatterBotFactory;
 import com.mysql.jdbc.StringUtils;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandRegistrar;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
+import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.modules.reactions.handlers.ReactRegistrar;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.utils.MessageBuilder;
@@ -34,7 +35,7 @@ import java.util.regex.Pattern;
  */
 public class MessageEvent {
 
-    private final Pattern INVITE = Pattern.compile("discord(?:\\.gg|app.com\\/invite)\\/([A-Z0-9-]{2,16})",Pattern.CASE_INSENSITIVE);
+    private final Pattern INVITE = Pattern.compile("discord(?:\\.gg|app.com\\/invite)\\/([A-Z0-9-]{2,16})", Pattern.CASE_INSENSITIVE);
 
 
     @SubscribeEvent
@@ -43,42 +44,44 @@ public class MessageEvent {
         if (event.getAuthor().isBot()) return;
 
         if (event.getMessage().getContent().startsWith
-                ("@" +  event.getGuild().getSelfMember().getEffectiveName())) {
+                ("@" + event.getGuild().getSelfMember().getEffectiveName())) {
             try {
                 String s = event.getMessage().getContent().replace
-                        ("@" + event.getGuild().getSelfMember().getEffectiveName()+ " ", "");
+                        ("@" + event.getGuild().getSelfMember().getEffectiveName() + " ", "");
                 if (s.isEmpty()) return;
                 s = Rixa.getChatBotSession().think(s);
                 if (s.isEmpty()) return;
                 event.getChannel().sendMessage(s).queue();
                 return;
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
 
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
         String prefix = rixaGuild
                 .getGuildSettings()
                 .getPrefix();
         //checkMessage(event.getMessage());
-        if (!event.getMessage().getContent().startsWith(prefix))  {
-            if (!(rixaGuild.getLevelsModule().isEnabled())) {
+        if (!event.getMessage().getContent().startsWith(prefix)) {
+            if (!(((LevelsModule) rixaGuild.getModule("Levels")).isEnabled())) {
                 return;
             }
             /*if(!event.getAuthor().getId().equalsIgnoreCase("202944101333729280") &&
                     !event.getAuthor().getId().equalsIgnoreCase("207322957075185665")) {
                 return;
             }*/
-            if(rixaGuild.getLevelsModule().getUserData(event.getAuthor().getId()).awardIfCan()) {
+            if (((LevelsModule) rixaGuild.getModule("Levels")).getUserData(event.getAuthor().getId()).awardIfCan()) {
                 new MessageBuilder(event.getAuthor().getAsMention() + " has leveled up to level " +
-                        rixaGuild.getLevelsModule().getUserData(event.getAuthor().getId()).getLevel())
+                        ((LevelsModule) rixaGuild.getModule("Levels")).getUserData(event.getAuthor().getId()).getLevel())
                         .setColor(event.getMember().getColor()).queue(event.getChannel());
             }
             return;
         }
 
         String[] splitContent = event.getMessage().getContent().replace(prefix, "").split(" ");
-        if(!CommandHandler.hasCommand(splitContent[0])) {
+        if (!CommandHandler.hasCommand(splitContent[0])) {
             return;
         }
         CommandRegistrar cmd = CommandHandler.get(splitContent[0]);
@@ -93,18 +96,19 @@ public class MessageEvent {
     private void checkMessage(Message message) {
         List<String> invites = new ArrayList<>();
         Matcher matcher = INVITE.matcher(message.getRawContent());
-        while(matcher.find()) {
+        while (matcher.find()) {
             invites.add(matcher.group(1));
         }
-        if(invites.size() == 0) {
+        if (invites.size() == 0) {
             return;
         }
-        for(String inviteCode : invites) {
+        for (String inviteCode : invites) {
             Invite invite = null;
             try {
                 invite = Invite.resolve(message.getJDA(), inviteCode).complete();
-            } catch(Exception e) {}
-            if(invite !=null && !invite.getGuild().getId().equals(message.getGuild().getId())) {
+            } catch (Exception e) {
+            }
+            if (invite != null && !invite.getGuild().getId().equals(message.getGuild().getId())) {
                 new MessageBuilder(String.format("Advertising is not allowed, %s!",
                         message.getAuthor().getAsMention())).setColor(message.getMember().getColor()).queue(message.getTextChannel());
                 message.delete().reason("Advertising is not allowed!").queue();
@@ -116,7 +120,7 @@ public class MessageEvent {
     public void onMemberJoin(PrivateMessageReceivedEvent event) {
         RixaGuild rixaGuild;
         if (MemberEvent.joinMembers.containsKey(event.getAuthor().getId())) {
-            rixaGuild = RixaGuild.getGuild(MemberEvent.joinMembers.get(event.getAuthor().getId()));
+            rixaGuild = Guilds.getGuild(MemberEvent.joinMembers.get(event.getAuthor().getId()));
             if (event.getMessage().getContent().equalsIgnoreCase("I agree") ||
                     event.getMessage().getContent().equalsIgnoreCase("I accept")
                     || event.getMessage().getContent().equalsIgnoreCase("Yes")) {
@@ -128,9 +132,9 @@ public class MessageEvent {
                         new MessageBuilder(String.format("You have been promoted on %s!", rixaGuild.getGuild().getName()))
                                 .setColor(rixaGuild.getGuild().getMember(event.getAuthor()).getColor()).send(event.getAuthor());
                         rixaGuild.getGuildSettings().setLastJoin(System.currentTimeMillis());
-                    } catch(PermissionException ex) {
-                            new MessageBuilder(String.format("I do not have permission for %s in %s", ex.getPermission().getName(), rixaGuild.getGuild().getName()))
-                                    .setColor(Color.RED).send(rixaGuild.getGuild().getOwner().getUser());
+                    } catch (PermissionException ex) {
+                        new MessageBuilder(String.format("I do not have permission for %s in %s", ex.getPermission().getName(), rixaGuild.getGuild().getName()))
+                                .setColor(Color.RED).send(rixaGuild.getGuild().getOwner().getUser());
                     }
                 }
             } else if (event.getMessage().getContent().equalsIgnoreCase("I disagree") ||
@@ -142,7 +146,7 @@ public class MessageEvent {
                     MemberEvent.joinMembers.remove(event.getAuthor().getId());
                     rixaGuild.getGuild().getController().kick(rixaGuild.getGuild().getMember(event.getAuthor())).complete();
                 } catch (PermissionException ex) {
-                    if(ex.getPermission() == Permission.KICK_MEMBERS) {
+                    if (ex.getPermission() == Permission.KICK_MEMBERS) {
                         new MessageBuilder(String.format("I do not have permission to kick %s from %s", event.getAuthor().getName(), rixaGuild.getGuild().getName()))
                                 .setColor(Color.RED).send(rixaGuild.getGuild().getOwner().getUser());
                     } else {
@@ -152,7 +156,7 @@ public class MessageEvent {
                 }
             }
         } else {
-            if(!event.getAuthor().isBot())
+            if (!event.getAuthor().isBot())
                 new MessageBuilder("Private messages are currently disabled!").setColor(Color.RED).send(event.getAuthor());
         }
     }
@@ -160,33 +164,33 @@ public class MessageEvent {
     @SubscribeEvent
     public void onReact(MessageReactionAddEvent event) {
         Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
-        if(message == null || message.getEmbeds().size() != 1) return;
+        if (message == null || message.getEmbeds().size() != 1) return;
         MessageEmbed embed = message.getEmbeds().get(0);
-        if(StringUtils.isNullOrEmpty(embed.getTitle())) return;
+        if (StringUtils.isNullOrEmpty(embed.getTitle())) return;
         String[] titleSplit = embed.getTitle().split(": ");
         if (titleSplit[0].equalsIgnoreCase("Leaderboard")) return;
-        if(!ReactionManager.getReactions().containsKey(titleSplit[0])) return;
+        if (!ReactionManager.getReactions().containsKey(titleSplit[0])) return;
 
-            ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
-            Method m = reactRegistrar.getMethod();
-            try {
-                m.invoke(reactRegistrar.getExecutor(), event);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
+        Method m = reactRegistrar.getMethod();
+        try {
+            m.invoke(reactRegistrar.getExecutor(), event);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
     @SubscribeEvent
     public void onGuildReact(GuildMessageReactionAddEvent event) {
         if (event.getGuild() == null) return;
         if (event.getUser().isBot()) return;
         Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
-        if(message == null || message.getEmbeds().size() != 1) return;
+        if (message == null || message.getEmbeds().size() != 1) return;
         MessageEmbed embed = message.getEmbeds().get(0);
-        if(StringUtils.isNullOrEmpty(embed.getTitle())) return;
+        if (StringUtils.isNullOrEmpty(embed.getTitle())) return;
         String[] titleSplit = embed.getTitle().split(": ");
         System.out.println(Arrays.toString(titleSplit));
-        if(ReactionManager.getReactions().containsKey(titleSplit[0])) {
+        if (ReactionManager.getReactions().containsKey(titleSplit[0])) {
             ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
             Method m = reactRegistrar.getMethod();
             try {

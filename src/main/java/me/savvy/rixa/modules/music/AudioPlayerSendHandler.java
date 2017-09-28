@@ -1,8 +1,8 @@
 package me.savvy.rixa.modules.music;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrame;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 
 /**
  * Created by Timber on 3/13/2017.

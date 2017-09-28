@@ -2,6 +2,7 @@ package me.savvy.rixa.events;
 
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
@@ -29,6 +30,6 @@ public class BotEvent {
 
     @SubscribeEvent
     public void onQuit(GuildLeaveEvent event) {
-        RixaGuild.removeGuild(RixaGuild.getGuild(event.getGuild()));
+        Guilds.removeGuild(Guilds.getGuild(event.getGuild()));
     }
 }

@@ -3,6 +3,7 @@ package me.savvy.rixa.commands.general;
 import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.User;
@@ -20,7 +21,7 @@ public class ServerInfoCommand implements CommandExec {
     description = "Receive information about the server!",
     aliases = "sinfo", mainCommand = "serverinfo")
     public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
         EmbedBuilder messageEmbed = new EmbedBuilder();
         User owner = event.getGuild().getOwner().getUser();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");

@@ -6,7 +6,6 @@ import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.EmbedBuilder;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 

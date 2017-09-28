@@ -20,7 +20,9 @@ import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.music.MusicManager;
+import me.savvy.rixa.modules.music.MusicModule;
 import me.savvy.rixa.modules.music.TrackScheduler;
 import me.savvy.rixa.utils.MessageBuilder;
 import me.savvy.rixa.utils.YoutubeSearch;
@@ -67,13 +69,14 @@ public class MusicCommand implements CommandExec {
             usage = "%pmusic", mainCommand = "music")
     public void execute(GuildMessageReceivedEvent event) {
         Guild guild = event.getGuild();
-        RixaGuild rixaGuild = RixaGuild.getGuild(guild);
-        if(!rixaGuild.getMusicModule().isEnabled()) {
+        RixaGuild rixaGuild = Guilds.getGuild(guild);
+        MusicModule module = ((MusicModule) rixaGuild.getModule("Music"));
+        if(!module.isEnabled()) {
             new MessageBuilder("Sorry music is not enabled on `" + guild.getName() + "`!").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
-        if(rixaGuild.getMusicModule().isRoleRequired()) {
-            Role role = event.getGuild().getRoleById(rixaGuild.getMusicModule().getMusicRole());
+        if(module.isRoleRequired()) {
+            Role role = event.getGuild().getRoleById(module.getMusicRole());
             boolean hasRole = false;
             for (Role roleItem : event.getMember().getRoles()) {
                 if (roleItem.getId().equalsIgnoreCase(role.getId())) {

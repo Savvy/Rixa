@@ -2,7 +2,7 @@ package me.savvy.rixa.data.database.sql.other;
 
 public enum DatabaseTables {
 
-    CORE("CREATE TABLE IF NOT EXISTS `core` ( `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `guild_id` varchar(255) NOT NULL, `guild_name` varchar(255) NOT NULL," +
+    CORE("CREATE TABLE IF NOT EXISTS `core` ( `guild_id` varchar(255) NOT NULL PRIMARY KEY, `guild_name` varchar(255) NOT NULL," +
             " `description` text, `enlisted` tinyint(1) NOT NULL DEFAULT '0', `icon` varchar(255) DEFAULT NULL, `link` varchar(255) DEFAULT NULL," +
             " `keywords` text, `creation_date` varchar(255) NOT NULL DEFAULT 'N/A', `guild_region` varchar(255) NOT NULL DEFAULT 'N/A'," +
             " `guild_owner` varchar(255) NOT NULL DEFAULT 'N/A'\n" +

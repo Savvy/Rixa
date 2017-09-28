@@ -6,8 +6,6 @@ import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
-import java.time.temporal.ChronoUnit;
-
 /**
  * Created by Timber on 5/23/2017.
  */

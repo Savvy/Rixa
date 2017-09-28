@@ -4,6 +4,7 @@ import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -19,7 +20,7 @@ public class RaidModeCommand implements CommandExec {
             channelType = ChannelType.TEXT,
             aliases = {"raidmode", "trm", "toggleraid"})
     public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
         if(!rixaGuild.hasPermission(event.getMember(), RixaPermission.TOGGLE_RAIDMODE)) {
             new MessageBuilder(event.getMember().getAsMention() + ", you do not have permission for this command.").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;

@@ -4,7 +4,6 @@ import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
-import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;

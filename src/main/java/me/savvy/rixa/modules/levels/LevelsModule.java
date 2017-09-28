@@ -1,11 +1,11 @@
 package me.savvy.rixa.modules.levels;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.majrly.database.Database;
 import me.majrly.database.statements.Query;
 import me.majrly.database.statements.Update;
 import me.savvy.rixa.Rixa;
-import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.user.UserData;
 import me.savvy.rixa.modules.RixaModule;
@@ -13,7 +13,6 @@ import me.savvy.rixa.utils.DatabaseUtils;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.Member;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -24,17 +23,12 @@ import java.util.*;
 public class LevelsModule implements RixaModule {
 
     @Getter
-    private final RixaGuild rixaGuild;
+    private RixaGuild rixaGuild;
     @Getter
     private Map<String, UserData> userData = new HashMap<>();
     @Getter
+    @Setter
     private boolean enabled;
-
-    public LevelsModule(RixaGuild rixaGuild) {
-        this.rixaGuild = rixaGuild;
-        enabled = true;
-        load();
-    }
 
     private List<UserData> leaderboard(Member member) {
         Database db = Rixa.getDatabase();
@@ -50,7 +44,7 @@ public class LevelsModule implements RixaModule {
         try {
             while (rs != null && rs.next()) {
                 if (member.getGuild().getMemberById(rs.getString("user_id")) == null) continue;
-                UserData userData = rixaGuild.getLevelsModule().getUserData(rs.getString("user_id"));
+                UserData userData = ((LevelsModule) rixaGuild.getModule("Levels")).getUserData(rs.getString("user_id"));
                 userDataList.add(userData);
             }
             rs.getStatement().close();
@@ -104,6 +98,35 @@ public class LevelsModule implements RixaModule {
         return "Rixa levels module.";
     }
 
+    @Override
+    public void load(RixaGuild rixaGuild) {
+        try {
+            this.rixaGuild = rixaGuild;
+            Query query = new Query("SELECT * FROM `modules` WHERE `guild_id`=?;");
+            query.setString(rixaGuild.getGuild().getId());
+            Optional<?> o = Rixa.getDatabase().send(query);
+            if (!o.isPresent()) return;
+            else if (!(o.get() instanceof ResultSet)) return;
+            ResultSet set = (ResultSet) o.get();
+            if (set.next()) {
+                setEnabled(set.getBoolean("levels"));
+            } else {
+                Update update = new Update("INSERT INTO `modules` (`guild_id`) VALUES (?);");
+                update.setString(rixaGuild.getGuild().getId());
+                Rixa.getDatabase().send(update);
+                setEnabled(true);
+            }
+            set.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void save() {
+        DatabaseUtils.update("modules", "levels", "guild_id", enabled, rixaGuild.getGuild().getId());
+    }
+
     public void registerUser(UserData userData) {
         if (getUserData().containsKey(userData.getUser().getId())) {
             return;
@@ -123,63 +146,5 @@ public class LevelsModule implements RixaModule {
         new UserData
                 (getRixaGuild().getGuild().getJDA().getUserById(key),
                         getRixaGuild().getGuild());
-    }
-
-    private void load() {
-        if (!(checkExists())) {
-            this.enabled = true;
-            insert();
-        }
-        String query = "SELECT `levels` FROM `modules` WHERE `guild_id` = ?;";
-        PreparedStatement ps;
-        ResultSet rs;
-        try {
-            ps = Rixa.getDatabase().getConnection().get().prepareStatement(query);
-            ps.setString(1, getRixaGuild().getGuild().getId());
-            rs = ps.executeQuery();
-            if (rs.next()) {
-                this.enabled = rs.getBoolean("levels");
-            }
-            ps.close();
-            rs.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private boolean checkExists() {
-        Result r = Result.FALSE;
-        try {
-            Query query = new Query("SELECT `guild_id` FROM `modules` WHERE `guild_id` = ?;");
-            query.setString(rixaGuild.getGuild().getId());
-            Optional<?> optional = Rixa.getDatabase().send(query);
-            if (!optional.isPresent()) r = Result.ERROR;
-            if (!(optional.get() instanceof ResultSet)) r = Result.ERROR;
-            ResultSet set = (ResultSet) optional.get();
-            if (r != Result.ERROR) {
-                if (set.next()) {
-                    r = Result.TRUE;
-                } else {
-                    r = Result.FALSE;
-                }
-            }
-            set.close();
-            return r == Result.TRUE;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private void insert() {
-        String query = "INSERT INTO `modules` (`guild_id`) VALUES (?);";
-        Update update = new Update(query);
-        update.setString(rixaGuild.getGuild().getId());
-        Rixa.getDatabase().send(update);
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-        DatabaseUtils.update("modules", "levels", "guild_id", enabled, rixaGuild.getGuild().getId());
     }
 }

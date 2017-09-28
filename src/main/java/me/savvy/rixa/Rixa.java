@@ -25,7 +25,9 @@ import me.savvy.rixa.data.filemanager.LanguageManager;
 import me.savvy.rixa.events.BotEvent;
 import me.savvy.rixa.events.MemberEvent;
 import me.savvy.rixa.events.MessageEvent;
+import me.savvy.rixa.events.Shutdown;
 import me.savvy.rixa.events.VoiceChannel;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.modules.reactions.react.ConfigReaction;
@@ -38,6 +40,7 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.core.requests.Route;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
@@ -65,9 +68,6 @@ public class Rixa {
     @Getter
     @Setter
     private static Database database;
-    private static ChatterBotFactory factory;
-    private static ChatterBotSession chatBotSession;
-    private static ChatterBot chatBot;
     @Getter
     @Setter
     private LanguageManager languageManager;
@@ -75,17 +75,28 @@ public class Rixa {
     @Setter
     private ScheduledExecutorService executorService;
 
+    private static ChatterBotFactory factory;
+    private static ChatterBotSession chatBotSession;
+    private static ChatterBot chatBot;
+
     // String search = event.getMessage().getContent().substring(event.getMessage().getContent().indexOf(" ") + 1);
     public static void main(String[] args) {
         instance = new Rixa();
         shardsList = new LinkedList<>();
-        //    config = new ConfigManager();
         config = new ConfigManager(new File("Rixa/config.json"));
         load();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                getShardsList().forEach(JDA::shutdown);
+            }
+        });
     }
 
     private static void load() {
         getInstance().setExecutorService(Executors.newSingleThreadScheduledExecutor());
+
         database = Database.options()
                 .type("mysql")
                 .hostname(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")), config.getJsonObject().getJSONObject("sql").getInt("portNumber"))
@@ -97,6 +108,7 @@ public class Rixa {
             database.send(new Update(databaseTables.getQuery()));
             getInstance().getLogger().info("Done checking " + databaseTables.toString());
         });
+
         getInstance().setLanguageManager(new LanguageManager(new File("Rixa/languages/language.json")));
         try {
             int shards = 5;
@@ -109,6 +121,7 @@ public class Rixa {
                         .addEventListener(new BotEvent())
                         .addEventListener(new MemberEvent())
                         .addEventListener(new VoiceChannel())
+                        .addEventListener(new Shutdown())
                         .setGame(Game.of(config.getJsonObject().getString("botGame")))
                         .setAutoReconnect(true)
                         .setStatus(OnlineStatus.ONLINE)
@@ -120,15 +133,17 @@ public class Rixa {
         } catch (LoginException | InterruptedException | RateLimitedException e) {
             e.printStackTrace();
         }
+
+        Guilds.getGuilds().values().parallelStream().forEach((rixaGuild) -> rixaGuild.load());
+
         timeUp = System.currentTimeMillis();
-        register(new CommandExec[]{
-                new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
+        register(new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),
                 new DeleteMessagesCommand(), new PingCommand(), new PurgeMessagesCommand(),
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
                 new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand(),
-                new LeaderboardCommand(), new RaidModeCommand()});
-        register(new React[]{new HelpReaction(), new ConfigReaction(), new LeaderboardReaction()});
+                new LeaderboardCommand(), new RaidModeCommand());
+        register(new HelpReaction(), new ConfigReaction(), new LeaderboardReaction());
         try {
             factory = new ChatterBotFactory();
             chatBot = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
@@ -138,13 +153,13 @@ public class Rixa {
         }
     }
 
-    private static void register(CommandExec commandExecs[]) {
+    private static void register(CommandExec... commandExecs) {
         for (CommandExec command : commandExecs) {
             CommandHandler.registerCommand(command);
         }
     }
 
-    private static void register(React react[]) {
+    private static void register(React... react) {
         for (React reaction : react) {
             ReactionManager.registerReaction(reaction);
         }
@@ -159,10 +174,15 @@ public class Rixa {
     }
 
     public void exit() {
+        getShardsList().forEach(JDA::shutdown);
+    }
+
+    public void close() {
         try {
+            Guilds.getGuilds().values().parallelStream().forEach((rixaGuild) -> rixaGuild.save());
+            Thread.sleep(1200);
             database.close();
-            getShardsList().forEach(JDA::shutdown);
-            Thread.sleep(5000);
+            Thread.sleep(200);
             System.exit(0);
         } catch (InterruptedException ex) {
             getLogger().severe("Could not shutdown Rixa instance.");

@@ -3,7 +3,7 @@ package me.savvy.rixa.modules.reactions.react;
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -26,7 +26,7 @@ public class HelpReaction implements React {
         }
         Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
         String title = message.getEmbeds().get(0).getTitle().split(": ")[1];
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getJDA().getGuildById(title));
+        RixaGuild rixaGuild = Guilds.getGuild(event.getJDA().getGuildById(title));
         String prefix = rixaGuild.getGuildSettings().getPrefix();
         EmbedBuilder embedBuilder;
         try {

@@ -9,9 +9,10 @@ import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.management.GuildSettings;
+import me.savvy.rixa.guild.management.Guilds;
+import me.savvy.rixa.modules.RixaModule;
 import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.modules.music.MusicModule;
-import me.savvy.rixa.modules.twitter.TwitterModule;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
@@ -19,7 +20,10 @@ import net.dv8tion.jda.core.entities.User;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Timber on 5/23/2017.
@@ -33,26 +37,20 @@ public class RixaGuild {
     @Setter
     private GuildSettings guildSettings;
     @Getter
-    @Setter
-    private MusicModule musicModule;
-    @Getter
-    @Setter
-    private TwitterModule twitterModule;
-    @Getter
     private List<String> mutedMembers = new ArrayList<>();
     @Getter
-    @Setter
-    private LevelsModule levelsModule;
+    private HashMap<String, RixaModule> modules;
 
     public RixaGuild(Guild guild) {
         this.guild = guild;
+        this.modules = new HashMap<>();
         this.db = Rixa.getDatabase();
-        setMusicModule(new MusicModule(guild));
-        setLevelsModule(new LevelsModule(this));
+        modules.put("Music", new MusicModule());
+        modules.put("Levels", new LevelsModule());
         load();
     }
 
-    private void load() {
+    public void load() {
         if (!(checkExists())) {
             Update update = new Update("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`) VALUES (?, ?, 'Description not set.', 'No Keywords Found.')");
             update.setString(guild.getId());
@@ -60,7 +58,7 @@ public class RixaGuild {
             db.send(update);
         }
         setGuildSettings(new GuildSettings(this.guild));
-        addGuild(this);
+        Guilds.addGuild(this);
     }
 
     public GuildSettings getGuildSettings() {
@@ -177,28 +175,16 @@ public class RixaGuild {
             mutedMembers.add(user.getId());
     }
 
-    @Getter
-    private static Map<String, RixaGuild> guilds = new HashMap<>();
-
-    private static void addGuild(RixaGuild guild) {
-        if (check(guild.getGuild())) return;
-        guilds.put(guild.getGuild().getId(), guild);
-    }
-
-    public static RixaGuild getGuild(Guild guild) {
-        if (!check(guild)) {
-            addGuild(new RixaGuild(guild));
+    public void save() {
+        for (RixaModule module : modules.values()) {
+            if (!module.isEnabled()) {
+                return;
+            }
+            module.save();
         }
-        return guilds.get(guild.getId());
     }
 
-    public static void removeGuild(RixaGuild guild) {
-        if (!check(guild.getGuild())) return;
-        guilds.remove(guild.getGuild().getId());
+    public RixaModule getModule(String levels) {
+        return this.modules.get(levels);
     }
-
-    private static boolean check(Guild guild) {
-        return guilds.containsKey(guild.getId());
-    }
-
 }

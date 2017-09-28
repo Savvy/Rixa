@@ -5,6 +5,7 @@ import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Role;
@@ -25,7 +26,7 @@ public class RemoveRoleCommand implements CommandExec {
             channelType = ChannelType.TEXT,
             usage = "%premoverole", mainCommand = "removerole", aliases = {"rr", "removeroles"})
     public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
         if(!rixaGuild.hasPermission(event.getMember(), RixaPermission.REMOVE_ROLE)) {
             new MessageBuilder(event.getMember().getAsMention() + ", you do not have permission for this command.").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;

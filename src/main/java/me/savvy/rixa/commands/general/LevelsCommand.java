@@ -4,7 +4,9 @@ import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.guild.user.UserData;
+import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
@@ -24,8 +26,8 @@ public class LevelsCommand implements CommandExec {
             description = "View your levels!",
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
-        if (!rixaGuild.getLevelsModule().isEnabled()) {
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
+        if (!((LevelsModule)  rixaGuild.getModule("Levels")).isEnabled()) {
             new MessageBuilder("Levels are not enabled on this server!").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
@@ -47,7 +49,7 @@ public class LevelsCommand implements CommandExec {
     
     public MessageBuilder getInfo(RixaGuild rixaGuild, Member member) {
         User author = member.getUser();
-        UserData data = rixaGuild.getLevelsModule().getUserData(author.getId());
+        UserData data = ((LevelsModule)  rixaGuild.getModule("Levels")).getUserData(author.getId());
         String query = "SELECT * FROM `levels` WHERE `guild_id` = '" + rixaGuild.getGuild().getId() + "' ORDER BY `experience` DESC";
         ResultSet rs = null;
         try {

@@ -26,7 +26,6 @@ public class Database {
     private String database;
 
     private int port = 3306;
-    private int timeout = 60 * 1000;
 
     private HikariDataSource source;
     private HikariConfig config = new HikariConfig();
@@ -49,6 +48,8 @@ public class Database {
         this.config.setUsername(this.username = username);
         this.config.setPassword(this.password = password);
         this.source = new HikariDataSource(config);
+        this.source.setPoolName("rixa");
+        this.source.setMaximumPoolSize(400);
     }
 
     /**
@@ -59,15 +60,6 @@ public class Database {
      */
     public static DatabaseOptions options() {
         return new DatabaseOptions();
-    }
-
-    /**
-     * Connects to the database
-     *
-     * @return Whether it connected or not
-     * @since 1.0.0
-     */
-    public void init() {
     }
 
     /**
@@ -88,7 +80,7 @@ public class Database {
                 return Optional.of(preparedStatement.executeUpdate());
             }
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            System.out.println("INFO: Couldn't send update / query! : " + exception.getLocalizedMessage());
             return Optional.empty();
         }
     }
@@ -106,7 +98,7 @@ public class Database {
             }
         } catch (SQLException e) {
             // Can't handle closing statement
-            e.printStackTrace();
+            System.out.println("INFO: Close connection! : " + e.getLocalizedMessage());
         }
     }
 
@@ -119,7 +111,7 @@ public class Database {
      */
     public Optional<PreparedStatement> prepare(Statement statement) {
         try {
-            PreparedStatement preparedStatement = source.getConnection().prepareStatement(statement.getSQL());
+            PreparedStatement preparedStatement = getConnection().get().prepareStatement(statement.getSQL());
             for (Map.Entry<Integer, Parameter> parameter : statement.getParameters().entrySet()) {
                 switch (parameter.getValue().getType()) {
                     case STRING:
@@ -156,7 +148,7 @@ public class Database {
             }
             return Optional.of(preparedStatement);
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            System.out.println("INFO: Couldn't prepare statement : " + exception.getLocalizedMessage());
             return Optional.empty();
         }
     }
@@ -172,7 +164,7 @@ public class Database {
         try {
             return Optional.of(source.getConnection().prepareStatement(sql));
         } catch (SQLException exception) {
-            exception.printStackTrace();
+            System.out.println("INFO: Couldn't send update / query! : " + exception.getLocalizedMessage());
             return Optional.empty();
         }
     }
@@ -187,6 +179,7 @@ public class Database {
         try {
             return Optional.of(source.getConnection());
         } catch (SQLException e) {
+            System.out.println("INFO: Couldn't get connection : " + e.getLocalizedMessage());
             return Optional.empty();
         }
     }

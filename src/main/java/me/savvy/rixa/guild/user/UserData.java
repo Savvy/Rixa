@@ -5,7 +5,8 @@ import me.majrly.database.statements.Query;
 import me.majrly.database.statements.Update;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.enums.Result;
-import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
+import me.savvy.rixa.modules.levels.LevelsModule;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
@@ -39,7 +40,7 @@ public class UserData {
     }
 
     private void register(UserData userData) {
-        RixaGuild.getGuild(guild).getLevelsModule().registerUser(userData);
+        ((LevelsModule) Guilds.getGuild(guild).getModule("Levels")).registerUser(userData);
     }
 
     private void load() {

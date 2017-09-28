@@ -4,6 +4,7 @@ import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -20,7 +21,7 @@ public class RoleRewardsCommand implements CommandExec {
             usage = "%prolerewards", mainCommand = "rolerewards",
             aliases =  {"rolereward", "rw"})
     public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
         String[] args = event.getMessage().getContent().split(" ");
 
         // ?rw <add/remove/list> [level] [role]
@@ -31,7 +32,7 @@ public class RoleRewardsCommand implements CommandExec {
                             setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
                 }
-                /*if (rixaGuild.getLevelsModule().getRoleRewards().containsKey(Integer.parseInt(args[2]))) {
+                /*if (((LevelsModule)  rixaGuild.getModule("Levels")).getRoleRewards().containsKey(Integer.parseInt(args[2]))) {
                     new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + args[0] + " <add/remove/list> [level] [role].").
                             setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
@@ -51,7 +52,7 @@ public class RoleRewardsCommand implements CommandExec {
                 switch(args[1].toLowerCase()) {
                     case "list":
                         Map<Integer, String> rewards = new HashMap<>();
-                       /* rixaGuild.getLevelsModule().getRoleRewards().forEach((integer, s) -> {
+                       /* ((LevelsModule)  rixaGuild.getModule("Levels")).getRoleRewards().forEach((integer, s) -> {
 
                         });*/
                         break;

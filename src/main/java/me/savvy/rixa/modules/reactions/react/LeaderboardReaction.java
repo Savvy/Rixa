@@ -1,13 +1,12 @@
 package me.savvy.rixa.modules.reactions.react;
 
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
+import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
-import net.dv8tion.jda.core.MessageBuilder;
-import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 
@@ -27,7 +26,7 @@ public class LeaderboardReaction implements React {
         if(guild == null) {
             return;
         }
-        RixaGuild rixaGuild = RixaGuild.getGuild(guild);
+        RixaGuild rixaGuild = Guilds.getGuild(guild);
         int page = 500;
         switch (event.getReaction().getEmote().getName()) {
             case "\u2B05":// previous
@@ -38,7 +37,7 @@ public class LeaderboardReaction implements React {
                 break;
         }
         if(page != 500) {
-            me.savvy.rixa.utils.MessageBuilder builder = rixaGuild.getLevelsModule().leaderboard
+            me.savvy.rixa.utils.MessageBuilder builder = ((LevelsModule)  rixaGuild.getModule("Levels")).leaderboard
                     (event.getMember(), page);
             if (builder == null) return;
             message.editMessage(builder.getBuilder().build()).queue();

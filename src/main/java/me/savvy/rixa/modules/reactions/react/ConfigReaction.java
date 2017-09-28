@@ -2,6 +2,7 @@ package me.savvy.rixa.modules.reactions.react;
 
 import me.savvy.rixa.commands.admin.ConfigCommand;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
 import me.savvy.rixa.utils.MessageBuilder;
@@ -30,7 +31,7 @@ public class ConfigReaction implements React {
         if(guild == null) {
             return;
         }
-        RixaGuild rixaGuild = RixaGuild.getGuild(guild);
+        RixaGuild rixaGuild = Guilds.getGuild(guild);
         String prefix = rixaGuild.getGuildSettings().getPrefix();
         MessageBuilder builder = null;
         int page = 500;

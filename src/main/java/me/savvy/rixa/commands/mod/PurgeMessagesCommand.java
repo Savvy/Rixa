@@ -5,6 +5,7 @@ import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
 import me.savvy.rixa.utils.Utils;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -31,7 +32,7 @@ public class PurgeMessagesCommand implements CommandExec {
             type = CommandType.MOD,
             usage = "%ppurge")
     public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = RixaGuild.getGuild(event.getGuild());
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
         if(!rixaGuild.hasPermission(event.getMember(), RixaPermission.CLEAR_CHAT)) {
             new MessageBuilder(event.getMember().getAsMention() + ", you do not have permission for this command.").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
