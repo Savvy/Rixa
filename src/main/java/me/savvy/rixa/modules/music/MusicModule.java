@@ -20,6 +20,9 @@ import java.util.Optional;
  */
 public class MusicModule implements RixaModule {
 
+    public MusicModule(RixaGuild rixaGuild) {
+        this.guild = rixaGuild.getGuild();
+    }
     private Database db;
     @Getter
     @Setter
@@ -31,9 +34,8 @@ public class MusicModule implements RixaModule {
     private Guild guild;
 
     @Override
-    public void load(RixaGuild rixaGuild) {
+    public void load() {
         try {
-            this.guild = rixaGuild.getGuild();
             this.enabled = false;
             this.musicRole = "default_value";
             db = Rixa.getDatabase();

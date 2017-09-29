@@ -62,7 +62,7 @@ public class TwitterModule implements RixaModule {
     }
 
     @Override
-    public void load(RixaGuild guild) { }
+    public void load() { }
 
     @Override
     public void save() { }

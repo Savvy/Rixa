@@ -11,6 +11,7 @@ import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.management.GuildSettings;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.RixaModule;
+import me.savvy.rixa.modules.conversations.ConversationModule;
 import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.modules.music.MusicModule;
 import net.dv8tion.jda.core.entities.Guild;
@@ -45,8 +46,9 @@ public class RixaGuild {
         this.guild = guild;
         this.modules = new HashMap<>();
         this.db = Rixa.getDatabase();
-        modules.put("Music", new MusicModule());
-        modules.put("Levels", new LevelsModule());
+        modules.put("Music", new MusicModule(this));
+        modules.put("Levels", new LevelsModule(this));
+        modules.put("Conversations", new ConversationModule(this));
         load();
     }
 

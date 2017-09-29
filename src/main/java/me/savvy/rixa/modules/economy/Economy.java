@@ -10,6 +10,9 @@ import java.util.Map;
 
 public class Economy implements RixaModule {
 
+    public Economy(RixaGuild rixaGuild) {
+        this.rixaGuild = rixaGuild;
+    }
     @Getter
     private RixaGuild rixaGuild;
     @Getter
@@ -33,9 +36,7 @@ public class Economy implements RixaModule {
     }
 
     @Override
-    public void load(RixaGuild rixaGuild) {
-        this.rixaGuild = rixaGuild;
-    }
+    public void load() { }
 
     @Override
     public void save() {
@@ -44,6 +45,6 @@ public class Economy implements RixaModule {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
-        DatabaseUtils.update("modules", "levels", "guild_id", enabled, rixaGuild.getGuild().getId());
+        DatabaseUtils.update("modules", "x", "guild_id", enabled, rixaGuild.getGuild().getId());
     }
 }

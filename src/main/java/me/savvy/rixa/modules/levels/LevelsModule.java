@@ -13,6 +13,7 @@ import me.savvy.rixa.utils.DatabaseUtils;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.Member;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
@@ -30,12 +31,42 @@ public class LevelsModule implements RixaModule {
     @Setter
     private boolean enabled;
 
+    public LevelsModule(RixaGuild rixaGuild) {
+        this.rixaGuild = rixaGuild;
+        load();
+    }
+
+    @Override
+    public void load() {
+        try {
+            Query query = new Query("SELECT * FROM `modules` WHERE `guild_id`=?;");
+            query.setString(rixaGuild.getGuild().getId());
+            Optional<?> o = Rixa.getDatabase().send(query);
+            if (!o.isPresent()) return;
+            else if (!(o.get() instanceof ResultSet)) return;
+            ResultSet set = (ResultSet) o.get();
+            if (set.next()) {
+                setEnabled(set.getBoolean("levels"));
+            } else {
+                Update update = new Update("INSERT INTO `modules` (`guild_id`) VALUES (?);");
+                update.setString(rixaGuild.getGuild().getId());
+                Rixa.getDatabase().send(update);
+                setEnabled(true);
+            }
+            set.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private List<UserData> leaderboard(Member member) {
         Database db = Rixa.getDatabase();
         ResultSet rs = null;
 
         try {
-            rs = db.getConnection().get().prepareStatement(String.format("SELECT * FROM `levels` WHERE `guild_id` = '%s' ORDER BY `experience` DESC;", member.getGuild().getId())).executeQuery();
+            PreparedStatement ps = db.getConnection().get().prepareStatement("SELECT * FROM `levels` WHERE `guild_id` = ? ORDER BY `experience` DESC;");
+            ps.setString(1, member.getGuild().getId());
+            rs = ps.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -96,30 +127,6 @@ public class LevelsModule implements RixaModule {
     @Override
     public String getDescription() {
         return "Rixa levels module.";
-    }
-
-    @Override
-    public void load(RixaGuild rixaGuild) {
-        try {
-            this.rixaGuild = rixaGuild;
-            Query query = new Query("SELECT * FROM `modules` WHERE `guild_id`=?;");
-            query.setString(rixaGuild.getGuild().getId());
-            Optional<?> o = Rixa.getDatabase().send(query);
-            if (!o.isPresent()) return;
-            else if (!(o.get() instanceof ResultSet)) return;
-            ResultSet set = (ResultSet) o.get();
-            if (set.next()) {
-                setEnabled(set.getBoolean("levels"));
-            } else {
-                Update update = new Update("INSERT INTO `modules` (`guild_id`) VALUES (?);");
-                update.setString(rixaGuild.getGuild().getId());
-                Rixa.getDatabase().send(update);
-                setEnabled(true);
-            }
-            set.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

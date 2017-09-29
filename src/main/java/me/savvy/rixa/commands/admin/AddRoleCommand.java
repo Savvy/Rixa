@@ -40,9 +40,9 @@ public class AddRoleCommand implements CommandExec {
             }
             try {
                 List<Role> roles = event.getMessage().getMentionedRoles();
-                User user = event.getMessage().getMentionedUsers().get(0);
-                event.getGuild().getController().addRolesToMember(event.getGuild().getMember(user), roles).queue();
-                new MessageBuilder("Successfully given " + user.getAsMention() + " `" + roles.size() + "` role(s)").setColor(event.getMember().getColor()).queue(event.getChannel());
+                int users = event.getMessage().getMentionedUsers().size();
+                event.getMessage().getMentionedUsers().forEach(user -> event.getGuild().getController().addRolesToMember(event.getGuild().getMember(user), roles).queue());
+                new MessageBuilder("Successfully given " + users + " `" + roles.size() + "` role(s)").setColor(event.getMember().getColor()).queue(event.getChannel());
             } catch (PermissionException ex) {
                 new MessageBuilder(event.getMember().getAsMention() + ", sorry I do not have permission for this!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }

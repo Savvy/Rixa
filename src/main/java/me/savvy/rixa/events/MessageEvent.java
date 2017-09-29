@@ -6,6 +6,7 @@ import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandRegistrar;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
+import me.savvy.rixa.modules.conversations.ConversationModule;
 import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.modules.reactions.handlers.ReactRegistrar;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
@@ -43,13 +44,15 @@ public class MessageEvent {
         if (event.getGuild() == null) return;
         if (event.getAuthor().isBot()) return;
 
+        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
+
         if (event.getMessage().getContent().startsWith
                 ("@" + event.getGuild().getSelfMember().getEffectiveName())) {
             try {
                 String s = event.getMessage().getContent().replace
                         ("@" + event.getGuild().getSelfMember().getEffectiveName() + " ", "");
                 if (s.isEmpty()) return;
-                s = Rixa.getChatBotSession().think(s);
+                s = ((ConversationModule) rixaGuild.getModule("Conversations")).getChatBotSession().think(s);
                 if (s.isEmpty()) return;
                 event.getChannel().sendMessage(s).queue();
                 return;
@@ -57,15 +60,12 @@ public class MessageEvent {
                 ex.printStackTrace();
             }
         }
-
-
-        RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
         String prefix = rixaGuild
                 .getGuildSettings()
                 .getPrefix();
         //checkMessage(event.getMessage());
         if (!event.getMessage().getContent().startsWith(prefix)) {
-            if (!(((LevelsModule) rixaGuild.getModule("Levels")).isEnabled())) {
+            if (!(rixaGuild.getModule("Levels").isEnabled())) {
                 return;
             }
             /*if(!event.getAuthor().getId().equalsIgnoreCase("202944101333729280") &&

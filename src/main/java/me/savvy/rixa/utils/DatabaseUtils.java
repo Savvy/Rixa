@@ -13,6 +13,7 @@ import java.util.Optional;
 public class DatabaseUtils {
 
     public static Result update(String table, String setting, String key, Object placeholder, Object placeholder2) {
+
         Update update = new Update("UPDATE `" + table + "` SET `" + setting + "` = ? WHERE `" + key + "` = ?;");
         update.setObject(placeholder);
         update.setObject(placeholder2);

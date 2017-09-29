@@ -40,9 +40,9 @@ public class RemoveRoleCommand implements CommandExec {
             }
             try {
                 List<Role> roles = event.getMessage().getMentionedRoles();
-                User user = event.getMessage().getMentionedUsers().get(0);
-                event.getGuild().getController().removeRolesFromMember(event.getGuild().getMember(user), roles).queue();
-                new MessageBuilder("Successfully removed `" + roles.size() + "` role(s) from " + user.getAsMention() + "!").setColor(event.getMember().getColor()).queue(event.getChannel());
+                int users = event.getMessage().getMentionedUsers().size();
+                event.getMessage().getMentionedUsers().forEach(user -> event.getGuild().getController().removeRolesFromMember(event.getGuild().getMember(user), roles).queue());
+                new MessageBuilder("Successfully removed `" + roles.size() + "` role(s) from " + users + " user(s)!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } catch (PermissionException ex) {
                 new MessageBuilder(event.getMember().getAsMention() + ", sorry I do not have permission for this!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }

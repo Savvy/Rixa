@@ -60,6 +60,7 @@ public class GuildSettings {
         if (!optional.isPresent()) return;
         if (!(optional.get() instanceof ResultSet)) return;
         ResultSet set = (ResultSet) optional.get();
+        if (set.next()) {
         this.prefix = (set.getString("prefix"));
         this.defaultRole = (set.getString("defaultRole"));
         this.joinMessage = (set.getString("joinMessage"));
@@ -73,14 +74,17 @@ public class GuildSettings {
         if (!set.getString("farewell").equalsIgnoreCase("default_value")) {
             quitMessageChannel = guild.getTextChannelById(set.getString("farewell"));
         }
+    }
         query = new Query("SELECT * FROM `core` WHERE `guild_id` = ?");
         query.setString(guild.getId());
         optional = Rixa.getDatabase().send(query);
         if (!optional.isPresent()) return;
         if (!(optional.get() instanceof ResultSet)) return;
         set = (ResultSet) optional.get();
-        this.description = (set.getString("description"));
-        this.enlisted = (set.getBoolean("enlisted"));
+        if (set.next()) {
+            this.description = (set.getString("description"));
+            this.enlisted = (set.getBoolean("enlisted"));
+        }
         this.raidMode = false;
     }
 

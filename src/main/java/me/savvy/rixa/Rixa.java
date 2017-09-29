@@ -19,6 +19,7 @@ import me.savvy.rixa.commands.mod.DeleteMessagesCommand;
 import me.savvy.rixa.commands.mod.MuteCommand;
 import me.savvy.rixa.commands.mod.PurgeMessagesCommand;
 import me.savvy.rixa.commands.mod.RaidModeCommand;
+import me.savvy.rixa.commands.owner.OwnerCommand;
 import me.savvy.rixa.data.database.sql.other.DatabaseTables;
 import me.savvy.rixa.data.filemanager.ConfigManager;
 import me.savvy.rixa.data.filemanager.LanguageManager;
@@ -27,6 +28,7 @@ import me.savvy.rixa.events.MemberEvent;
 import me.savvy.rixa.events.MessageEvent;
 import me.savvy.rixa.events.Shutdown;
 import me.savvy.rixa.events.VoiceChannel;
+import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
@@ -74,10 +76,6 @@ public class Rixa {
     @Getter
     @Setter
     private ScheduledExecutorService executorService;
-
-    private static ChatterBotFactory factory;
-    private static ChatterBotSession chatBotSession;
-    private static ChatterBot chatBot;
 
     // String search = event.getMessage().getContent().substring(event.getMessage().getContent().indexOf(" ") + 1);
     public static void main(String[] args) {
@@ -142,15 +140,8 @@ public class Rixa {
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
                 new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand(),
-                new LeaderboardCommand(), new RaidModeCommand());
+                new LeaderboardCommand(), new RaidModeCommand(), new OwnerCommand());
         register(new HelpReaction(), new ConfigReaction(), new LeaderboardReaction());
-        try {
-            factory = new ChatterBotFactory();
-            chatBot = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
-            chatBotSession = chatBot.createSession();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private static void register(CommandExec... commandExecs) {
@@ -165,10 +156,6 @@ public class Rixa {
         }
     }
 
-    public static ChatterBotSession getChatBotSession() {
-        return chatBotSession;
-    }
-
     public Logger getLogger() {
         return Logger.getLogger("Rixa");
     }
@@ -179,7 +166,7 @@ public class Rixa {
 
     public void close() {
         try {
-            Guilds.getGuilds().values().parallelStream().forEach((rixaGuild) -> rixaGuild.save());
+            Guilds.getGuilds().values().parallelStream().forEach(RixaGuild::save);
             Thread.sleep(1200);
             database.close();
             Thread.sleep(200);
