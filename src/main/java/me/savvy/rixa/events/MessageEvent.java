@@ -52,6 +52,11 @@ public class MessageEvent {
                 String s = event.getMessage().getContent().replace
                         ("@" + event.getGuild().getSelfMember().getEffectiveName() + " ", "");
                 if (s.isEmpty()) return;
+
+                if (s.equalsIgnoreCase("prefix")) {
+                    new MessageBuilder(event.getGuild().getName() + "'s server prefix is `" + rixaGuild.getGuildSettings().getPrefix() + "`.").queue(event.getChannel());
+                    return;
+                }
                 s = ((ConversationModule) rixaGuild.getModule("Conversations")).getChatBotSession().think(s);
                 if (s.isEmpty()) return;
                 event.getChannel().sendMessage(s).queue();
