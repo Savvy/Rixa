@@ -57,8 +57,10 @@ public class GuildSettings {
         Query query = new Query("SELECT * FROM `settings` WHERE `guild_id` = ?");
         query.setString(guild.getId());
         Optional<?> optional = Rixa.getDatabase().send(query);
-        if (!optional.isPresent()) return;
-        if (!(optional.get() instanceof ResultSet)) return;
+        if (!optional.isPresent() || !(optional.get() instanceof ResultSet)) {
+            Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + ", GuildSettings:60");
+            return;
+        }
         ResultSet set = (ResultSet) optional.get();
         if (set.next()) {
         this.prefix = (set.getString("prefix"));

@@ -24,9 +24,9 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:3.1.1_215'
+    compile 'net.dv8tion:JDA:3.3.1_284'
     compile 'mysql:mysql-connector-java:5.1.38'
-    compile 'com.sedmelluq:lavaplayer:1.2.42'
+    compile 'com.sedmelluq:lavaplayer:1.2.43'
     compile 'org.twitter4j:twitter4j-core:4.0.3'
     compile 'org.twitter4j:twitter4j-stream:4.0.6'
     compile 'org.projectlombok:lombok:1.16.18'

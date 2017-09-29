@@ -73,8 +73,12 @@ public class RixaGuild {
         try {
             Query query = new Query("SELECT `guild_name` FROM `core` WHERE `guild_id` = '" + guild.getId() + "';");
             Optional<?> optional = db.send(query);
-            if (!optional.isPresent()) r = Result.ERROR;
-            if (!(optional.get() instanceof ResultSet)) r = Result.ERROR;
+            if (!optional.isPresent() || !(optional.get() instanceof ResultSet)) {
+                r = Result.ERROR;
+            } else {
+                r = Result.SUCCESS;
+            }
+
             if (r != Result.ERROR) {
                 ResultSet set = (ResultSet) optional.get();
                 if (set.next()) {
@@ -87,7 +91,6 @@ public class RixaGuild {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return r == Result.TRUE;
     }
 

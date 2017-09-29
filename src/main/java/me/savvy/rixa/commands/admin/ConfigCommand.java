@@ -14,7 +14,6 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import org.apache.commons.lang3.EnumUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -201,8 +200,10 @@ public class ConfigCommand implements CommandExec {
         } else if (messages[1].equalsIgnoreCase("addperm") || messages[1].equalsIgnoreCase("addpermission") || messages[1].equalsIgnoreCase("aperm")) {
             String permission = "notFound";
             for (String string : messages) {
-                if (EnumUtils.isValidEnum(RixaPermission.class, string.toUpperCase())) {
-                    permission = string.toUpperCase();
+                for(RixaPermission rixaPermission: RixaPermission.values()) {
+                    if (rixaPermission.name().equalsIgnoreCase(string)) {
+                        permission = string.toUpperCase();
+                    }
                 }
             }
             if (permission.equalsIgnoreCase("notFound")) {
@@ -229,8 +230,10 @@ public class ConfigCommand implements CommandExec {
                 || messages[1].equalsIgnoreCase("delperm")) {
             String permission = "notFound";
             for (String string : messages) {
-                if (EnumUtils.isValidEnum(RixaPermission.class, string.toUpperCase())) {
-                    permission = string.toUpperCase();
+                for(RixaPermission rixaPermission: RixaPermission.values()) {
+                    if (rixaPermission.name().equalsIgnoreCase(string)) {
+                        permission = string.toUpperCase();
+                    }
                 }
             }
             if (permission.equalsIgnoreCase("notFound")) {
