@@ -53,7 +53,7 @@ public class LevelsCommand implements CommandExec {
         String query = "SELECT * FROM `levels` WHERE `guild_id` = '" + rixaGuild.getGuild().getId() + "' ORDER BY `experience` DESC";
         ResultSet rs = null;
         try {
-            rs = Rixa.getDatabase().getConnection().get().prepareStatement(query).executeQuery();
+            rs = Rixa.getDatabase().getPreparedStatement(query).executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
         }

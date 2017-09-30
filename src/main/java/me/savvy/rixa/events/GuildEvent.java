@@ -15,7 +15,7 @@ public class GuildEvent {
     @SubscribeEvent
     public void onNameUpdate(GuildUpdateNameEvent event) {
         try {
-            PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("UPDATE `core` SET `guild_name` = ? WHERE `core`.`guild_id` = ?;");
+            PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("UPDATE `core` SET `guild_name` = ? WHERE `core`.`guild_id` = ?;");
             ps.setString(1, event.getGuild().getName());
             ps.setString(2, event.getGuild().getId());
             ps.executeUpdate();
@@ -27,7 +27,7 @@ public class GuildEvent {
     @SubscribeEvent
     public void onIconUpdate(GuildUpdateIconEvent event) {
         try {
-            PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("UPDATE `core` SET `icon` = ? WHERE `core`.`guild_id` = ?;");
+            PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("UPDATE `core` SET `icon` = ? WHERE `core`.`guild_id` = ?;");
             ps.setString(1, event.getGuild().getIconId());
             ps.setString(2, event.getGuild().getId());
             ps.executeUpdate();
@@ -39,7 +39,7 @@ public class GuildEvent {
     @SubscribeEvent
     public void onOwnerUpdate(GuildUpdateOwnerEvent event) {
         try {
-            PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("UPDATE `core` SET `guild_owner` = ? WHERE `core`.`guild_id` = ?;");
+            PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("UPDATE `core` SET `guild_owner` = ? WHERE `core`.`guild_id` = ?;");
             ps.setString(1, event.getGuild().getOwner().getUser().getName());
             ps.setString(2, event.getGuild().getId());
             ps.executeUpdate();
@@ -51,7 +51,7 @@ public class GuildEvent {
     @SubscribeEvent
     public void onRegionUpdate(GuildUpdateRegionEvent event) {
         try {
-            PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("UPDATE `core` SET `guild_region` = ? WHERE `core`.`guild_id` = ?;");
+            PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("UPDATE `core` SET `guild_region` = ? WHERE `core`.`guild_id` = ?;");
             ps.setString(1, event.getGuild().getRegion().getName());
             ps.setString(2, event.getGuild().getId());
             ps.executeUpdate();

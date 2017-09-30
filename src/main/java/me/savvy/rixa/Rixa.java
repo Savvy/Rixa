@@ -1,13 +1,7 @@
 package me.savvy.rixa;
 
-import com.google.code.chatterbotapi.ChatterBot;
-import com.google.code.chatterbotapi.ChatterBotFactory;
-import com.google.code.chatterbotapi.ChatterBotSession;
-import com.google.code.chatterbotapi.ChatterBotType;
 import lombok.Getter;
 import lombok.Setter;
-import me.majrly.database.Database;
-import me.majrly.database.statements.Update;
 import me.savvy.rixa.commands.admin.AddRoleCommand;
 import me.savvy.rixa.commands.admin.BatchMoveCommand;
 import me.savvy.rixa.commands.admin.ConfigCommand;
@@ -20,16 +14,12 @@ import me.savvy.rixa.commands.mod.MuteCommand;
 import me.savvy.rixa.commands.mod.PurgeMessagesCommand;
 import me.savvy.rixa.commands.mod.RaidModeCommand;
 import me.savvy.rixa.commands.owner.OwnerCommand;
+import me.savvy.rixa.data.database.sql.SQLBuilder;
 import me.savvy.rixa.data.database.sql.other.DatabaseTables;
 import me.savvy.rixa.data.filemanager.ConfigManager;
 import me.savvy.rixa.data.filemanager.LanguageManager;
-import me.savvy.rixa.events.BotEvent;
-import me.savvy.rixa.events.MemberEvent;
-import me.savvy.rixa.events.MessageEvent;
+import me.savvy.rixa.events.*;
 import me.savvy.rixa.events.Shutdown;
-import me.savvy.rixa.events.VoiceChannel;
-import me.savvy.rixa.guild.RixaGuild;
-import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.reactions.handlers.React;
 import me.savvy.rixa.modules.reactions.handlers.ReactionManager;
 import me.savvy.rixa.modules.reactions.react.ConfigReaction;
@@ -42,10 +32,10 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
-import net.dv8tion.jda.core.requests.Route;
 
 import javax.security.auth.login.LoginException;
 import java.io.File;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +59,7 @@ public class Rixa {
     private static ConfigManager config;
     @Getter
     @Setter
-    private static Database database;
+    private static SQLBuilder database;
     @Getter
     @Setter
     private LanguageManager languageManager;
@@ -95,16 +85,21 @@ public class Rixa {
     private static void load() {
         getInstance().setExecutorService(Executors.newSingleThreadScheduledExecutor());
 
-        database = Database.options()
-                .type("mysql")
-                .hostname(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("hostName")), config.getJsonObject().getJSONObject("sql").getInt("portNumber"))
-                .database(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("databaseName")))
-                .auth(String.valueOf(config.getJsonObject().getJSONObject("sql").getString("userName")), String.valueOf(config.getJsonObject().getJSONObject("sql").getString("password")))
-                .build();
+        database = new SQLBuilder(
+                config.getJsonObject().getJSONObject("sql").getString("userName"),
+                config.getJsonObject().getJSONObject("sql").getString("password"),
+                config.getJsonObject().getJSONObject("sql").getString("portNumber"),
+                config.getJsonObject().getJSONObject("sql").getString("databaseName"),
+                config.getJsonObject().getJSONObject("sql").getString("hostName"));
         Arrays.stream(DatabaseTables.values()).forEach(databaseTables -> {
             getInstance().getLogger().info("Checking database table (creating if needed): " + databaseTables.toString());
-            database.send(new Update(databaseTables.getQuery()));
-            getInstance().getLogger().info("Done checking " + databaseTables.toString());
+            try {
+                database.executeUpdate(databaseTables.getQuery());
+                getInstance().getLogger().info("Done checking " + databaseTables.toString());
+            } catch (SQLException e) {
+                getInstance().getLogger().severe("Could not create table: " + databaseTables.toString());
+                e.printStackTrace();
+            }
         });
 
         getInstance().setLanguageManager(new LanguageManager(new File("Rixa/languages/language.json")));
@@ -125,7 +120,7 @@ public class Rixa {
                         .setStatus(OnlineStatus.ONLINE)
                         .setAudioEnabled(true)
                         .useSharding(i, shards);
-                shardsList.add(jda.buildBlocking());
+                shardsList.add(jda.buildAsync());
                 getInstance().getLogger().info("Shard #" + i + " has been loaded");
                 Thread.sleep(5000);
             }
@@ -163,8 +158,7 @@ public class Rixa {
 
     public void close() {
         try {
-            Thread.sleep(5000);
-            database.close();
+            database.closeConnection();
             Thread.sleep(200);
             getShardsList().forEach(JDA::shutdown);
             Thread.sleep(200);

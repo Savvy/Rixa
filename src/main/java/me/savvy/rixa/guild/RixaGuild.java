@@ -2,11 +2,9 @@ package me.savvy.rixa.guild;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.majrly.database.Database;
-import me.majrly.database.statements.Query;
-import me.majrly.database.statements.Update;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.RixaPermission;
+import me.savvy.rixa.data.database.sql.SQLBuilder;
 import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.management.GuildSettings;
 import me.savvy.rixa.guild.management.Guilds;
@@ -19,12 +17,12 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.User;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Timber on 5/23/2017.
@@ -34,7 +32,7 @@ public class RixaGuild {
 
     @Getter
     private Guild guild;
-    private Database db;
+    private SQLBuilder db;
     @Setter
     private GuildSettings guildSettings;
     @Getter
@@ -54,10 +52,12 @@ public class RixaGuild {
 
     public void load() {
         if (!(checkExists())) {
-            Update update = new Update("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`) VALUES (?, ?, 'Description not set.', 'No Keywords Found.')");
-            update.setString(guild.getId());
-            update.setString(guild.getName());
-            db.send(update);
+            try {
+                PreparedStatement ps = db.getPreparedStatement("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`) VALUES (?, ?, 'Description not set.', 'No Keywords Found.')\"");
+                ps.setString(1, guild.getId());
+                ps.setString(2, guild.getName());
+                db.executeUpdate(ps);
+            } catch (SQLException ignored) {}
         }
         setGuildSettings(new GuildSettings(this.guild));
         Guilds.addGuild(this);
@@ -69,27 +69,16 @@ public class RixaGuild {
 
     private boolean checkExists() {
         Result r = Result.ERROR;
-
         try {
-            Query query = new Query("SELECT `guild_name` FROM `core` WHERE `guild_id` = ?;");
-            query.setString(guild.getId());
-            Optional<?> optional = db.send(query);
-
-            if (!optional.isPresent()) {
-                if (!(optional.get() instanceof ResultSet)) {
-                    Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + " in settings it wasn't an instance of result set!, GuildSettings:75");
-                    return false;
-                }
-                Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + ", GuildSettings:75");
-                return false;
+            PreparedStatement ps = db.getPreparedStatement("SELECT `guild_name` FROM `core` WHERE `guild_id` = ?;");
+            ps.setString(1, guild.getId());
+            ResultSet set = ps.executeQuery();
+            if (set.next()) {
+                r = Result.TRUE;
+            } else {
+                r = Result.FALSE;
             }
-                ResultSet set = (ResultSet) optional.get();
-                if (set.next()) {
-                    r = Result.TRUE;
-                } else {
-                    r = Result.FALSE;
-                }
-                set.close();
+            set.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -116,13 +105,13 @@ public class RixaGuild {
 
         boolean b = false;
         try {
-            Query query = new Query("SELECT `" + permission.toString().toUpperCase() + "` FROM `permissions` WHERE `role_id` = ?");
-            query.setString(role.getId());
-            Optional<?> optional = db.send(query);
-            if (!optional.isPresent()) return b;
-            if (!(optional.get() instanceof ResultSet)) return b;
-            ResultSet set = (ResultSet) optional.get();
-            b = set.getBoolean(permission.toString().toUpperCase());
+            PreparedStatement ps = db.getPreparedStatement("SELECT ? FROM `permissions` WHERE `role_id` = ?");
+            ps.setString(1, permission.toString().toUpperCase());
+            ps.setString(2, role.getId());
+            ResultSet set = ps.executeQuery();
+            if (set.next()) {
+                b = set.getBoolean(permission.toString().toUpperCase());
+            }
             set.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -132,41 +121,46 @@ public class RixaGuild {
 
     public void setPermission(Role role, RixaPermission permission, boolean value) {
         if (!permissionExists(role)) {
-            Update update = new Update("INSERT INTO `permissions` " +
-                    "(`role_id`, `guild_id`, `MUTE`, `ADD_ROLE`, `REMOVE_ROLE`, `CLEAR_CHAT`, " +
-                    "`ACCESS_CONFIG`, `PM_MESSAGE`, `KICK_MEMBER`, `BAN_MEMBER`)" +
-                    " VALUES (?, ?, '0', '0', '0', '0', '0', '0', '0', '0');");
-            update.setString(role.getId());
-            update.setString(guild.getId());
-            db.send(update);
-        }
-        Update update = new Update("UPDATE `permissions` SET `" + permission.toString().toUpperCase() + "` = ? WHERE `guild_id` = ? AND `role_id` = ?;");
-        update.setBoolean(value);
-        update.setString(guild.getId());
-        update.setString(role.getId());
-        db.send(update);
-    }
-
-    private boolean permissionExists(Role role) {
-        Query query = new Query("SELECT `" + RixaPermission.values()[0] + "` FROM `permissions` WHERE `guild_id` = ? AND `role_id` = ?");
-        query.setString(guild.getId());
-        query.setString(role.getId());
-        Optional<?> optional = db.send(query);
-        if (!optional.isPresent()) return false;
-        if (!(optional.get() instanceof ResultSet)) return false;
-        ResultSet set = (ResultSet) optional.get();
-        try {
-            return set.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
+            PreparedStatement ps = null;
             try {
-                set.close();
+                ps = db.getPreparedStatement("INSERT INTO `permissions` " +
+                        "(`role_id`, `guild_id`, `MUTE`, `ADD_ROLE`, `REMOVE_ROLE`, `CLEAR_CHAT`, " +
+                        "`ACCESS_CONFIG`, `PM_MESSAGE`, `KICK_MEMBER`, `BAN_MEMBER`)" +
+                        " VALUES (?, ?, '0', '0', '0', '0', '0', '0', '0', '0');");
+                ps.setString(1, role.getId());
+                ps.setString(2, guild.getId());
+                db.executeUpdate(ps);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+        try {
+            PreparedStatement ps = db.getPreparedStatement("UPDATE `permissions` SET ? = ? WHERE `guild_id` = ? AND `role_id` = ?;");
+            ps.setString(1, permission.toString().toUpperCase());
+            ps.setBoolean(2, value);
+            ps.setString(3, guild.getId());
+            ps.setString(4, role.getId());
+            db.executeUpdate(ps);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private boolean permissionExists(Role role) {
+        try {
+            PreparedStatement query = db.getPreparedStatement("SELECT ? FROM `permissions` WHERE `guild_id` = ? AND `role_id` = ?");
+            query.setString(1, RixaPermission.values()[0].toString().toUpperCase());
+            query.setString(2, guild.getId());
+            query.setString(3, role.getId());
+            ResultSet set = query.executeQuery();
+            boolean b = set.next();
+            query.close();
+            set.close();
+            return b;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return false;
     }
 
     public boolean isUserMuted(User user) {

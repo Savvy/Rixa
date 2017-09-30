@@ -1,7 +1,6 @@
 package me.savvy.rixa.events;
 
 import com.mysql.jdbc.StringUtils;
-import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.CommandHandler;
 import me.savvy.rixa.commands.handlers.CommandRegistrar;
 import me.savvy.rixa.guild.RixaGuild;
@@ -90,6 +89,7 @@ public class MessageEvent {
             return;
         }
         CommandRegistrar cmd = CommandHandler.get(splitContent[0]);
+        if (cmd == null) return;
         Method m = cmd.getMethod();
         try {
             m.invoke(cmd.getExecutor(), event);

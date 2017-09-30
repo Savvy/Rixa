@@ -9,6 +9,7 @@ import me.savvy.rixa.modules.reactions.handlers.ReactHandle;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 
@@ -25,8 +26,11 @@ public class HelpReaction implements React {
             return;
         }
         Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
-        String title = message.getEmbeds().get(0).getTitle().split(": ")[1];
+        MessageEmbed messageEmbed = message.getEmbeds().get(0);
+        if (!messageEmbed.getTitle().contains(": ")) return;
+        String title = messageEmbed.getTitle().split(": ")[1];
         RixaGuild rixaGuild = Guilds.getGuild(event.getJDA().getGuildById(title));
+        if (rixaGuild == null) return;
         String prefix = rixaGuild.getGuildSettings().getPrefix();
         EmbedBuilder embedBuilder;
         try {

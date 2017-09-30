@@ -2,16 +2,15 @@ package me.savvy.rixa.guild.management;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.majrly.database.statements.Query;
-import me.majrly.database.statements.Update;
 import me.savvy.rixa.Rixa;
+import me.savvy.rixa.data.database.sql.SQLBuilder;
 import me.savvy.rixa.enums.Result;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -36,6 +35,7 @@ public class GuildSettings {
     long lastJoin;
     private boolean raidMode;
 
+    private SQLBuilder db;
     public GuildSettings(Guild guild) {
         this.guild = guild;
         try {
@@ -46,23 +46,18 @@ public class GuildSettings {
     }
 
     private void load() throws SQLException {
+        db = Rixa.getDatabase();
         if (!checkExists()) {
-            Update update = new Update("INSERT INTO settings(guild_id, log_enabled, log_channel, joinMessage, quitMessage, greetings, farewell, prefix, joinPm, joinVerification, defaultRole, muteRole) VALUES ('" + guild.getId() + "', '0', 'default_value', 'default_value', 'default_value', 'default_value', 'default_value', '/', 'default', '0', 'default_value', 'default_value');");
-            Rixa.getDatabase().send(update);
+            PreparedStatement statement = db.getPreparedStatement
+                    ("INSERT INTO settings(guild_id, log_enabled, log_channel, joinMessage, quitMessage, greetings, farewell, prefix, joinPm, joinVerification, defaultRole, muteRole) VALUES " +
+                            "(?, '0', 'default_value', 'default_value', 'default_value', 'default_value', 'default_value', '/', 'default', '0', 'default_value', 'default_value');");
+            statement.setString(1, guild.getId());
+            statement.executeUpdate();
             return;
         }
-        Query query = new Query("SELECT * FROM `settings` WHERE `guild_id` = ?");
-        query.setString(guild.getId());
-        Optional<?> optional = Rixa.getDatabase().send(query);
-        if (!optional.isPresent()) {
-            if (!(optional.get() instanceof ResultSet)) {
-                Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + " it wasn't an instance of result set!, GuildSettings:61");
-                return;
-            }
-            Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + ", GuildSettings:60");
-            return;
-        }
-        ResultSet set = (ResultSet) optional.get();
+        PreparedStatement statement = db.getPreparedStatement("SELECT * FROM `settings` WHERE `guild_id` = ?");
+        statement.setString(1, guild.getId());
+        ResultSet set = statement.executeQuery();
         if (set.next()) {
         this.prefix = (set.getString("prefix"));
         this.defaultRole = (set.getString("defaultRole"));
@@ -78,12 +73,9 @@ public class GuildSettings {
             quitMessageChannel = guild.getTextChannelById(set.getString("farewell"));
         }
     }
-        query = new Query("SELECT * FROM `core` WHERE `guild_id` = ?");
-        query.setString(guild.getId());
-        optional = Rixa.getDatabase().send(query);
-        if (!optional.isPresent()) return;
-        if (!(optional.get() instanceof ResultSet)) return;
-        set = (ResultSet) optional.get();
+        statement = db.getPreparedStatement("SELECT * FROM `core` WHERE `guild_id` = ?");
+        statement.setString(1, guild.getId());
+        set = statement.executeQuery();
         if (set.next()) {
             this.description = (set.getString("description"));
             this.enlisted = (set.getBoolean("enlisted"));
@@ -94,18 +86,10 @@ public class GuildSettings {
     private boolean checkExists() {
         Result r;
         try {
-            Query query = new Query("SELECT `guild_id` FROM `settings` WHERE `guild_id` = ?");
-            query.setString(guild.getId());
-            Optional<?> optional = Rixa.getDatabase().send(query);
-            if (!optional.isPresent()) {
-                if (!(optional.get() instanceof ResultSet)) {
-                    Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + " in settings it wasn't an instance of result set!, GuildSettings:97");
-                    return false;
-                }
-                Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + ", GuildSettings:99");
-                return false;
-            }
-            ResultSet set = (ResultSet) optional.get();
+            PreparedStatement statement = db.getPreparedStatement
+                    ("SELECT `guild_id` FROM `settings` WHERE `guild_id` = ?");
+            statement.setString(1, guild.getId());
+            ResultSet set = statement.executeQuery();
                 if (set.next()) {
                     r = Result.TRUE;
                 } else {
@@ -125,74 +109,130 @@ public class GuildSettings {
 
     public void setJoinMessage(String joinMessage) {
         this.joinMessage = joinMessage;
-        update("settings", "joinMessage", "guild_id", joinMessage, guild.getId());
+        try {
+            update("settings", "joinMessage", "guild_id", joinMessage, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setQuitMessage(String quitMessage) {
         this.quitMessage = quitMessage;
-        update("settings", "quitMessage", "guild_id", quitMessage, guild.getId());
+        try {
+            update("settings", "quitMessage", "guild_id", quitMessage, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setJoinPrivateMessage(String joinPrivateMessage) {
         this.joinPrivateMessage = joinPrivateMessage;
-        update("settings", "joinPM", "guild_id", joinPrivateMessage, guild.getId());
+        try {
+            update("settings", "joinPM", "guild_id", joinPrivateMessage, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setJoinMessageChannel(TextChannel joinMessageChannel) {
         this.joinMessageChannel = joinMessageChannel;
-        update("settings", "greetings", "guild_id", joinMessageChannel.getId(), guild.getId());
+        try {
+            update("settings", "greetings", "guild_id", joinMessageChannel.getId(), guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setJoinMessageChannel(String joinMessageChannel) {
         if (joinMessageChannel.equalsIgnoreCase("default_value")) this.joinMessageChannel = null;
-        update("settings", "greetings", "guild_id", joinMessageChannel, guild.getId());
+        try {
+            update("settings", "greetings", "guild_id", joinMessageChannel, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void update(String table, String setting, String key, Object placeholder, Object placeholder2) {
-        Update update = new Update("UPDATE `" + table + "` SET `" + setting + "` = ? WHERE `" + key + "` = ?;");
-        update.setObject(placeholder);
-        update.setObject(placeholder2);
-        Rixa.getDatabase().send(update);
+    private void update(String table, String setting, String key, Object placeholder, Object placeholder2) throws SQLException {
+        PreparedStatement statement = db.getPreparedStatement("UPDATE ? SET ? = ? WHERE ? = ?;");
+        statement.setString(1, table);
+        statement.setString(2, setting);
+        statement.setObject(3, placeholder);
+        statement.setString(4, key);
+        statement.setObject(5, placeholder2);
+        statement.executeUpdate();
+        statement.close();
     }
 
     public void setQuitMessageChannel(TextChannel quitMessageChannel) {
         this.quitMessageChannel = quitMessageChannel;
-        update("settings", "farewell", "guild_id", quitMessageChannel.getId(), guild.getId());
+        try {
+            update("settings", "farewell", "guild_id", quitMessageChannel.getId(), guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setQuitMessageChannel(String quitMessageChannel) {
         if (quitMessageChannel.equalsIgnoreCase("default_value")) this.quitMessageChannel = null;
-        update("settings", "greetings", "guild_id", quitMessageChannel, guild.getId());
+        try {
+            update("settings", "greetings", "guild_id", quitMessageChannel, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setDefaultRole(String defaultRole) {
         this.defaultRole = defaultRole;
-        update("settings", "defaultRole", "guild_id", defaultRole, guild.getId());
+        try {
+            update("settings", "defaultRole", "guild_id", defaultRole, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
-        update("settings", "prefix", "guild_id", prefix, guild.getId());
+        try {
+            update("settings", "prefix", "guild_id", prefix, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setDescription(String description) {
         this.description = description;
-        update("core", "description", "guild_id", description, guild.getId());
+        try {
+            update("core", "description", "guild_id", description, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setEnlisted(boolean enlisted) {
         this.enlisted = enlisted;
-        update("core", "enlisted", "guild_id", enlisted, guild.getId());
+        try {
+            update("core", "enlisted", "guild_id", enlisted, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setMuteRole(String muteRole) {
         this.muteRole = muteRole;
-        update("settings", "muteRole", "guild_id", muteRole, guild.getId());
+        try {
+            update("settings", "muteRole", "guild_id", muteRole, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setJoinVerification(boolean joinVerification) {
         this.joinVerification = joinVerification;
-        update("settings", "joinVerification", "guild_id", joinVerification, guild.getId());
+        try {
+            update("settings", "joinVerification", "guild_id", joinVerification, guild.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startRaidMode() {

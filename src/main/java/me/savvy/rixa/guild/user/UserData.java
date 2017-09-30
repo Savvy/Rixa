@@ -1,8 +1,6 @@
 package me.savvy.rixa.guild.user;
 
 import lombok.Getter;
-import me.majrly.database.statements.Query;
-import me.majrly.database.statements.Update;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.enums.Result;
 import me.savvy.rixa.guild.management.Guilds;
@@ -10,9 +8,9 @@ import me.savvy.rixa.modules.levels.LevelsModule;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,13 +48,10 @@ public class UserData {
             return;
         }
         try {
-            Query query = new Query("SELECT * FROM `levels` WHERE `guild_id` = ? AND `user_id` = ?;");
-            query.setString(guild.getId());
-            query.setString(user.getId());
-            Optional<?> optional = Rixa.getDatabase().send(query);
-            if (!optional.isPresent()) return;
-            if (!(optional.get() instanceof ResultSet)) return;
-            ResultSet set = (ResultSet) optional.get();
+            PreparedStatement statement = Rixa.getDatabase().getPreparedStatement("SELECT * FROM `levels` WHERE `guild_id` = ? AND `user_id` = ?;");
+            statement.setString(1, guild.getId());
+            statement.setString(2, user.getId());
+            ResultSet set = statement.executeQuery();
             if (set.next()) {
                 setExperience(set.getInt("experience"));
             }
@@ -111,21 +106,16 @@ public class UserData {
     }
 
     private boolean checkExists() {
-        Result r = Result.FALSE;
+        Result r;
         try {
-            Query query = new Query("SELECT `user_id` FROM `levels` WHERE `guild_id` = ? AND `user_id` = ?;");
-            query.setString(guild.getId());
-            query.setString(user.getId());
-            Optional<?> optional = Rixa.getDatabase().send(query);
-            if (!optional.isPresent()) r = Result.ERROR;
-            if (!(optional.get() instanceof ResultSet)) r = Result.ERROR;
-            ResultSet set = (ResultSet) optional.get();
-            if (r != Result.ERROR) {
-                if (set.next()) {
-                    r = Result.TRUE;
-                } else {
-                    r = Result.FALSE;
-                }
+            PreparedStatement statement = Rixa.getDatabase().getPreparedStatement("SELECT `user_id` FROM `levels` WHERE `guild_id` = ? AND `user_id` = ?;");
+            statement.setString(1, guild.getId());
+            statement.setString(2, user.getId());
+            ResultSet set = statement.executeQuery();
+            if (set.next()) {
+                r = Result.TRUE;
+            } else {
+                r = Result.FALSE;
             }
             set.close();
             return r == Result.TRUE;
@@ -136,21 +126,29 @@ public class UserData {
     }
 
     private void insert() {
-        Update update = new Update("INSERT INTO `levels` (guild_id, user_id, experience) VALUES (?, ?, ?);");
-        update.setString(guild.getId());
-        update.setString(user.getId());
-        update.setInteger(0);
-        Rixa.getDatabase().send(update);
+        try {
+            PreparedStatement statement = Rixa.getDatabase().getPreparedStatement("INSERT INTO `levels` (guild_id, user_id, experience) VALUES (?, ?, ?);");
+            statement.setString(1, guild.getId());
+            statement.setString(2, user.getId());
+            statement.setInt(3, 0);
+            statement.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void setExperience(int experience) {
         this.experience = experience;
         String query = "UPDATE `levels` SET `experience` = ? WHERE `guild_id` = ? AND `user_id` = ?;";
-        Update update = new Update(query);
-        update.setInteger(experience);
-        update.setString(guild.getId());
-        update.setString(user.getId());
-        Rixa.getDatabase().send(update);
+        try {
+            PreparedStatement ps = Rixa.getDatabase().getPreparedStatement(query);
+            ps.setInt(1, experience);
+            ps.setString(2, guild.getId());
+            ps.setString(3, user.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private int getRandom() {

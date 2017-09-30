@@ -34,7 +34,7 @@ public class CheckGuildCommand implements CommandExec {
             if (member.getUser().getId().equalsIgnoreCase(event.getAuthor().getId())) continue;
             try {
                 if (!(checkExists(member.getUser().getId()))) {
-                    PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("INSERT INTO `user` (`user_id`, `user_name`, `avatar_hash`) VALUES (?, ?, ?)");
+                    PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("INSERT INTO `user` (`user_id`, `user_name`, `avatar_hash`) VALUES (?, ?, ?)");
                     ps.setString(1, member.getUser().getId());
                     ps.setString(2, member.getUser().getName());
                     ps.setString(3, member.getUser().getAvatarId());
@@ -51,7 +51,7 @@ public class CheckGuildCommand implements CommandExec {
 
     private boolean checkExists(String userId) {
         try {
-            PreparedStatement ps = Rixa.getDatabase().getConnection().get().prepareStatement("SELECT `user_id` FROM `user` WHERE `user_id` = ?;");
+            PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("SELECT `user_id` FROM `user` WHERE `user_id` = ?;");
             ps.setString(1, userId);
             ResultSet rs = ps.executeQuery();
             return rs.next();

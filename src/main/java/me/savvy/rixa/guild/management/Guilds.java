@@ -18,6 +18,7 @@ public class Guilds {
     }
 
     public static RixaGuild getGuild(Guild guild) {
+        if (guild == null) return null;
         if (!check(guild)) {
             addGuild(new RixaGuild(guild));
         }
@@ -29,7 +30,8 @@ public class Guilds {
         guilds.remove(guild.getGuild().getId());
     }
 
-    public static boolean check(Guild guild) {
+    private static boolean check(Guild guild) {
+        if (guild == null) return false;
         return guilds.containsKey(guild.getId());
     }
 }

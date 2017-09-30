@@ -2,10 +2,8 @@ package me.savvy.rixa.modules.levels;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.majrly.database.Database;
-import me.majrly.database.statements.Query;
-import me.majrly.database.statements.Update;
 import me.savvy.rixa.Rixa;
+import me.savvy.rixa.data.database.sql.SQLBuilder;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.user.UserData;
 import me.savvy.rixa.modules.RixaModule;
@@ -16,7 +14,10 @@ import net.dv8tion.jda.core.entities.Member;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Timber on 5/23/2017.
@@ -30,6 +31,7 @@ public class LevelsModule implements RixaModule {
     @Getter
     @Setter
     private boolean enabled;
+    private SQLBuilder db;
 
     public LevelsModule(RixaGuild rixaGuild) {
         this.rixaGuild = rixaGuild;
@@ -38,19 +40,17 @@ public class LevelsModule implements RixaModule {
 
     @Override
     public void load() {
+        this.db = Rixa.getDatabase();
         try {
-            Query query = new Query("SELECT * FROM `modules` WHERE `guild_id`=?;");
-            query.setString(rixaGuild.getGuild().getId());
-            Optional<?> o = Rixa.getDatabase().send(query);
-            if (!o.isPresent()) return;
-            else if (!(o.get() instanceof ResultSet)) return;
-            ResultSet set = (ResultSet) o.get();
+            PreparedStatement query = db.getPreparedStatement("SELECT * FROM `modules` WHERE `guild_id`= ?;");
+            query.setString(1, rixaGuild.getGuild().getId());
+            ResultSet set = query.executeQuery();
             if (set.next()) {
                 setEnabled(set.getBoolean("levels"));
             } else {
-                Update update = new Update("INSERT INTO `modules` (`guild_id`) VALUES (?);");
-                update.setString(rixaGuild.getGuild().getId());
-                Rixa.getDatabase().send(update);
+                query = db.getPreparedStatement("INSERT INTO `modules` (`guild_id`) VALUES (?);");
+                query.setString(1, rixaGuild.getGuild().getId());
+                query.executeUpdate();
                 setEnabled(true);
             }
             set.close();
@@ -60,11 +60,10 @@ public class LevelsModule implements RixaModule {
     }
 
     private List<UserData> leaderboard(Member member) {
-        Database db = Rixa.getDatabase();
         ResultSet rs = null;
-
+        PreparedStatement ps = null;
         try {
-            PreparedStatement ps = db.getConnection().get().prepareStatement("SELECT * FROM `levels` WHERE `guild_id` = ? ORDER BY `experience` DESC;");
+            ps = db.getPreparedStatement("SELECT * FROM `levels` WHERE `guild_id` = ? ORDER BY `experience` DESC;");
             ps.setString(1, member.getGuild().getId());
             rs = ps.executeQuery();
         } catch (SQLException e) {
@@ -78,7 +77,7 @@ public class LevelsModule implements RixaModule {
                 UserData userData = ((LevelsModule) rixaGuild.getModule("Levels")).getUserData(rs.getString("user_id"));
                 userDataList.add(userData);
             }
-            rs.getStatement().close();
+            ps.close();
             rs.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
