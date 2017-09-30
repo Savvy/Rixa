@@ -51,7 +51,6 @@ public class UserData {
         }
         try {
             Query query = new Query("SELECT * FROM `levels` WHERE `guild_id` = ? AND `user_id` = ?;");
-            query.setString("levels");
             query.setString(guild.getId());
             query.setString(user.getId());
             Optional<?> optional = Rixa.getDatabase().send(query);

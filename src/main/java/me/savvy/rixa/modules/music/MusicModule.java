@@ -19,10 +19,6 @@ import java.util.Optional;
  * Created by Timber on 5/23/2017.
  */
 public class MusicModule implements RixaModule {
-
-    public MusicModule(RixaGuild rixaGuild) {
-        this.guild = rixaGuild.getGuild();
-    }
     private Database db;
     @Getter
     @Setter
@@ -32,6 +28,11 @@ public class MusicModule implements RixaModule {
     private String musicRole;
     @Getter
     private Guild guild;
+
+    public MusicModule(RixaGuild rixaGuild) {
+        this.guild = rixaGuild.getGuild();
+        load();
+    }
 
     @Override
     public void load() {

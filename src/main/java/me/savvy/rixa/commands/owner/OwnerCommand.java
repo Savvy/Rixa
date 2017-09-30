@@ -4,7 +4,10 @@ import me.savvy.rixa.Rixa;
 import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
+import me.savvy.rixa.guild.RixaGuild;
+import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -22,8 +25,19 @@ public class OwnerCommand implements CommandExec {
                     .setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
-        Rixa.getInstance().close();
-        Rixa.getInstance().exit();
 
+        try {
+            for (RixaGuild rixaGuild : Guilds.getGuilds().values()) {
+                Thread.sleep(50);
+                rixaGuild.save();
+            }
+            Thread.sleep(500);
+            Rixa.getInstance().close();
+            System.exit(0);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+
+        Rixa.getInstance().close();
     }
 }

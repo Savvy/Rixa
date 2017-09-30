@@ -81,6 +81,7 @@ public class Database {
             }
         } catch (SQLException exception) {
             System.out.println("INFO: Couldn't send update / query! : " + exception.getLocalizedMessage());
+            exception.printStackTrace();
             return Optional.empty();
         }
     }
@@ -99,6 +100,7 @@ public class Database {
         } catch (SQLException e) {
             // Can't handle closing statement
             System.out.println("INFO: Close connection! : " + e.getLocalizedMessage());
+            e.printStackTrace();
         }
     }
 
@@ -149,6 +151,7 @@ public class Database {
             return Optional.of(preparedStatement);
         } catch (SQLException exception) {
             System.out.println("INFO: Couldn't prepare statement : " + exception.getLocalizedMessage());
+            exception.printStackTrace();
             return Optional.empty();
         }
     }
@@ -164,7 +167,8 @@ public class Database {
         try {
             return Optional.of(source.getConnection().prepareStatement(sql));
         } catch (SQLException exception) {
-            System.out.println("INFO: Couldn't send update / query! : " + exception.getLocalizedMessage());
+            System.out.println("INFO: Couldn't send prepared statement! : " + exception.getLocalizedMessage());
+            exception.printStackTrace();
             return Optional.empty();
         }
     }
