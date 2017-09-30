@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import me.majrly.database.params.Parameter;
 import me.majrly.database.statements.Query;
 import me.majrly.database.statements.Statement;
+import me.savvy.rixa.Rixa;
 
 import java.sql.*;
 import java.util.Map;
@@ -113,7 +114,12 @@ public class Database {
      */
     public Optional<PreparedStatement> prepare(Statement statement) {
         try {
-            PreparedStatement preparedStatement = getConnection().get().prepareStatement(statement.getSQL());
+            Optional<Connection> optional = getConnection();
+            if (!optional.isPresent()) {
+                Rixa.getInstance().getLogger().severe("Could not find connection, GuildSettings:117");
+                return Optional.empty();
+            }
+            PreparedStatement preparedStatement = optional.get().prepareStatement(statement.getSQL());
             for (Map.Entry<Integer, Parameter> parameter : statement.getParameters().entrySet()) {
                 switch (parameter.getValue().getType()) {
                     case STRING:

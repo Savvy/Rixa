@@ -111,7 +111,6 @@ public class Rixa {
         try {
             int shards = 5;
             for (int i = 0; i < shards; i++) {
-                Thread.sleep(5000);
                 Logger.getLogger("Rixa").info("Loading shard #" + i);
                 JDABuilder jda = new JDABuilder(AccountType.BOT)
                         .setToken(config.getJsonObject().getString("secretToken"))
@@ -128,12 +127,13 @@ public class Rixa {
                         .useSharding(i, shards);
                 shardsList.add(jda.buildBlocking());
                 getInstance().getLogger().info("Shard #" + i + " has been loaded");
+                Thread.sleep(5000);
             }
         } catch (LoginException | InterruptedException | RateLimitedException e) {
             e.printStackTrace();
         }
 
-        Guilds.getGuilds().values().parallelStream().forEach((rixaGuild) -> rixaGuild.load());
+        //Guilds.getGuilds().values().parallelStream().forEach((rixaGuild) -> rixaGuild.load());
 
         timeUp = System.currentTimeMillis();
         register(new InfoCommand(), new ServerInfoCommand(), new HelpCommand(),

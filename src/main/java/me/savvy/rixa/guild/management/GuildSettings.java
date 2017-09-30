@@ -92,20 +92,25 @@ public class GuildSettings {
     }
 
     private boolean checkExists() {
-        Result r = Result.FALSE;
+        Result r;
         try {
-            Query query = new Query("SELECT `guild_id` FROM `settings` WHERE `guild_id` = '" + guild.getId() + "'");
+            Query query = new Query("SELECT `guild_id` FROM `settings` WHERE `guild_id` = ?");
+            query.setString(guild.getId());
             Optional<?> optional = Rixa.getDatabase().send(query);
-            if (!optional.isPresent()) r = Result.ERROR;
-            if (!(optional.get() instanceof ResultSet)) r = Result.ERROR;
+            if (!optional.isPresent()) {
+                if (!(optional.get() instanceof ResultSet)) {
+                    Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + " in settings it wasn't an instance of result set!, GuildSettings:97");
+                    return false;
+                }
+                Rixa.getInstance().getLogger().severe("Could not find " + guild.getName() + ", GuildSettings:99");
+                return false;
+            }
             ResultSet set = (ResultSet) optional.get();
-            if (r != Result.ERROR) {
                 if (set.next()) {
                     r = Result.TRUE;
                 } else {
                     r = Result.FALSE;
                 }
-            }
             set.close();
             return r == Result.TRUE;
         } catch (SQLException e) {
