@@ -44,7 +44,7 @@ public class MusicModule implements RixaModule {
                 Update update = new Update("INSERT INTO `music` (`guild_id`, `music_role`, `enabled`) VALUES ('" + guild.getId() + "', 'default_value', '0');");
                 db.send(update);
             }
-            Query query = new Query("SELECT * FROM `modules` WHERE `guild_id` = ?");
+            Query query = new Query("SELECT * FROM `music` WHERE `guild_id` = ?");
             query.setString(guild.getId());
             Optional<?> optional = Rixa.getDatabase().send(query);
             if (!optional.isPresent()) return;

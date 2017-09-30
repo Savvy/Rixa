@@ -57,7 +57,9 @@ public class UserData {
             if (!optional.isPresent()) return;
             if (!(optional.get() instanceof ResultSet)) return;
             ResultSet set = (ResultSet) optional.get();
-            setExperience(set.getInt("experience"));
+            if (set.next()) {
+                setExperience(set.getInt("experience"));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
