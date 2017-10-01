@@ -18,6 +18,7 @@ public class DatabaseUtils {
         statement.setObject(2, placeholder);
         statement.setObject(3, placeholder2);
         statement.executeUpdate();
+        statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
             return Result.FALSE;

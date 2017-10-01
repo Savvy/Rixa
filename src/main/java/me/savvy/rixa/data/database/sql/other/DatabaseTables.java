@@ -12,8 +12,7 @@ public enum DatabaseTables {
             " `experience` int(90) NOT NULL\n" +
             ");"),
 
-    MODULES("CREATE TABLE IF NOT EXISTS `modules` ( `guild_id` varchar(255) DEFAULT NULL, `levels` tinyint(1) NOT NULL DEFAULT '1'\n" +
-            ")"),
+    MODULES("CREATE TABLE IF NOT EXISTS `modules` (`guild_id` varchar(255) DEFAULT NULL, `levels` tinyint(1) NOT NULL DEFAULT '1', `conversations` tinyint(1) NOT NULL DEFAULT '1');"),
 
     MUSIC("CREATE TABLE IF NOT EXISTS `music` ( `guild_id` varchar(255) NOT NULL UNIQUE PRIMARY KEY, `music_role` varchar(255) NOT NULL DEFAULT 'default_value'," +
             " `skip_amount` int(5) NOT NULL DEFAULT '0', `max_playlist_amount` int(5) NOT NULL DEFAULT '100', `enabled` tinyint(1) NOT NULL DEFAULT '0'\n" +

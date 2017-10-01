@@ -1,8 +1,14 @@
 package me.savvy.rixa.modules.conversations;
 
 import com.google.code.chatterbotapi.*;
+import lombok.Getter;
+import lombok.Setter;
+import me.savvy.rixa.Rixa;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.modules.RixaModule;
+import me.savvy.rixa.utils.DatabaseUtils;
+
+import java.sql.PreparedStatement;
 
 public class ConversationModule implements RixaModule {
 
@@ -10,6 +16,10 @@ public class ConversationModule implements RixaModule {
     private ChatterBotFactory factory;
     private ChatterBotSession chatBotSession;
     private ChatterBot chatBot;
+    @Getter
+    @Setter
+    private boolean enabled;
+
 
     public ConversationModule(RixaGuild rixaGuild) {
         this.rixaGuild = rixaGuild;
@@ -27,12 +37,15 @@ public class ConversationModule implements RixaModule {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 
     @Override
     public void load() {
         try {
+            PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("SELECT `conversations` FROM `modules` WHERE `guild_id` = ?");
+            ps.setString(1, rixaGuild.getGuild().getId());
+            this.enabled = Rixa.getDatabase().getBoolean(ps, "enabled");
             factory = new ChatterBotFactory();
             chatBot = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
             chatBotSession = chatBot.createSession();
@@ -42,7 +55,9 @@ public class ConversationModule implements RixaModule {
     }
 
     @Override
-    public void save() {}
+    public void save() {
+        DatabaseUtils.update("modules", "conversations", "guild_id", enabled, rixaGuild.getGuild().getId());
+    }
 
     public ChatterBotSession getChatBotSession() {
         return chatBotSession;

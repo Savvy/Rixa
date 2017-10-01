@@ -13,5 +13,7 @@ public interface RixaModule {
 
     void load();
 
+    void setEnabled(boolean b);
+
     void save();
 }

@@ -185,7 +185,7 @@ public class RixaGuild {
         }
     }
 
-    public RixaModule getModule(String levels) {
-        return this.modules.get(levels);
+    public RixaModule getModule(String module) {
+        return this.modules.get(module);
     }
 }

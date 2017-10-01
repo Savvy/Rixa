@@ -56,7 +56,9 @@ public class MessageEvent {
                     new MessageBuilder(event.getGuild().getName() + "'s server prefix is `" + rixaGuild.getGuildSettings().getPrefix() + "`.").queue(event.getChannel());
                     return;
                 }
-                s = ((ConversationModule) rixaGuild.getModule("Conversations")).getChatBotSession().think(s);
+                ConversationModule conversationModule = (ConversationModule) rixaGuild.getModule("Conversations");
+                if (!conversationModule.isEnabled()) return;
+                s = conversationModule.getChatBotSession().think(s);
                 if (s.isEmpty()) return;
                 event.getChannel().sendMessage(s).queue();
                 return;

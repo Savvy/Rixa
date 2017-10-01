@@ -5,6 +5,7 @@ import lombok.Setter;
 import me.savvy.rixa.Rixa;
 import me.savvy.rixa.data.database.sql.SQLBuilder;
 import me.savvy.rixa.enums.Result;
+import me.savvy.rixa.utils.DatabaseUtils;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -153,14 +154,7 @@ public class GuildSettings {
     }
 
     private void update(String table, String setting, String key, Object placeholder, Object placeholder2) throws SQLException {
-        PreparedStatement statement = db.getPreparedStatement("UPDATE ? SET ? = ? WHERE ? = ?;");
-        statement.setString(1, table);
-        statement.setString(2, setting);
-        statement.setObject(3, placeholder);
-        statement.setString(4, key);
-        statement.setObject(5, placeholder2);
-        statement.executeUpdate();
-        statement.close();
+        DatabaseUtils.update(table, setting, key, placeholder, placeholder2);
     }
 
     public void setQuitMessageChannel(TextChannel quitMessageChannel) {

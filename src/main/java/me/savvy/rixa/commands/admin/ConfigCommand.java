@@ -6,7 +6,6 @@ import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
-import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.modules.music.MusicModule;
 import me.savvy.rixa.utils.MessageBuilder;
 import net.dv8tion.jda.core.entities.ChannelType;
@@ -172,30 +171,33 @@ public class ConfigCommand implements CommandExec {
                 new MessageBuilder("Successfully set music role to " + role.getName() + "!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
         } else if (messages[1].equalsIgnoreCase("enable")) {
-            if (messages[2].equalsIgnoreCase("music")) {
-                ((MusicModule) rixaGuild.getModule("Music")).setEnabled(true);
-                new MessageBuilder("Successfully enabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
-            } else if (messages[2].equalsIgnoreCase("levels")) {
-                ((LevelsModule) rixaGuild.getModule("Levels")).setEnabled(true);
-                event.getChannel().sendMessage("Successfully enabled the levels module").queue();
-            } else if (messages[2].equalsIgnoreCase("joinverification")) {
+            rixaGuild.getModules().keySet().forEach(moduleName -> {
+                if (messages[2].equalsIgnoreCase(moduleName)) {
+                    rixaGuild.getModule(moduleName).setEnabled(true);
+                    new MessageBuilder("Successfully enabled the `" + moduleName + "` module!").setColor(event.getMember().getColor()).queue(event.getChannel());
+                }
+            });
+            if (messages[2].equalsIgnoreCase("joinverification")) {
                 Guilds.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(true);
                 new MessageBuilder("Successfully enabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
         } else if (messages[1].equalsIgnoreCase("disable")) {
-            if (messages[2].equalsIgnoreCase("music")) {
-                ((MusicModule) rixaGuild.getModule("Music")).setEnabled(false);
-                new MessageBuilder("Successfully disabled the music module!").setColor(event.getMember().getColor()).queue(event.getChannel());
-            } else if (messages[2].equalsIgnoreCase("levels")) {
-                ((MusicModule) rixaGuild.getModule("Music")).setEnabled(false);
-                event.getChannel().sendMessage("Successfully disabled the levels module").queue();
-            } else if (messages[2].equalsIgnoreCase("joinverification")) {
+
+            rixaGuild.getModules().keySet().forEach(moduleName -> {
+                if (messages[2].equalsIgnoreCase(moduleName)) {
+                    rixaGuild.getModule(moduleName).setEnabled(false);
+                    new MessageBuilder("Successfully disabled the `" + moduleName + "` module!").setColor(event.getMember().getColor()).queue(event.getChannel());
+                }
+            });
+                if (messages[2].equalsIgnoreCase("joinverification")) {
                 Guilds.getGuild(event.getGuild()).getGuildSettings().setJoinVerification(false);
                 new MessageBuilder("Successfully disabled Join Verification!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if (messages[2].equalsIgnoreCase("joinmessage")) {
                 Guilds.getGuild(event.getGuild()).getGuildSettings().setJoinMessageChannel("default_value");
+                    new MessageBuilder("Successfully disabled Join messages!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if (messages[2].equalsIgnoreCase("quitmessage")) {
                 Guilds.getGuild(event.getGuild()).getGuildSettings().setQuitMessageChannel("default_value");
+                    new MessageBuilder("Successfully disabled Quit messages!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
         } else if (messages[1].equalsIgnoreCase("addperm") || messages[1].equalsIgnoreCase("addpermission") || messages[1].equalsIgnoreCase("aperm")) {
             String permission = "notFound";
