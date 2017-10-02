@@ -60,8 +60,8 @@ public class MessageBuilder {
         channel.sendMessage(builder.build()).queue();
     }
 
-    public void complete(TextChannel channel) {
-        channel.sendMessage(builder.build()).complete();
+    public Message complete(TextChannel channel) {
+        return channel.sendMessage(builder.build()).complete();
     }
 
     public void send(User member) {

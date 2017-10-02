@@ -36,16 +36,11 @@ public class ConversationModule implements RixaModule {
     }
 
     @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    @Override
     public void load() {
         try {
             PreparedStatement ps = Rixa.getDatabase().getPreparedStatement("SELECT `conversations` FROM `modules` WHERE `guild_id` = ?");
             ps.setString(1, rixaGuild.getGuild().getId());
-            this.enabled = Rixa.getDatabase().getBoolean(ps, "enabled");
+            this.enabled = Rixa.getDatabase().getBoolean(ps, "conversations");
             factory = new ChatterBotFactory();
             chatBot = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
             chatBotSession = chatBot.createSession();

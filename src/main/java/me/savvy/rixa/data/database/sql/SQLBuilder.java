@@ -61,8 +61,8 @@ public class SQLBuilder {
     }
 
 
-    public Connection getConnection() {
-        if (connection == null) {
+    public Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed()) {
             connect();
         }
         return connection;

@@ -6,6 +6,7 @@ import me.savvy.rixa.commands.handlers.CommandExec;
 import me.savvy.rixa.commands.handlers.CommandType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageEmbed;
@@ -57,6 +58,7 @@ public class InfoCommand implements CommandExec {
                     .addField("Bot Uptime ", "Uptime: " + day + " days " + hours + " hours " + minute + " minutes " + second + " seconds.", true)
                     .addField("Total Guilds", String.valueOf(guildCount), true)
                     .addField("Total Users", String.valueOf(userCount), true)
+                    .addField("JDA Version", JDAInfo.VERSION, true)
                     .addField("Rixa Developer", botOwner.getName() + "#" + botOwner.getDiscriminator(), true)
                     .setFooter("Requested by " + event.getAuthor().getName() + "#" + event.getAuthor().getDiscriminator(), event.getAuthor().getAvatarUrl());
             event.getChannel().sendMessage(messageEmbed.build()).queue();

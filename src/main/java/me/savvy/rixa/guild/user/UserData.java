@@ -131,7 +131,7 @@ public class UserData {
             statement.setString(1, guild.getId());
             statement.setString(2, user.getId());
             statement.setInt(3, 0);
-            statement.executeUpdate();
+            Rixa.getDatabase().executeUpdate(statement);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -145,7 +145,7 @@ public class UserData {
             ps.setInt(1, experience);
             ps.setString(2, guild.getId());
             ps.setString(3, user.getId());
-            ps.executeUpdate();
+            Rixa.getDatabase().executeUpdate(ps);
         } catch (SQLException e) {
             e.printStackTrace();
         }

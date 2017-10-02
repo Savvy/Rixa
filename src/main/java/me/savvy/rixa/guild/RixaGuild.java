@@ -50,7 +50,7 @@ public class RixaGuild {
         load();
     }
 
-    public void load() {
+    private void load() {
         if (!(checkExists())) {
             try {
                 PreparedStatement ps = db.getPreparedStatement("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`) VALUES (?, ?, 'Description not set.', 'No Keywords Found.')\"");
@@ -105,9 +105,8 @@ public class RixaGuild {
 
         boolean b = false;
         try {
-            PreparedStatement ps = db.getPreparedStatement("SELECT ? FROM `permissions` WHERE `role_id` = ?");
-            ps.setString(1, permission.toString().toUpperCase());
-            ps.setString(2, role.getId());
+            PreparedStatement ps = db.getPreparedStatement("SELECT `" + permission.toString().toUpperCase() + "` FROM `permissions` WHERE `role_id` = ?");
+            ps.setString(1, role.getId());
             ResultSet set = ps.executeQuery();
             if (set.next()) {
                 b = set.getBoolean(permission.toString().toUpperCase());
@@ -135,11 +134,10 @@ public class RixaGuild {
             }
         }
         try {
-            PreparedStatement ps = db.getPreparedStatement("UPDATE `permissions` SET ? = ? WHERE `guild_id` = ? AND `role_id` = ?;");
-            ps.setString(1, permission.toString().toUpperCase());
-            ps.setBoolean(2, value);
-            ps.setString(3, guild.getId());
-            ps.setString(4, role.getId());
+            PreparedStatement ps = db.getPreparedStatement("UPDATE `permissions` SET `" + permission.toString().toUpperCase() + "` = ? WHERE `guild_id` = ? AND `role_id` = ?;");
+            ps.setBoolean(1, value);
+            ps.setString(2, guild.getId());
+            ps.setString(3, role.getId());
             db.executeUpdate(ps);
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -148,10 +146,9 @@ public class RixaGuild {
 
     private boolean permissionExists(Role role) {
         try {
-            PreparedStatement query = db.getPreparedStatement("SELECT ? FROM `permissions` WHERE `guild_id` = ? AND `role_id` = ?");
-            query.setString(1, RixaPermission.values()[0].toString().toUpperCase());
-            query.setString(2, guild.getId());
-            query.setString(3, role.getId());
+            PreparedStatement query = db.getPreparedStatement("SELECT `" + RixaPermission.values()[0].toString().toUpperCase() + "` FROM `permissions` WHERE `guild_id` = ? AND `role_id` = ?");
+            query.setString(1, guild.getId());
+            query.setString(2, role.getId());
             ResultSet set = query.executeQuery();
             boolean b = set.next();
             query.close();

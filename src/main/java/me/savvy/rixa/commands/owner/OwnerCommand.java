@@ -7,7 +7,6 @@ import me.savvy.rixa.commands.handlers.CommandType;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -27,6 +26,7 @@ public class OwnerCommand implements CommandExec {
         }
 
         try {
+            new MessageBuilder("Shutting down...").queue(event.getChannel());
             for (RixaGuild rixaGuild : Guilds.getGuilds().values()) {
                 Thread.sleep(50);
                 rixaGuild.save();

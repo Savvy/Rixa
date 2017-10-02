@@ -15,7 +15,7 @@ import twitter4j.conf.ConfigurationBuilder;
  */
 public class TwitterModule implements RixaModule {
 
-    @Getter private boolean enabled;
+    @Getter @Setter  private boolean enabled;
     @Getter
     private final TwitterStream twitterStream;
     @Getter

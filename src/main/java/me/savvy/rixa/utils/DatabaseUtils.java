@@ -13,10 +13,9 @@ public class DatabaseUtils {
     public static Result update(String table, String setting, String key, Object placeholder, Object placeholder2) {
         PreparedStatement statement = null;
         try {
-            statement = Rixa.getDatabase().getPreparedStatement("UPDATE `" + table + "` SET ? = ? WHERE `" + key + "` = ?;");
-        statement.setString(1, setting);
-        statement.setObject(2, placeholder);
-        statement.setObject(3, placeholder2);
+            statement = Rixa.getDatabase().getPreparedStatement("UPDATE `" + table + "` SET `" + setting + "` = ? WHERE `" + key + "` = ?;");
+        statement.setObject(1, placeholder);
+        statement.setObject(2, placeholder2);
         statement.executeUpdate();
         statement.close();
         } catch (SQLException e) {
