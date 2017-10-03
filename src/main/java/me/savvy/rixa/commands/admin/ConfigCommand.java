@@ -8,6 +8,7 @@ import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.modules.music.MusicModule;
 import me.savvy.rixa.utils.MessageBuilder;
+import me.savvy.rixa.utils.Utils;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
@@ -143,30 +144,30 @@ public class ConfigCommand implements CommandExec {
                 rixaGuild.getGuildSettings().setPrefix(pref);
                 new MessageBuilder("Successfully updated command prefix!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if (messages[2].equalsIgnoreCase("defaultRole")) {
-                if (event.getMessage().getMentionedRoles().size() < 1) {
+                if (Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).size() < 1) {
                     new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + messages[0] + " set defaultRole <role>].\nMake sure to mention the role!")
                             .setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
                 }
-                Role role = event.getMessage().getMentionedRoles().get(0);
+                Role role = Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).get(0);
                 rixaGuild.getGuildSettings().setDefaultRole(role.getId());
                 new MessageBuilder("Successfully set default role to " + role.getName() + "!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if (messages[2].equalsIgnoreCase("muteRole")) {
-                if (event.getMessage().getMentionedRoles().size() < 1) {
+                if (Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).size() < 1) {
                     new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + messages[0] + " set muteRole <role>].")
                             .setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
                 }
-                Role role = event.getMessage().getMentionedRoles().get(0);
+                Role role = Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).get(0);
                 rixaGuild.getGuildSettings().setMuteRole(role.getId());
                 new MessageBuilder("Successfully set mute role to " + role.getName() + "!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if (messages[2].equalsIgnoreCase("musicRole")) {
-                if (event.getMessage().getMentionedRoles().size() < 1) {
+                if (Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).size() < 1) {
                     new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + messages[0] + " set musicRole <role>].")
                             .setColor(event.getMember().getColor()).queue(event.getChannel());
                     return;
                 }
-                Role role = event.getMessage().getMentionedRoles().get(0);
+                Role role = Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).get(0);
                 ((MusicModule) rixaGuild.getModule("Music")).setMusicRole(role.getId());
                 new MessageBuilder("Successfully set music role to " + role.getName() + "!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }
@@ -213,13 +214,13 @@ public class ConfigCommand implements CommandExec {
                 return;
             }
 
-            if (event.getMessage().getMentionedRoles().size() == 0) {
+            if (Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).size() == 0) {
                 new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + messages[0] + " addPerm <role> <permission>].")
                         .setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
             RixaPermission perm = RixaPermission.valueOf(permission.toUpperCase());
-            Role role = event.getMessage().getMentionedRoles().get(0);
+            Role role = Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).get(0);
             if (rixaGuild.hasPermission(role, perm)) {
                 new MessageBuilder("That role already has this permission!").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
@@ -243,12 +244,12 @@ public class ConfigCommand implements CommandExec {
                 return;
             }
             RixaPermission perm = RixaPermission.valueOf(permission.toUpperCase());
-            if (event.getMessage().getMentionedRoles().size() == 0) {
+            if (Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).size() == 0) {
                 new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + messages[0] + " removePerm <role> <permission>].")
                         .setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
-            Role role = event.getMessage().getMentionedRoles().get(0);
+            Role role = Utils.roleSearch(event.getGuild(), event.getMessage().getContent()).get(0);
             if (!rixaGuild.hasPermission(role, perm)) {
                 new MessageBuilder("That role doesn't have this permission!").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
