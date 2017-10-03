@@ -170,20 +170,25 @@ public class MessageEvent {
 
     @SubscribeEvent
     public void onReact(MessageReactionAddEvent event) {
-        Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
-        if (message == null || message.getEmbeds().size() != 1) return;
-        MessageEmbed embed = message.getEmbeds().get(0);
-        if (StringUtils.isNullOrEmpty(embed.getTitle())) return;
-        String[] titleSplit = embed.getTitle().split(": ");
-        if (titleSplit[0].equalsIgnoreCase("Leaderboard")) return;
-        if (!ReactionManager.getReactions().containsKey(titleSplit[0])) return;
-
-        ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
-        Method m = reactRegistrar.getMethod();
         try {
-            m.invoke(reactRegistrar.getExecutor(), event);
-        } catch (Exception e) {
-            e.printStackTrace();
+            Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
+            if (message == null || message.getEmbeds().size() != 1) return;
+            MessageEmbed embed = message.getEmbeds().get(0);
+            if (StringUtils.isNullOrEmpty(embed.getTitle())) return;
+            String[] titleSplit = embed.getTitle().split(": ");
+            if (titleSplit[0].equalsIgnoreCase("Leaderboard")) return;
+            if (!ReactionManager.getReactions().containsKey(titleSplit[0])) return;
+
+            ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
+            Method m = reactRegistrar.getMethod();
+            try {
+                m.invoke(reactRegistrar.getExecutor(), event);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (PermissionException pex) {
+            if (pex.getPermission() == Permission.MESSAGE_READ) return;
+            pex.printStackTrace();
         }
     }
 
