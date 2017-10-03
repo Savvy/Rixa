@@ -136,7 +136,8 @@ public class Rixa {
                 new BatchMoveCommand(), new MuteCommand(), new MusicCommand(),
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
                 new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand(),
-                new LeaderboardCommand(), new RaidModeCommand(), new OwnerCommand(), new ColorCommand());
+                new LeaderboardCommand(), new RaidModeCommand(), new OwnerCommand(),
+                new ColorCommand(), new ModulesCommand());
         register(new HelpReaction(), new ConfigReaction(), new LeaderboardReaction());
     }
 

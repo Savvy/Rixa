@@ -165,6 +165,7 @@ public class RixaGuild {
     }
 
     public void unmuteMember(User user) {
+        if (mutedMembers.contains(user.getId()))
         mutedMembers.remove(user.getId());
     }
 

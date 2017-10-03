@@ -40,10 +40,10 @@ public class ConfigCommand implements CommandExec {
                 "%pconfig set twitterASecret <key> ; Set Twitter Access Secret!",
                 "%config set twitterChannel ; Set the channel for Twitter feed updates!",
 
-                "%pconfig joinMessage <joinMessage> ; Set the greetings message for when a user joins the server!",
-                "%pconfig quitMessage <quitMessage> ; Set the quit message for when a user leaves the server!",
-                "%pconfig joinPm <joinPm> ; Set the message to be private messaged when a user joins!",
-                "%pconfig description <description> ; Set your server description!",
+                "%pconfig set tjoinMessage <joinMessage> ; Set the greetings message for when a user joins the server!",
+                "%pconfig set quitMessage <quitMessage> ; Set the quit message for when a user leaves the server!",
+                "%pconfig set joinPm <joinPm> ; Set the message to be private messaged when a user joins!",
+                "%pconfig set description <description> ; Set your server description!",
                 "%pconfig addPerm <role> <permission> ; Give a role permission to access a command!",
                 "%pconfig removePerm <role> <permission> ; Remove a role's permission to access a command!",
                 "%pconfig enable <module> ; Enabled a Rixa Module!",
@@ -87,43 +87,43 @@ public class ConfigCommand implements CommandExec {
             return;
         }
         String message;
-        if (messages[1].equalsIgnoreCase("joinmessage")) {
-            message = getMessage(messages);
-            if(event.getMessage().getMentionedChannels().size() > 0) {
-                for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
-                    message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
+      if (messages[1].equalsIgnoreCase("set")) {
+            if (messages[2].equalsIgnoreCase("joinpm")) {
+                message = getMessage(messages);
+                if(event.getMessage().getMentionedChannels().size() > 0) {
+                    for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
+                        message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
+                    }
                 }
-            }
-            rixaGuild.getGuildSettings().setJoinMessage(message);
-            new MessageBuilder("Successfully set Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
-                    .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
-        } else if (messages[1].equalsIgnoreCase("quitmessage")) {
-            message = getMessage(messages);
-            if(event.getMessage().getMentionedChannels().size() > 0) {
-                for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
-                    message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
-                }
-            }
-            rixaGuild.getGuildSettings().setQuitMessage(message);
-            new MessageBuilder("Successfully set Quit Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
-                    .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
-        } else if (messages[1].equalsIgnoreCase("joinpm")) {
-            message = getMessage(messages);
-            if(event.getMessage().getMentionedChannels().size() > 0) {
-                for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
-                    message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
-                }
-            }
-            rixaGuild.getGuildSettings().setJoinPrivateMessage(message);
-            new MessageBuilder("Successfully set Private Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
-                    .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
-        } else if (messages[1].equalsIgnoreCase("description")) {
-            message = getMessage(messages);
-            rixaGuild.getGuildSettings().setDescription(message);
-            new MessageBuilder("Successfully set Server Description to\n" + message.replace("{0}", event.getMember().getUser().getName())
-                    .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
-        } else if (messages[1].equalsIgnoreCase("set")) {
-            if (messages[2].equalsIgnoreCase("greetings")) {
+                rixaGuild.getGuildSettings().setJoinPrivateMessage(message);
+                new MessageBuilder("Successfully set Private Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
+                        .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
+            } else if (messages[2].equalsIgnoreCase("description")) {
+                message = getMessage(messages);
+                rixaGuild.getGuildSettings().setDescription(message);
+                new MessageBuilder("Successfully set Server Description to\n" + message.replace("{0}", event.getMember().getUser().getName())
+                        .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
+            } else if (messages[2].equalsIgnoreCase("joinmessage")) {
+                 message = getMessage(messages);
+                 if(event.getMessage().getMentionedChannels().size() > 0) {
+                     for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
+                         message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
+                     }
+                 }
+                 rixaGuild.getGuildSettings().setJoinMessage(message);
+                 new MessageBuilder("Successfully set Join Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
+                         .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
+             } else if (messages[2].equalsIgnoreCase("quitmessage")) {
+                 message = getMessage(messages);
+                 if(event.getMessage().getMentionedChannels().size() > 0) {
+                     for (TextChannel messageChannel : event.getMessage().getMentionedChannels()) {
+                         message = message.replace(messageChannel.getAsMention(), "<#" + messageChannel.getId() + ">");
+                     }
+                 }
+                 rixaGuild.getGuildSettings().setQuitMessage(message);
+                 new MessageBuilder("Successfully set Quit Message to\n" + message.replace("{0}", event.getMember().getUser().getName())
+                         .replace("{1}", event.getGuild().getName())).setColor(event.getMember().getColor()).queue(event.getChannel());
+             } else if (messages[2].equalsIgnoreCase("greetings")) {
                 rixaGuild.getGuildSettings().setJoinMessageChannel(event.getChannel());
                 new MessageBuilder("Successfully updated Greetings channel!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } else if (messages[2].equalsIgnoreCase("farewell")) {
@@ -287,7 +287,7 @@ public class ConfigCommand implements CommandExec {
 
     private String getMessage(String[] messages) {
         StringBuilder builder = new StringBuilder();
-        for(int i = 2; i < messages.length; i++) {
+        for(int i = 3; i < messages.length; i++) {
             builder.append(messages[i]).append(" ");
         }
         return builder.toString().trim();
