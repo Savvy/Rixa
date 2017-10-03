@@ -27,7 +27,10 @@ public class Utils {
         for (Member member : guild.getMembers()) {
             if ((member.getUser().getName().toLowerCase() + "#" + member.getUser().getDiscriminator()).contains(finalString)
                     || (member.getEffectiveName().toLowerCase().contains(finalString))
-                    || finalString.contains(member.getUser().getId())) {
+                    || finalString.contains(member.getUser().getId())
+                    || finalString.contains(member.getUser().getName().toLowerCase() + "#" + member.getUser().getDiscriminator())
+                    || finalString.contains(member.getEffectiveName())
+                    ) {
 
                 if (!bots && member.getUser().isBot()) continue;
                 members.add(member);

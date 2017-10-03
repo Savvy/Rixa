@@ -7,10 +7,10 @@ import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
+import me.savvy.rixa.utils.Utils;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
@@ -48,16 +48,15 @@ public class MuteCommand implements CommandExec {
             return;
         }
         try {
-            for(User user: event.getMessage().getMentionedUsers()) {
-                Member muted = rixaGuild.getGuild().getMember(user);
-                if (rixaGuild.isUserMuted(muted.getUser())) {
-                    rixaGuild.getGuild().getController().removeRolesFromMember(muted, Collections.singleton(muteRole)).queue();
-                    rixaGuild.unmuteMember(muted.getUser());
-                    new MessageBuilder("Successfully unmuted `" + muted.getEffectiveName() + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
+            for(Member member: Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), false)) {
+                if (rixaGuild.isUserMuted(member.getUser())) {
+                    rixaGuild.getGuild().getController().removeRolesFromMember(member, Collections.singleton(muteRole)).queue();
+                    rixaGuild.unmuteMember(member.getUser());
+                    new MessageBuilder("Successfully unmuted `" + member.getEffectiveName() + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 } else {
-                    rixaGuild.getGuild().getController().addRolesToMember(muted, Collections.singleton(muteRole)).queue();
-                    rixaGuild.muteMember(muted.getUser());
-                    new MessageBuilder("Successfully muted `" + muted.getEffectiveName() + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    rixaGuild.getGuild().getController().addRolesToMember(member, Collections.singleton(muteRole)).queue();
+                    rixaGuild.muteMember(member.getUser());
+                    new MessageBuilder("Successfully muted `" + member.getEffectiveName() + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
             }
         } catch (PermissionException ex) {

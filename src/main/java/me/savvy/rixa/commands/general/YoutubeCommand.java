@@ -2,7 +2,6 @@ package me.savvy.rixa.commands.general;
 
 import me.savvy.rixa.commands.handlers.Command;
 import me.savvy.rixa.commands.handlers.CommandExec;
-import me.savvy.rixa.utils.MessageBuilder;
 import me.savvy.rixa.utils.YoutubeSearch;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -24,8 +23,9 @@ public class YoutubeCommand implements CommandExec {
         String search = getMessage(message);
         try {
             YoutubeSearch ytSearch = new YoutubeSearch(search);
+            event.getChannel().sendMessage(ytSearch.getUrl(0)).queue();/*
             new MessageBuilder(ytSearch.getUrl(0))
-                    .setColor(event.getMember().getColor()).queue(event.getChannel());
+                    .setColor(event.getMember().getColor()).queue(event.getChannel());*/
         } catch (IOException e) {
             e.printStackTrace();
         }

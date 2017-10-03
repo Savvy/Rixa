@@ -238,6 +238,12 @@ public class MusicCommand implements CommandExec {
                 if (chan == null) {
                     new MessageBuilder("Sorry I was unable to find the VoiceChannel: `" + channelName + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 } else {
+                    synchronized (musicManagers) {
+                        player.destroy();
+                        guild.getAudioManager().setSendingHandler(null);
+                        musicManagers.remove(guild.getId());
+                    }
+                    mng = getMusicManager(guild);
                     guild.getAudioManager().setSendingHandler(mng.sendHandler);
                     try {
                         new MessageBuilder("Entering Voice Channel: " + chan.getName()).setColor(event.getMember().getColor()).queue(event.getChannel());
@@ -294,6 +300,12 @@ public class MusicCommand implements CommandExec {
                 if (chan == null) {
                     new MessageBuilder("Sorry I was unable to find the VoiceChannel: `" + message[2] + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 } else {
+                    synchronized (musicManagers) {
+                        player.destroy();
+                        guild.getAudioManager().setSendingHandler(null);
+                        musicManagers.remove(guild.getId());
+                    }
+                    mng = getMusicManager(guild);
                     guild.getAudioManager().setSendingHandler(mng.sendHandler);
                     try {
                         new MessageBuilder("Entering Voice Channel: " + chan.getName()).setColor(event.getMember().getColor()).queue(event.getChannel());

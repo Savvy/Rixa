@@ -7,10 +7,10 @@ import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
+import me.savvy.rixa.utils.Utils;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
@@ -43,17 +43,16 @@ public class UnmuteCommand implements CommandExec {
             return;
         }
         try {
-            for(User user: event.getMessage().getMentionedUsers()) {
-                Member muted = rixaGuild.getGuild().getMember(user);
-                if (rixaGuild.isUserMuted(muted.getUser())) {
+            for(Member member: Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), false)) {
+                if (rixaGuild.isUserMuted(member.getUser())) {
                     Role muteRole = event.getGuild().getRoleById(rixaGuild.getGuildSettings().getMuteRole());
                     if(muteRole != null) {
-                        rixaGuild.getGuild().getController().removeRolesFromMember(muted, Collections.singleton(muteRole)).queue();
+                        rixaGuild.getGuild().getController().removeRolesFromMember(member, Collections.singleton(muteRole)).queue();
                     }
-                    rixaGuild.unmuteMember(muted.getUser());
-                    new MessageBuilder("Successfully unmuted `" + muted.getEffectiveName() + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    rixaGuild.unmuteMember(member.getUser());
+                    new MessageBuilder("Successfully unmuted `" + member.getEffectiveName() + "`.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 } else {
-                    new MessageBuilder( muted.getEffectiveName() + ", is not muted.").setColor(event.getMember().getColor()).queue(event.getChannel());
+                    new MessageBuilder( member.getEffectiveName() + ", is not muted.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 }
             }
         } catch (PermissionException ex) {

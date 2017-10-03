@@ -7,9 +7,10 @@ import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
+import me.savvy.rixa.utils.Utils;
 import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 
@@ -41,7 +42,8 @@ public class RemoveRoleCommand implements CommandExec {
             try {
                 List<Role> roles = event.getMessage().getMentionedRoles();
                 int users = event.getMessage().getMentionedUsers().size();
-                event.getMessage().getMentionedUsers().forEach(user -> event.getGuild().getController().removeRolesFromMember(event.getGuild().getMember(user), roles).queue());
+                List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), true);
+                memberList.forEach(user -> event.getGuild().getController().removeRolesFromMember(user, roles).queue());
                 new MessageBuilder("Successfully removed `" + roles.size() + "` role(s) from " + users + " user(s)!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } catch (PermissionException ex) {
                 new MessageBuilder(event.getMember().getAsMention() + ", sorry I do not have permission for this!").setColor(event.getMember().getColor()).queue(event.getChannel());

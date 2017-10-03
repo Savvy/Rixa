@@ -27,7 +27,7 @@ public class PurgeMessagesCommand implements CommandExec {
     @Override
     @Command(mainCommand = "purge",
             aliases = { "pmessages", "purgemessages", "purgeuser" },
-            description = "Remove a users messages!",
+            description = "Remove a users messages within selected amount!",
             channelType = ChannelType.TEXT,
             type = CommandType.MOD,
             usage = "%ppurge")
@@ -53,8 +53,9 @@ public class PurgeMessagesCommand implements CommandExec {
                 break;
             }
         }
-        Member memberToDel = event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0));
-        deleteMessage(event.getChannel(), event.getMember(), memberToDel, amount);
+        List<Member> members = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), true);
+        int finalAmount = amount;
+        members.forEach(memberToDel -> deleteMessage(event.getChannel(), event.getMember(), memberToDel, finalAmount));
     }
 
     private void deleteMessage(TextChannel channel, Member user, Member userToDel, int amount) {

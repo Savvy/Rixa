@@ -8,6 +8,7 @@ import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.guild.user.UserData;
 import me.savvy.rixa.modules.levels.LevelsModule;
 import me.savvy.rixa.utils.MessageBuilder;
+import me.savvy.rixa.utils.Utils;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.User;
@@ -15,6 +16,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by savit on 7/11/2017.
@@ -27,7 +29,7 @@ public class LevelsCommand implements CommandExec {
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
         RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
-        if (!((LevelsModule)  rixaGuild.getModule("Levels")).isEnabled()) {
+        if (!rixaGuild.getModule("Levels").isEnabled()) {
             new MessageBuilder("Levels are not enabled on this server!").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
@@ -37,11 +39,12 @@ public class LevelsCommand implements CommandExec {
                 new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + rixaGuild.getGuildSettings().getPrefix() + "rank <user>].").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
-            if (event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0)) == null) {
+            List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), false);
+            if (memberList.get(0) == null) {
                 new MessageBuilder(event.getMember().getAsMention() + ", couldn't find user.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
-            getInfo(rixaGuild, event.getGuild().getMember(event.getMessage().getMentionedUsers().get(0))).queue(event.getChannel());
+            getInfo(rixaGuild, memberList.get(0)).queue(event.getChannel());
             return;
         }
         getInfo(rixaGuild, event.getMember()).queue(event.getChannel());
