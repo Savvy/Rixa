@@ -6,6 +6,7 @@ import me.savvy.rixa.commands.handlers.RixaPermission;
 import me.savvy.rixa.guild.RixaGuild;
 import me.savvy.rixa.guild.management.Guilds;
 import me.savvy.rixa.utils.MessageBuilder;
+import me.savvy.rixa.utils.Utils;
 import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
@@ -31,12 +32,13 @@ public class BatchMoveCommand implements CommandExec {
             new MessageBuilder(event.getMember().getAsMention() + ", you do not have permission for this command.").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
-        if(event.getMessage().getMentionedRoles().size() < 2) {
+        List<Role> roleList = Utils.roleSearch(event.getGuild(), event.getMessage().getContent());
+        if(roleList.size() < 2) {
             new MessageBuilder("You need to include two roles!").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
-        Role old_role = event.getMessage().getMentionedRoles().get(0);
-        Role new_role = event.getMessage().getMentionedRoles().get(1);
+        Role old_role = roleList.get(0);
+        Role new_role = roleList.get(1);
         List<Member> userWithRole = event.getGuild().getMembersWithRoles(old_role);
         if(userWithRole.size() == 0) {
             new MessageBuilder("There are no users with the role " + old_role.getAsMention()).setColor(old_role.getColor()).queue(event.getChannel());

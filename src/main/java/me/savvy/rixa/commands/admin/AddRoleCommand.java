@@ -33,18 +33,18 @@ public class AddRoleCommand implements CommandExec {
             return;
         }
         String[] messages = event.getMessage().getContent().split(" ");
+        List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), true);
+        List<Role> roleList = Utils.roleSearch(event.getGuild(), event.getMessage().getContent());
         if (messages.length >= 3) {
-            if(event.getMessage().getMentionedRoles().size() < 1 ||
-                    event.getMessage().getMentionedUsers().size() < 1) {
+            if(memberList.size() < 1 ||
+                    roleList.size() < 1) {
                 new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + messages[0] + " <role> <user>].").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
             try {
-                List<Role> roles = event.getMessage().getMentionedRoles();
                 int users = event.getMessage().getMentionedUsers().size();
-                List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), true);
-                memberList.forEach(user -> event.getGuild().getController().addRolesToMember(user, roles).queue());
-                new MessageBuilder("Successfully given " + users + " `" + roles.size() + "` role(s)").setColor(event.getMember().getColor()).queue(event.getChannel());
+                memberList.forEach(user -> event.getGuild().getController().addRolesToMember(user, roleList).queue());
+                new MessageBuilder("Successfully given " + users + " `" + roleList.size() + "` role(s)").setColor(event.getMember().getColor()).queue(event.getChannel());
             } catch (PermissionException ex) {
                 new MessageBuilder(event.getMember().getAsMention() + ", sorry I do not have permission for this!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }

@@ -33,18 +33,18 @@ public class RemoveRoleCommand implements CommandExec {
             return;
         }
         String[] messages = event.getMessage().getContent().split(" ");
+        List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), true);
+        List<Role> roleList = Utils.roleSearch(event.getGuild(), event.getMessage().getContent());
         if (messages.length >= 3) {
-            if(event.getMessage().getMentionedRoles().size() < 1 ||
-                    event.getMessage().getMentionedUsers().size() < 1) {
+            if(roleList.size() < 1 ||
+                    memberList.size() < 1) {
                 new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + messages[0] + " <role> <user>].").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
             try {
-                List<Role> roles = event.getMessage().getMentionedRoles();
                 int users = event.getMessage().getMentionedUsers().size();
-                List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), true);
-                memberList.forEach(user -> event.getGuild().getController().removeRolesFromMember(user, roles).queue());
-                new MessageBuilder("Successfully removed `" + roles.size() + "` role(s) from " + users + " user(s)!").setColor(event.getMember().getColor()).queue(event.getChannel());
+                memberList.forEach(user -> event.getGuild().getController().removeRolesFromMember(user, roleList).queue());
+                new MessageBuilder("Successfully removed `" + roleList.size() + "` role(s) from " + users + " user(s)!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } catch (PermissionException ex) {
                 new MessageBuilder(event.getMember().getAsMention() + ", sorry I do not have permission for this!").setColor(event.getMember().getColor()).queue(event.getChannel());
             }

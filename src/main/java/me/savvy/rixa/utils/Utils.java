@@ -29,7 +29,7 @@ public class Utils {
                     || (member.getEffectiveName().toLowerCase().contains(finalString))
                     || finalString.contains(member.getUser().getId())
                     || finalString.contains(member.getUser().getName().toLowerCase() + "#" + member.getUser().getDiscriminator())
-                    || finalString.contains(member.getEffectiveName())
+                    || finalString.contains(member.getEffectiveName().toLowerCase())
                     ) {
 
                 if (!bots && member.getUser().isBot()) continue;
@@ -44,7 +44,9 @@ public class Utils {
         List<Role> roles = new ArrayList<>();
         guild.getRoles().forEach(role -> {
             if (role.getName().toLowerCase().contains(string.toLowerCase())
-                    || string.contains(role.getId()))
+                    || string.contains(role.getId())
+                    || string.toLowerCase().contains(role.getName().toLowerCase())
+                    )
                 roles.add(role);
         });
         return roles;

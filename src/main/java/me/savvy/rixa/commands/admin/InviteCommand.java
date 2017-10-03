@@ -16,7 +16,7 @@ public class InviteCommand implements CommandExec {
 
     @Command(
             description = "Receive an invite from a server",
-            type = CommandType.USER,
+            type = CommandType.BOT_OWNER,
             channelType = ChannelType.TEXT,
             usage = "%pinvite", mainCommand = "invite")
     public void execute(GuildMessageReceivedEvent event) {
