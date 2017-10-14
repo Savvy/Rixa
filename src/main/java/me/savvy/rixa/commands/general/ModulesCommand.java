@@ -16,9 +16,10 @@ public class ModulesCommand implements CommandExec {
     @Override
     @Command(mainCommand = "modules",
             description = "List Rixa Modules!",
+            aliases = {"module"},
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
         RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
-        new MessageBuilder("Available Rixa Modules: " + String.join(",", rixaGuild.getModules().keySet())).setColor(event.getMember().getColor()).complete(event.getChannel());
+        new MessageBuilder("Available Rixa Modules: " + String.join(", ", rixaGuild.getModules().keySet())).setColor(event.getMember().getColor()).complete(event.getChannel());
     }
 }

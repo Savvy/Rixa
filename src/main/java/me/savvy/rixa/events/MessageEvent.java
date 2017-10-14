@@ -24,7 +24,6 @@ import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import java.awt.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -194,22 +193,26 @@ public class MessageEvent {
 
     @SubscribeEvent
     public void onGuildReact(GuildMessageReactionAddEvent event) {
-        if (event.getGuild() == null) return;
-        if (event.getUser().isBot()) return;
-        Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
-        if (message == null || message.getEmbeds().size() != 1) return;
-        MessageEmbed embed = message.getEmbeds().get(0);
-        if (StringUtils.isNullOrEmpty(embed.getTitle())) return;
-        String[] titleSplit = embed.getTitle().split(": ");
-        System.out.println(Arrays.toString(titleSplit));
-        if (ReactionManager.getReactions().containsKey(titleSplit[0])) {
-            ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
-            Method m = reactRegistrar.getMethod();
-            try {
-                m.invoke(reactRegistrar.getExecutor(), event);
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+            if (event.getGuild() == null) return;
+            if (event.getUser().isBot()) return;
+            Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
+            if (message == null || message.getEmbeds().size() != 1) return;
+            MessageEmbed embed = message.getEmbeds().get(0);
+            if (StringUtils.isNullOrEmpty(embed.getTitle())) return;
+            String[] titleSplit = embed.getTitle().split(": ");
+            if (ReactionManager.getReactions().containsKey(titleSplit[0])) {
+                ReactRegistrar reactRegistrar = ReactionManager.getReactions().get(titleSplit[0]);
+                Method m = reactRegistrar.getMethod();
+                try {
+                    m.invoke(reactRegistrar.getExecutor(), event);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
+        } catch (PermissionException pex) {
+            if (pex.getPermission() == Permission.MESSAGE_READ) return;
+            pex.printStackTrace();
         }
     }
 }

@@ -16,10 +16,14 @@ public class FeaturesCommand implements CommandExec {
     @Override
     @Command(mainCommand = "features",
             description = "List Rixa Features!",
+            aliases = {"feature"},
             channelType = ChannelType.TEXT)
     public void execute(GuildMessageReceivedEvent event) {
         RixaGuild rixaGuild = Guilds.getGuild(event.getGuild());
-        String[] features = {};
+        String[] features = {
+                "Music", "Economy", "Moderation", "Server List", "User Profiles",
+                "Role Management", "Fun Commands", "Custom Commands", "Games", "& more."
+        };
         new MessageBuilder(
                 features.length == 0 ? "There are currently no features listed." :
                 "Rixa Features: " + String.join("\n", features

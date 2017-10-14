@@ -13,6 +13,7 @@ import me.savvy.rixa.commands.mod.DeleteMessagesCommand;
 import me.savvy.rixa.commands.mod.MuteCommand;
 import me.savvy.rixa.commands.mod.PurgeMessagesCommand;
 import me.savvy.rixa.commands.mod.RaidModeCommand;
+import me.savvy.rixa.commands.owner.CleanGuildCommand;
 import me.savvy.rixa.commands.owner.OwnerCommand;
 import me.savvy.rixa.data.database.sql.SQLBuilder;
 import me.savvy.rixa.data.database.sql.other.DatabaseTables;
@@ -92,10 +93,10 @@ public class Rixa {
                 config.getJsonObject().getJSONObject("sql").getString("databaseName"),
                 config.getJsonObject().getJSONObject("sql").getString("hostName"));
         Arrays.stream(DatabaseTables.values()).forEach(databaseTables -> {
-            getInstance().getLogger().info("Checking database table (creating if needed): " + databaseTables.toString());
+            System.out.println("Checking database table (creating if needed): " + databaseTables.toString());
             try {
                 database.executeUpdate(databaseTables.getQuery());
-                getInstance().getLogger().info("Done checking " + databaseTables.toString());
+                System.out.println("Done checking " + databaseTables.toString());
             } catch (SQLException e) {
                 getInstance().getLogger().severe("Could not create table: " + databaseTables.toString());
                 e.printStackTrace();
@@ -137,7 +138,8 @@ public class Rixa {
                 new ConfigCommand(), new UrbanDictionaryCommand(), new YoutubeCommand(),
                 new AddRoleCommand(), new RemoveRoleCommand(), new LevelsCommand(),
                 new LeaderboardCommand(), new RaidModeCommand(), new OwnerCommand(),
-                new ColorCommand(), new ModulesCommand());
+                new ColorCommand(), new ModulesCommand(), new FeaturesCommand(),
+                new CleanGuildCommand());
         register(new HelpReaction(), new ConfigReaction(), new LeaderboardReaction());
     }
 

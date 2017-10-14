@@ -102,7 +102,9 @@ public class MusicCommand implements CommandExec {
                     return;
                 }
                 try {
-                    guild.getAudioManager().openAudioConnection(event.getMember().getVoiceState().getChannel());
+                    VoiceChannel channel = event.getMember().getVoiceState().getChannel();
+                    guild.getAudioManager().openAudioConnection(channel);
+                    new MessageBuilder("Entering Voice Channel: " + channel.getName()).setColor(event.getMember().getColor()).queue(event.getChannel());
                 } catch (PermissionException e) {
                     if (e.getPermission() == Permission.VOICE_CONNECT) {
                         new MessageBuilder("I do not have permission to join the requested voice channel.").setColor(event.getMember().getColor()).queue(event.getChannel());

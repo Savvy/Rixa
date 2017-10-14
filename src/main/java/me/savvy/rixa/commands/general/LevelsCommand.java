@@ -33,13 +33,14 @@ public class LevelsCommand implements CommandExec {
             new MessageBuilder("Levels are not enabled on this server!").setColor(event.getMember().getColor()).queue(event.getChannel());
             return;
         }
+
+        List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), false);
         
         if (event.getMessage().getContent().split(" ").length == 2) {
-            if(event.getMessage().getMentionedUsers().size() < 1) {
+            if (memberList.size() < 1) {
                 new MessageBuilder(event.getMember().getAsMention() + ", incorrect usage try [" + rixaGuild.getGuildSettings().getPrefix() + "rank <user>].").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;
             }
-            List<Member> memberList = Utils.memberSearch(event.getGuild(), event.getMessage().getContent(), false);
             if (memberList.get(0) == null) {
                 new MessageBuilder(event.getMember().getAsMention() + ", couldn't find user.").setColor(event.getMember().getColor()).queue(event.getChannel());
                 return;

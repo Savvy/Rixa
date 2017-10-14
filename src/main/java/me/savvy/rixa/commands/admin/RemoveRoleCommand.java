@@ -42,7 +42,7 @@ public class RemoveRoleCommand implements CommandExec {
                 return;
             }
             try {
-                int users = event.getMessage().getMentionedUsers().size();
+                int users = memberList.size();
                 memberList.forEach(user -> event.getGuild().getController().removeRolesFromMember(user, roleList).queue());
                 new MessageBuilder("Successfully removed `" + roleList.size() + "` role(s) from " + users + " user(s)!").setColor(event.getMember().getColor()).queue(event.getChannel());
             } catch (PermissionException ex) {
