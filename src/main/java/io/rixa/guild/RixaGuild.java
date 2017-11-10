@@ -1,5 +1,6 @@
 package io.rixa.guild;
 
+import io.rixa.guild.manager.IGuild;
 import io.rixa.guild.modules.RixaModule;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Guild;

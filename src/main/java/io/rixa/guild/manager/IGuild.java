@@ -1,4 +1,4 @@
-package io.rixa.guild;
+package io.rixa.guild.manager;
 
 import io.rixa.guild.modules.RixaModule;
 
