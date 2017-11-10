@@ -1,5 +1,6 @@
 token: "YOUR_TOKEN_HERE"
 botGame: "Rixa 2.0 | http://rixa.io/invite"
+shards: 5
 botAdmins:
 - "YOUR_USER_ID_HERE"
 - "OTHER_ADMINS"

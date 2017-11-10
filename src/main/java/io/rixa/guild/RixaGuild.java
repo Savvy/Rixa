@@ -20,7 +20,7 @@ public class RixaGuild implements IGuild {
     }
 
     @Override
-    public void load() { }
+    public void load() {}
 
     @Override
     public void save() { }

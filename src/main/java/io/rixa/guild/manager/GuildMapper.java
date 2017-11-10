@@ -11,7 +11,6 @@ public class GuildMapper implements RowMapper<RixaGuild> {
     @Override
     public RixaGuild mapRow(ResultSet resultSet, int i) throws SQLException {
         RixaGuild guild = new RixaGuild(null);
-        guild.load(resultSet);
         // Register guild;
         return guild;
     }
