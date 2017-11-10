@@ -74,12 +74,12 @@ public class Rixa {
     private void loadConfiguration() {
         try {
             if (FileUtils.saveResource("config.yml", false)) {
-                File file = new File(defaultPath.getPath() + "/config.yml");
-                configuration = objectMapper.readValue(file, Configuration.class);
-                logger.info("Configuration successfully loaded.");
                 logger.info("Shutting down Rixa. Please edit configuration");
                 System.exit(0);
             }
+            File file = new File(defaultPath.getPath() + "/config.yml");
+            configuration = objectMapper.readValue(file, Configuration.class);
+            logger.info("Configuration successfully loaded.");
         } catch (IOException e) {
             logger.severe("Could not properly load configuration file!.");
             e.printStackTrace();
