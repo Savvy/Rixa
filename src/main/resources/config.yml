@@ -1,0 +1,12 @@
+token: "YOUR_TOKEN_HERE"
+botGame: "Rixa 2.0 | http://rixa.io/invite"
+botAdmins:
+- "YOUR_USER_ID_HERE"
+- "OTHER_ADMINS"
+- "REMOVE_IF_YOU_DONT_WANT"
+sqlCredentials:
+  hostName: "localhost"
+  databaseName: "rixa"
+  userName: "rixa_users"
+  password: "password"
+  port: "3306"
