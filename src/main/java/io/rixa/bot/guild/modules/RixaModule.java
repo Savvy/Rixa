@@ -1,4 +1,4 @@
-package io.rixa.guild.modules;
+package io.rixa.bot.guild.modules;
 
 public interface RixaModule {
 

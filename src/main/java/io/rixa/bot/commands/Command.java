@@ -1,8 +1,7 @@
-package io.rixa.commands;
+package io.rixa.bot.commands;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Collections;

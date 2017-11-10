@@ -1,6 +1,6 @@
-package io.rixa.utils;
+package io.rixa.bot.utils;
 
-import io.rixa.Rixa;
+import io.rixa.bot.Rixa;
 
 import java.io.*;
 import java.net.URL;
@@ -11,7 +11,7 @@ public class FileUtils {
     /*
     Method borrowed from https://hub.spigotmc.org/stash/projects/SPIGOT/repos/bukkit/browse/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
      */
-    public static void saveResource(String resourcePath, boolean replace) throws IOException{
+    public static boolean saveResource(String resourcePath, boolean replace) throws IOException{
         if (resourcePath == null || resourcePath.equals("")) {
             throw new IllegalArgumentException("ResourcePath cannot be null or empty");
         }
@@ -39,9 +39,9 @@ public class FileUtils {
             }
             out.close();
             in.close();
-        } else {
-            System.out.println("Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+            return true;
         }
+        return false;
     }
 
     /*

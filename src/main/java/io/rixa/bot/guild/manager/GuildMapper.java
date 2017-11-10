@@ -1,6 +1,6 @@
-package io.rixa.guild.manager;
+package io.rixa.bot.guild.manager;
 
-import io.rixa.guild.RixaGuild;
+import io.rixa.bot.guild.RixaGuild;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

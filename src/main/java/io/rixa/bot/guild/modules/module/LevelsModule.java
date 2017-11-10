@@ -1,6 +1,6 @@
-package io.rixa.guild.modules.module;
+package io.rixa.bot.guild.modules.module;
 
-import io.rixa.guild.modules.RixaModule;
+import io.rixa.bot.guild.modules.RixaModule;
 import lombok.Getter;
 import lombok.Setter;
 

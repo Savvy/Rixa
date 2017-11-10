@@ -1,9 +1,10 @@
-package io.rixa;
+package io.rixa.bot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.rixa.data.config.Configuration;
-import io.rixa.utils.FileUtils;
+import io.rixa.bot.commands.CommandHandler;
+import io.rixa.bot.data.config.Configuration;
+import io.rixa.bot.utils.FileUtils;
 import lombok.Getter;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
@@ -23,6 +24,7 @@ import java.util.logging.Logger;
 public class Rixa {
 
     private static Rixa instance;
+    @Getter private CommandHandler commandHandler;
     @Getter private Configuration configuration;
     @Getter private ObjectMapper objectMapper;
     @Getter private List<JDA> shardList;
@@ -35,11 +37,12 @@ public class Rixa {
         logger = Logger.getLogger(Rixa.class.getCanonicalName());
         objectMapper = new ObjectMapper(new YAMLFactory());
         defaultPath = new File("Rixa");
+        commandHandler = new CommandHandler();
         shardList = new ArrayList<>();
         defaultPath.mkdirs();
         loadConfiguration();
-        loadJDA();
         registerCommands();
+        loadJDA();
     }
 
     private void loadJDA() {
@@ -70,10 +73,13 @@ public class Rixa {
 
     private void loadConfiguration() {
         try {
-            FileUtils.saveResource("config.yml", false);
-            File file = new File(defaultPath.getPath() + "/config.yml");
-            configuration = objectMapper.readValue(file, Configuration.class);
-            logger.info("Configuration successfully loaded.");
+            if (FileUtils.saveResource("config.yml", false)) {
+                File file = new File(defaultPath.getPath() + "/config.yml");
+                configuration = objectMapper.readValue(file, Configuration.class);
+                logger.info("Configuration successfully loaded.");
+                logger.info("Shutting down Rixa. Please edit configuration");
+                System.exit(0);
+            }
         } catch (IOException e) {
             logger.severe("Could not properly load configuration file!.");
             e.printStackTrace();
@@ -82,9 +88,5 @@ public class Rixa {
 
     public static Rixa getInstance() {
         return (instance == null) ? new Rixa() : instance;
-    }
-
-    public static void main(String[] args) {
-        Rixa.getInstance();
     }
 }

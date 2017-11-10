@@ -1,4 +1,4 @@
-package io.rixa.commands;
+package io.rixa.bot.commands;
 
 public enum RixaPermission {
     NONE;

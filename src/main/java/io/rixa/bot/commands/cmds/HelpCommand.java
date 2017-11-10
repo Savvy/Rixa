@@ -1,7 +1,7 @@
-package io.rixa.commands.cmds;
+package io.rixa.bot.commands.cmds;
 
-import io.rixa.commands.Command;
-import io.rixa.commands.RixaPermission;
+import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.RixaPermission;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class HelpCommand extends Command {

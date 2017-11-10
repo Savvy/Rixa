@@ -1,4 +1,4 @@
-package io.rixa.data.config;
+package io.rixa.bot.data.config;
 
 import lombok.Getter;
 import lombok.Setter;

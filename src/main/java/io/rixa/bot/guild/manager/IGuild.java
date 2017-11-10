@@ -1,6 +1,6 @@
-package io.rixa.guild.manager;
+package io.rixa.bot.guild.manager;
 
-import io.rixa.guild.modules.RixaModule;
+import io.rixa.bot.guild.modules.RixaModule;
 
 public interface IGuild {
 

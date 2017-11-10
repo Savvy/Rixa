@@ -1,4 +1,4 @@
-package io.rixa.data;
+package io.rixa.bot.data;
 
 public interface DataStorage {
 }
