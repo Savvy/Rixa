@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.rixa.bot.commands.CommandHandler;
 import io.rixa.bot.data.config.Configuration;
+import io.rixa.bot.data.storage.DatabaseAdapter;
 import io.rixa.bot.utils.FileUtils;
 import lombok.Getter;
 import net.dv8tion.jda.core.AccountType;
@@ -84,6 +85,7 @@ public class Rixa {
             logger.severe("Could not properly load configuration file!.");
             e.printStackTrace();
         }
+        DatabaseAdapter.getInstance().check();
     }
 
     public static Rixa getInstance() {

@@ -14,4 +14,8 @@ public class Configuration {
     @Getter @Setter private int shards;
 
     public Configuration() {}
+
+    public boolean isBotAdmin(String s) {
+        return botAdmins.contains(s);
+    }
 }
