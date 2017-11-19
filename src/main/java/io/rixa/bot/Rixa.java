@@ -2,12 +2,12 @@ package io.rixa.bot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.rixa.bot.commands.cmds.InfoCommand;
-import io.rixa.bot.commands.cmds.PingCommand;
-import io.rixa.bot.commands.cmds.ServerInfoCommand;
+import io.rixa.bot.commands.cmds.general.InfoCommand;
+import io.rixa.bot.commands.cmds.general.PingCommand;
+import io.rixa.bot.commands.cmds.general.ServerInfoCommand;
 import io.rixa.bot.commands.handler.CommandHandler;
 import io.rixa.bot.commands.perms.RixaPermission;
-import io.rixa.bot.commands.cmds.HelpCommand;
+import io.rixa.bot.commands.cmds.general.HelpCommand;
 import io.rixa.bot.data.config.Configuration;
 import io.rixa.bot.data.storage.DatabaseAdapter;
 import io.rixa.bot.events.BotJoinListener;
@@ -123,5 +123,9 @@ public class Rixa {
 
     public static Rixa getInstance() {
         return (instance == null) ? new Rixa() : instance;
+    }
+
+    public void close() {
+        shardList.forEach(JDA::shutdown);
     }
 }

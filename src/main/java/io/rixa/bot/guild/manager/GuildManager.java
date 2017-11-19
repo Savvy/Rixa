@@ -1,5 +1,6 @@
 package io.rixa.bot.guild.manager;
 
+import gnu.trove.map.TByteByteMap;
 import io.rixa.bot.data.storage.DatabaseAdapter;
 import io.rixa.bot.data.storage.enums.Statements;
 import io.rixa.bot.guild.RixaGuild;
@@ -51,5 +52,9 @@ public class GuildManager {
         DatabaseAdapter.getInstance().get().update
                 (Statements.INSERT_CORE.getStatement(),
                         guild.getId(), guild.getName(), "Description not set.", "No Keywords Found ");
+    }
+
+    public Map<String, RixaGuild> getGuilds() {
+        return rixaGuildMap;
     }
 }

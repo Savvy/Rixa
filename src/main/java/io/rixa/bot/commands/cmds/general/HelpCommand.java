@@ -1,4 +1,4 @@
-package io.rixa.bot.commands.cmds;
+package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.commands.Command;
 import io.rixa.bot.commands.perms.RixaPermission;
