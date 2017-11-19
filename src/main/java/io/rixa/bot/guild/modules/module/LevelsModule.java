@@ -6,11 +6,12 @@ import lombok.Setter;
 
 public class LevelsModule implements RixaModule {
 
-    @Getter @Setter private String name, description;
+    @Getter private String name, description;
+    @Getter @Setter boolean enabled;
 
     public LevelsModule(String name, String description) {
-        setName(name);
-        setDescription(description);
+        this.name = name;
+        this.description = description;
     }
 
     @Override
@@ -20,6 +21,11 @@ public class LevelsModule implements RixaModule {
 
     @Override
     public void save() {
+
+    }
+
+    @Override
+    public void reload() {
 
     }
 }

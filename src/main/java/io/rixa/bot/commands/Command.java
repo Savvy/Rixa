@@ -1,5 +1,6 @@
 package io.rixa.bot.commands;
 
+import io.rixa.bot.commands.perms.RixaPermission;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -31,5 +32,5 @@ public abstract class Command {
         setAliases(aliases);
     }
 
-    public abstract boolean execute(GuildMessageReceivedEvent event);
+    public abstract void execute(GuildMessageReceivedEvent event);
 }

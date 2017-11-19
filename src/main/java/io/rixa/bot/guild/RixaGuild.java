@@ -1,7 +1,9 @@
 package io.rixa.bot.guild;
 
+import io.rixa.bot.Rixa;
 import io.rixa.bot.guild.manager.IGuild;
 import io.rixa.bot.guild.modules.RixaModule;
+import io.rixa.bot.guild.modules.module.ConversationModule;
 import lombok.Getter;
 import lombok.Setter;
 import net.dv8tion.jda.core.entities.Guild;
@@ -28,7 +30,9 @@ public class RixaGuild implements IGuild {
     }
 
     @Override
-    public void load() {}
+    public void load() {
+        registerModule(new ConversationModule("Conversation", "Have a conversation with Rixa!"));
+    }
 
     @Override
     public void save() { }
@@ -39,8 +43,8 @@ public class RixaGuild implements IGuild {
     }
 
     @Override
-    public RixaModule registerModule(String id, RixaModule module) {
-        if (!(isRegistered(id))) modules.put(id, module);
+    public RixaModule registerModule(RixaModule module) {
+        if (!(isRegistered(module.getName()))) modules.put(module.getName(), module);
         return module;
     }
 

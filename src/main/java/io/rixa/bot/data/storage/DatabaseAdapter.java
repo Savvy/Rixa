@@ -2,8 +2,19 @@ package io.rixa.bot.data.storage;
 
 import io.rixa.bot.Rixa;
 import io.rixa.bot.data.config.Configuration;
+import io.rixa.bot.data.storage.enums.Statements;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowCountCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import java.sql.Array;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
 public class DatabaseAdapter {
 
@@ -22,9 +33,10 @@ public class DatabaseAdapter {
         Configuration config = rixaInstance.getConfiguration();
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl(
-                String.format("jdbc:mysql://%s:%s/%s", config.getSqlCredentials().get("hostName"),
-                        config.getSqlCredentials().get("port"), config.getSqlCredentials().get("databaseName")));
+        String url = String.format("jdbc:mysql://%s:%s/%s", config.getSqlCredentials().get("hostName"),
+                config.getSqlCredentials().get("port"), config.getSqlCredentials().get("databaseName"));
+        System.out.println(url);
+        dataSource.setUrl(url);
         dataSource.setUsername(config.getSqlCredentials().get("userName"));
         dataSource.setPassword(config.getSqlCredentials().get("password"));
         jdbcTemplate = new JdbcTemplate(dataSource);
@@ -36,8 +48,21 @@ public class DatabaseAdapter {
     }
 
     public boolean exists(String table, String key, String value) {
-        int amount = get().queryForObject(String.format("SELECT COUNT(*) FROM `%s` WHERE `%s` = ?", table, key), new Object[] { value }, Integer.class);
-        return amount > 0;
+        try {
+            int amount = get().queryForObject
+                    (String.format(Statements.COUNT_CORE.getStatement(), table, key), new Object[]{value}, Integer.class);
+            return amount > 0;
+        } catch (EmptyResultDataAccessException ex) {
+            return false;
+        }
+    }
+
+    public Array createArrayOf(String typeName, Object[] elements) {
+        try {
+            return get().getDataSource().getConnection().createArrayOf(typeName, elements);
+        } catch (SQLException ignored) {
+        }
+        return null;
     }
 
     public static DatabaseAdapter getInstance() {

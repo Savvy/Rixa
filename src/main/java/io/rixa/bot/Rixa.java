@@ -2,9 +2,17 @@ package io.rixa.bot;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.rixa.bot.commands.CommandHandler;
+import io.rixa.bot.commands.cmds.InfoCommand;
+import io.rixa.bot.commands.cmds.PingCommand;
+import io.rixa.bot.commands.cmds.ServerInfoCommand;
+import io.rixa.bot.commands.handler.CommandHandler;
+import io.rixa.bot.commands.perms.RixaPermission;
+import io.rixa.bot.commands.cmds.HelpCommand;
 import io.rixa.bot.data.config.Configuration;
 import io.rixa.bot.data.storage.DatabaseAdapter;
+import io.rixa.bot.events.BotJoinListener;
+import io.rixa.bot.events.MessageListener;
+import io.rixa.bot.events.ReadyListener;
 import io.rixa.bot.utils.FileUtils;
 import lombok.Getter;
 import net.dv8tion.jda.core.AccountType;
@@ -12,6 +20,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
 
@@ -31,7 +40,7 @@ public class Rixa {
     @Getter private List<JDA> shardList;
     @Getter private File defaultPath;
     @Getter private Logger logger;
-    @Getter private JDA jda;
+    private static long timeUp;
 
     private Rixa() {
         instance = this;
@@ -46,31 +55,42 @@ public class Rixa {
         loadJDA();
     }
 
+    public static long getTimeUp() {
+        return timeUp;
+    }
+
     private void loadJDA() {
+        JDABuilder jda = new JDABuilder(AccountType.BOT)
+                .setToken(configuration.getToken())
+                .setGame(Game.of(configuration.getBotGame()))
+                .setEventManager(new AnnotatedEventManager())
+                .addEventListener(new ReadyListener(), new BotJoinListener(), new MessageListener())
+                .setAutoReconnect(true)
+                .setAudioEnabled(true)
+                .setEnableShutdownHook(false)
+                .setStatus(OnlineStatus.ONLINE);
         for (int i = 0; i < configuration.getShards(); i++) {
-            getLogger().info("Loading Shard #" + (i + 1) + "!");
             try {
-                jda = new JDABuilder(AccountType.BOT)
-                        .setToken(configuration.getToken())
-                        .setGame(Game.of(configuration.getBotGame()))
-                        .setEventManager(new AnnotatedEventManager())
-                        .setAutoReconnect(true)
-                        .setStatus(OnlineStatus.ONLINE)
-                        .setAudioEnabled(true)
-                        .setEnableShutdownHook(false)
-                        .useSharding(i, configuration.getShards())
-                        .buildBlocking();
-                getShardList().add(jda);
-                getLogger().info("Shard #" + (i + 1) + " has been loaded");
+            getLogger().info("Loading Shard #" + (i + 1) + "!");
+            getShardList().add(jda.useSharding(i, configuration.getShards()).buildBlocking());
+            getLogger().info("Shard #" + (i + 1) + " has been loaded");
                 Thread.sleep(5000);
-            } catch (LoginException | RateLimitedException | InterruptedException e) {
+            } catch (InterruptedException | RateLimitedException | LoginException e) {
                 e.printStackTrace();
             }
         }
         Runtime.getRuntime().addShutdownHook(new Thread(() -> getShardList().forEach(JDA::shutdown)));
+        timeUp = System.currentTimeMillis();
     }
 
-    private void registerCommands() {}
+    private void registerCommands() {
+        this.commandHandler.registerCommands(
+                new HelpCommand("help", RixaPermission.NONE, "Review commands and its usages!"),
+                new InfoCommand("info", RixaPermission.NONE, "Review information about a user or Rixa!"),
+                new ServerInfoCommand("serverinfo", RixaPermission.NONE, "Review information about the server!"),
+                new PingCommand("ping", RixaPermission.NONE, "Check Rixa's ping!")
+        );
+    }
 
     private void loadConfiguration() {
         try {
@@ -81,11 +101,24 @@ public class Rixa {
             File file = new File(defaultPath.getPath() + "/config.yml");
             configuration = objectMapper.readValue(file, Configuration.class);
             logger.info("Configuration successfully loaded.");
+            DatabaseAdapter.getInstance().check();
         } catch (IOException e) {
             logger.severe("Could not properly load configuration file!.");
             e.printStackTrace();
         }
-        DatabaseAdapter.getInstance().check();
+    }
+
+    public Guild getGuildById(String id) {
+        Guild guild = null;
+        for (JDA jda : Rixa.getInstance().getShardList()) {
+            System.out.println(jda.getShardInfo().toString());
+            System.out.println("JDA GUILDS:" + jda.getGuilds().size());
+            if (jda == null || jda.getGuilds().size() == 0 || jda.getGuildById(id) == null) continue;
+            guild = jda.getGuildById(id);
+            break;
+        }
+        if (guild != null) return guild;
+        throw new NullPointerException("Guild not found.");
     }
 
     public static Rixa getInstance() {

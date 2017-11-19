@@ -10,7 +10,7 @@ public interface IGuild {
     void load();
     void save();
     RixaModule getModule(String id);
-    RixaModule registerModule(String id, RixaModule module);
+    RixaModule registerModule(RixaModule module);
     boolean isRegistered(String id);
     void setDescription(String description);
     void setKeywords(List<String> keywords);

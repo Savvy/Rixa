@@ -1,5 +1,6 @@
-package io.rixa.bot.commands;
+package io.rixa.bot.commands.handler;
 
+import io.rixa.bot.commands.Command;
 import io.rixa.bot.commands.exceptions.CommandNotFoundException;
 
 import java.util.HashMap;
@@ -14,7 +15,14 @@ public class CommandHandler {
        commandMap.put(command.getCommand(), command);
     }
 
+    public void registerCommands(Command...commands) {
+        for (Command command : commands) {
+            registerCommand(command);
+        }
+    }
+
     public Command getCommand(String commandName) throws CommandNotFoundException {
+        if (commandMap.containsKey(commandName)) return commandMap.get(commandName);
         for(Command command: commandMap.values()) {
             if (command.getAliases().contains(commandName)) {
                 return command;

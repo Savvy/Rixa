@@ -1,6 +1,7 @@
 package io.rixa.bot.guild.manager;
 
 import io.rixa.bot.data.storage.DatabaseAdapter;
+import io.rixa.bot.data.storage.enums.Statements;
 import io.rixa.bot.guild.RixaGuild;
 import net.dv8tion.jda.core.entities.Guild;
 
@@ -20,18 +21,35 @@ public class GuildManager {
         return (instance == null) ? new GuildManager() : instance;
     }
 
-    public void addGuild(Guild guild) {
+    public RixaGuild getGuild(Guild guild) {
+        if (!hasGuild(guild.getId())) {
+            return addGuild(guild);
+        }
+        return rixaGuildMap.get(guild.getId());
+    }
+
+    public RixaGuild getGuild(String id) {
+        return rixaGuildMap.get(id);
+    }
+
+    public boolean hasGuild(String id) {
+        return rixaGuildMap.containsKey(id);
+    }
+
+    public RixaGuild addGuild(Guild guild) {
         if (!(DatabaseAdapter.getInstance().exists("core", "guild_id", guild.getId()))) {
             insert(guild);
         }
-        RixaGuild rixaGuild = (RixaGuild) DatabaseAdapter.getInstance().get().queryForObject(
-                "SELECT * FROM `core` WHERE `guild_name` = ?", new Object[] { guild.getId() }, new GuildMapper());
+        RixaGuild rixaGuild = new RixaGuild(guild);
         rixaGuildMap.put(guild.getId(), rixaGuild);
+        DatabaseAdapter.getInstance().get().queryForObject(
+                Statements.SELECT_CORE.getStatement(), new Object[] { guild.getId() }, new GuildMapper());
+        return rixaGuild;
     }
 
     private void insert(Guild guild) {
         DatabaseAdapter.getInstance().get().update
-                ("INSERT INTO `core` (`guild_id`, `guild_name`, `description`, `keywords`) VALUES (?, ?, ?, ?)",
-                        guild.getId(), guild.getName(), "Description not set.", "No Keywords Found.");
+                (Statements.INSERT_CORE.getStatement(),
+                        guild.getId(), guild.getName(), "Description not set.", "No Keywords Found ");
     }
 }

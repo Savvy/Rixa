@@ -8,6 +8,10 @@ public class ReadyListener {
 
     @SubscribeEvent
     public void onReady(ReadyEvent event) {
-        event.getJDA().getGuilds().forEach(guild -> GuildManager.getInstance().addGuild(guild));
+        if (event.getJDA().getGuilds().size() == 0) return;
+        System.out.println("Ready Event Triggered");
+        event.getJDA().getGuilds().forEach(guild -> {
+            GuildManager.getInstance().addGuild(guild);
+        });
     }
 }
