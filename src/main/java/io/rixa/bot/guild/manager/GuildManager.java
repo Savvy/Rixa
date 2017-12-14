@@ -1,9 +1,9 @@
 package io.rixa.bot.guild.manager;
 
-import gnu.trove.map.TByteByteMap;
 import io.rixa.bot.data.storage.DatabaseAdapter;
 import io.rixa.bot.data.storage.enums.Statements;
 import io.rixa.bot.guild.RixaGuild;
+import io.rixa.bot.guild.mapper.GuildMapper;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class GuildManager {
         RixaGuild rixaGuild = new RixaGuild(guild);
         rixaGuildMap.put(guild.getId(), rixaGuild);
         DatabaseAdapter.getInstance().get().queryForObject(
-                Statements.SELECT_CORE.getStatement(), new Object[] { guild.getId() }, new GuildMapper());
+                Statements.SELECT_ALL_FROM_TABLE.getStatement("{table_name}", "core"), new Object[] { guild.getId() }, new GuildMapper());
         return rixaGuild;
     }
 

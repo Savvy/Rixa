@@ -7,8 +7,8 @@ public enum Statements {
     /*
     Select statements
      */
-    SELECT_CORE("SELECT * FROM `core` WHERE `guild_id` = ?"),
     SELECT_MODULE_STATUS("SELECT `{module_name}` FROM `modules` WHERE `guild_id` = ?"),
+    SELECT_ALL_FROM_TABLE("SELECT * FROM `{table_name}` WHERE `guild_id` = ?"),
 
 
     /*

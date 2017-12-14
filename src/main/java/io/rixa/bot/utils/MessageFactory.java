@@ -47,6 +47,11 @@ public class MessageFactory {
         return this;
     }
 
+    public MessageFactory setImage(String image) {
+        builder.setImage(image);
+        return this;
+    }
+
     public MessageFactory setColor(Color color) {
         builder.setColor(color);
         return this;
@@ -64,6 +69,11 @@ public class MessageFactory {
 
     public MessageFactory setAuthor(String name, String url, String iconURL) {
         builder.setAuthor(name, url, iconURL);
+        return this;
+    }
+
+    public MessageFactory setAuthor(String name, String iconURL) {
+        builder.setAuthor(name, iconURL, iconURL);
         return this;
     }
 

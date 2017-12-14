@@ -12,11 +12,12 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
+import java.io.IOException;
+
 public class MessageListener {
 
     @SubscribeEvent
     public void onMessage(GuildMessageReceivedEvent event) {
-        System.out.println("GuildMessageReceivedEvent Event");
         String message = event.getMessage().getContent().trim();
         RixaGuild rixaGuild = GuildManager.getInstance().getGuild(event.getGuild());
         if (message.startsWith("@" + event.getGuild().getSelfMember().getEffectiveName())) {
@@ -25,16 +26,21 @@ public class MessageListener {
         }
         String prefix = "!";
         if (!(message.startsWith(prefix))) return;
-        String commandName = (message.contains(" ") ? message.split(" ")[0] : message);
-        command(commandName, prefix, event);
+        String[] msgArgs = message.split(" ");
+        String commandName = (message.contains(" ") ? msgArgs[0] : message);
+        String[] args = new String[msgArgs.length - 1];
+        System.arraycopy(msgArgs, 1, args, 0, msgArgs.length - 1);
+        command(commandName, prefix, event, args);
     }
 
-    private void command(String commandName, String prefix, GuildMessageReceivedEvent event) {
+    private void command(String commandName, String prefix, GuildMessageReceivedEvent event, String[] args) {
         commandName = commandName.replaceFirst(prefix, "");
         try {
             Command command = Rixa.getInstance().getCommandHandler().getCommand(commandName);
-            command.execute(event);
-        } catch (CommandNotFoundException ignored) {}
+            //command.execute(event);
+            event.getMessage().delete().queue();
+            command.execute(commandName, event.getGuild(), event.getMember(), event.getChannel(), args);
+        } catch (CommandNotFoundException | IOException ignored) { }
     }
 
     private void chatter(RixaGuild rixaGuild, TextChannel channel, String message) {

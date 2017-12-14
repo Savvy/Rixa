@@ -5,6 +5,9 @@ import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
 import io.rixa.bot.utils.MessageFactory;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
@@ -17,25 +20,25 @@ public class ServerInfoCommand extends Command {
     }
 
     @Override
-    public void execute(GuildMessageReceivedEvent event) {
-        RixaGuild rixaGuild = GuildManager.getInstance().getGuild(event.getGuild());
+    public void execute(String commandLabel, Guild guild, Member member, TextChannel channel, String[] args) {
+        RixaGuild rixaGuild = GuildManager.getInstance().getGuild(guild);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
-        User owner = event.getGuild().getOwner().getUser();
+        User owner = guild.getOwner().getUser();
         MessageFactory
                 .create(rixaGuild.getDescription())
-                .setTitle(event.getGuild().getName(), String.format("http://rixa.io/servers/%s", event.getGuild().getId()))
-                .addField("Created", event.getGuild().getCreationTime().format(formatter), true)
-                .addField("Region", event.getGuild().getRegion().toString(), true)
-                .addField("Users", String.valueOf(event.getGuild().getMembers().size()), true)
-                .addField("Channel Categories", String.valueOf(event.getGuild().getCategories().size()), true)
-                .addField("Text Channels", String.valueOf(event.getGuild().getTextChannels().size()), true)
-                .addField("Voice Channels", String.valueOf(event.getGuild().getVoiceChannels().size()), true)
-                .addField("Verification Level", event.getGuild().getVerificationLevel().toString(), true)
-                .addField("Roles", String.valueOf(event.getGuild().getRoles().size()), true)
+                .setTitle(guild.getName(), String.format("http://rixa.io/servers/%s", guild.getId()))
+                .addField("Created", guild.getCreationTime().format(formatter), true)
+                .addField("Region", guild.getRegion().toString(), true)
+                .addField("Users", String.valueOf(guild.getMembers().size()), true)
+                .addField("Channel Categories", String.valueOf(guild.getCategories().size()), true)
+                .addField("Text Channels", String.valueOf(guild.getTextChannels().size()), true)
+                .addField("Voice Channels", String.valueOf(guild.getVoiceChannels().size()), true)
+                .addField("Verification Level", guild.getVerificationLevel().toString(), true)
+                .addField("Roles", String.valueOf(guild.getRoles().size()), true)
                 .addField("Owner", owner.getName() + "#" + owner.getDiscriminator(), true)
                 .addField("Enlisted", String.valueOf(true), true)
-                .setThumbnail(event.getGuild().getIconUrl())
-                .footer("Server Id: " + event.getGuild().getId(), event.getGuild().getIconUrl())
-                .queue(event.getChannel());
+                .setThumbnail(guild.getIconUrl())
+                .footer("Server Id: " + guild.getId(), guild.getIconUrl())
+                .queue(channel);
     }
 }

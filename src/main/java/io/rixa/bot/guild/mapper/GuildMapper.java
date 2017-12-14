@@ -1,5 +1,7 @@
-package io.rixa.bot.guild.manager;
+package io.rixa.bot.guild.mapper;
 
+import io.rixa.bot.guild.manager.GuildManager;
+import io.rixa.bot.guild.manager.IGuild;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

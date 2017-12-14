@@ -6,6 +6,7 @@ import com.google.code.chatterbotapi.ChatterBotSession;
 import com.google.code.chatterbotapi.ChatterBotType;
 import io.rixa.bot.data.storage.DatabaseAdapter;
 import io.rixa.bot.data.storage.enums.Statements;
+import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.modules.RixaModule;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,12 +17,14 @@ public class ConversationModule implements RixaModule {
     @Getter private ChatterBotSession chatBotSession;
     @Getter private ChatterBot chatBot;
     @Getter private String name, description;
+    @Getter private RixaGuild guild;
     @Getter @Setter boolean enabled;
 
-    public ConversationModule(String name, String description) {
+    public ConversationModule(String name, String description, RixaGuild guild) {
         this.name = name;
         this.description = description;
         this.enabled = true;
+        this.guild = guild;
     }
 
     @Override

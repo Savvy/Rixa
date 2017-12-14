@@ -22,7 +22,7 @@ public class CommandHandler {
     }
 
     public Command getCommand(String commandName) throws CommandNotFoundException {
-        if (commandMap.containsKey(commandName)) return commandMap.get(commandName);
+        if (commandMap.containsKey(commandName.toLowerCase())) return commandMap.get(commandName.toLowerCase());
         for(Command command: commandMap.values()) {
             if (command.getAliases().contains(commandName)) {
                 return command;

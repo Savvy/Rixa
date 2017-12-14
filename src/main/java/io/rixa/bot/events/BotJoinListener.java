@@ -8,7 +8,6 @@ public class BotJoinListener {
 
     @SubscribeEvent
     public void onJoin(GuildJoinEvent event) {
-        System.out.println("GuildJoinEvent Event");
         event.getJDA().getGuilds().forEach(guild -> GuildManager.getInstance().addGuild(guild));
     }
 }
