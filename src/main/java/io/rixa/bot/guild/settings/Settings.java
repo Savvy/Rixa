@@ -22,15 +22,24 @@ public class Settings implements RixaSettings {
 
     public Settings(RixaGuild rixaGuild) {
         this.rixaGuild = rixaGuild;
+        load();
     }
 
     @Override
     public void load() {
+        if (!(DatabaseAdapter.getInstance().exists("settings", "guild_id", rixaGuild.getId()))) {
+            DatabaseAdapter.getInstance().get().update
+                    ("INSERT INTO settings(guild_id, log_enabled, log_channel, joinMessage, quitMessage, greetings, farewell," +
+                                    " prefix, joinPm, joinVerification, defaultRole, muteRole) VALUES " +
+                                    "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                            rixaGuild.getId(), false, "default_value", "default_value", "default_value", "default_value",
+                            "default_value", "!", "default", 0, "default_value", "default_value");
+        }
         DatabaseAdapter.getInstance().get().query("SELECT * FROM `settings` WHERE `guild_id` = ?",
                 new Object[] { rixaGuild.getId() }, (resultSet, i) -> {
                     setPrefix(resultSet.getString("prefix"));
                     setJoinMessage(resultSet.getString("joinMessage"));
-                    setJoinMessage(resultSet.getString("quitMessage"));
+                    setQuitMessage(resultSet.getString("quitMessage"));
                     setJoinPrivateMessage(resultSet.getString("joinPm"));
                     setJoinVerification(resultSet.getBoolean("joinVerification"));
                     String greetingsId = resultSet.getString("greetings");
@@ -55,6 +64,14 @@ public class Settings implements RixaSettings {
 
     @Override
     public void save() {
-
+        DatabaseAdapter.getInstance().get().update("UPDATE `settings` SET " +
+                "`prefix` = ?, `joinMessage` = ?, `quitMessage` = ?, " +
+                "`joinPm` = ?, `joinVerification` = ?, `greetings` = ?, " +
+                "`farewell` = ?, `defaultRole` = ?, `muteRole` = ?;",
+                prefix, joinMessage, quitMessage, joinPrivateMessage, joinVerification,
+                ((greetings == null) ? "default_value" : greetings.getId()),
+                ((farewell == null) ? "default_value" : farewell.getId()),
+                ((defaultRole == null) ? "default_value" : defaultRole.getId()),
+                ((muteRole == null) ? "default_value" : muteRole.getId()));
     }
 }

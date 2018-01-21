@@ -21,7 +21,7 @@ public class AdviceCommand extends Command {
     @Override
     public void execute(String commandLabel, Guild guild, Member member, TextChannel channel, String[] args) {
         MessageFactory.create(getAdvice()).setTitle("Advice Request").footer("Requested by: " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl())
-                .setColor(member.getColor()).queue(channel);
+                .setColor(member.getColor()).setTimestamp().queue(channel);
     }
 
     private String getAdvice() {

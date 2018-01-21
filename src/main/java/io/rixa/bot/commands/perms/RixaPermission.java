@@ -11,7 +11,6 @@ public enum RixaPermission {
     KICK_MEMBER,
     BAN_MEMBER,
     BATCH_MOVE,
-    UNMUTE,
     TOGGLE_RAIDMODE;
 
     public static RixaPermission fromString(String string) {

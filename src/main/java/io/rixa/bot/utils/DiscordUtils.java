@@ -104,4 +104,29 @@ public class DiscordUtils {
                 voiceChannel.getName().contains(string)).findFirst();
         return optional.orElse(null);
     }
+
+
+
+    public static int getLevelFromExperience(int xp) {
+        int level = 0;
+        while (xp >= getNeededXP(level)) {
+            xp -= getNeededXP(level);
+            level++;
+        }
+        return level;
+    }
+
+    public static Double getNeededXP(double n) {
+        if (n < 0) return 0.0;
+        return (6 * Math.pow(n, 3) + 119 * n + 100);
+    }
+
+    public static int getRemainingExperience(int xp) {
+        int level = getLevelFromExperience(xp);
+
+        for (int i = 0; i < level; i++) {
+            xp -= getNeededXP(i);
+        }
+        return xp;
+    }
 }

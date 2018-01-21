@@ -33,16 +33,19 @@ public class PMCommand extends Command {
         msg = msg.replaceFirst(role.getAsMention(), "").replaceFirst("@" + role.getName(),"");
         int usersWithRole = 0;
         int sendingFailed = 0;
+        String finalMsg = msg;
         for (Member memberWithRole : guild.getMembersWithRoles(role)) {
             try {
-                memberWithRole.getUser().openPrivateChannel().complete().sendMessage(msg).queue();
+                memberWithRole.getUser().openPrivateChannel().queue(privateChannel -> privateChannel.sendMessage(finalMsg).queue());
                 usersWithRole++;
             } catch (ErrorResponseException ex) {
                 if (ex.getErrorResponse() == ErrorResponse.CANNOT_SEND_TO_USER)
                     sendingFailed++;
             }
         }
-        MessageFactory.create("```" + msg + "```")
+        MessageFactory.create(msg)
+                .setAuthor("Private Message: " + role.getName(), guild.getIconUrl())
+                .setTimestamp()
                 .footer("Successful Deliveries: " + usersWithRole + " | Failed Deliveries: " + sendingFailed, guild.getIconUrl()).queue(channel);
     }
 }

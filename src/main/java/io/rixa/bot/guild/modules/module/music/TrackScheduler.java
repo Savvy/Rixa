@@ -4,8 +4,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
-import io.rixa.bot.pagination.ObjectPagination;
-import io.rixa.bot.pagination.QueuePagination;
+import io.rixa.bot.pagination.Pagination;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +18,7 @@ public class TrackScheduler extends AudioEventAdapter {
     @Getter private final AudioPlayer player;
     @Getter private final Queue<AudioTrack> queue;
     @Getter private AudioTrack lastTrack;
-    @Getter private QueuePagination queuePagination;
+    @Getter private Pagination queuePagination;
 
     /**
      * @param player The audio player this scheduler uses
@@ -27,7 +26,7 @@ public class TrackScheduler extends AudioEventAdapter {
     public TrackScheduler(AudioPlayer player) {
         this.player = player;
         this.queue = new LinkedList<>();
-        queuePagination = new QueuePagination(queue, 5);
+        queuePagination = new Pagination(queue, 5);
     }
 
     /**

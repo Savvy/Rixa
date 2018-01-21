@@ -17,6 +17,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClearCommand extends Command {
 
@@ -35,18 +36,14 @@ public class ClearCommand extends Command {
                     commandLabel)).setColor(member.getColor()).queue(channel);
             return;
         }
-        RixaUser user = new RixaUser();
-        if (!(user.hasPermission(rixaPermission))) {
-            MessageFactory.create("Sorry! You do not have permission for this command!").setColor(member.getColor()).queue(channel);
-            return;
-        }
         int amount = Integer.parseInt(args[0]);
         if (amount < 1 || amount > 100) {
             MessageFactory.create("Please try a number less than 100 and greater than 1 and :grimacing:").setColor(member.getColor()).queue(channel);
             return;
         }
         int i = deleteMessages(channel, amount);
-        MessageFactory.create("Successfully deleted *" + i + "* messages in " + channel.getAsMention())
+        MessageFactory.create(((i == 0) ? "Could not find any messages to delete" : "Successfully deleted *" + i +
+                "* messages in " + channel.getAsMention()))
                 .footer("Requested by: " + member.getEffectiveName(), member.getUser().getEffectiveAvatarUrl())
                 .setColor(member.getColor())
                 .queue(channel);
@@ -55,17 +52,17 @@ public class ClearCommand extends Command {
     private int deleteMessages(TextChannel channel, int amount) {
         List<Message> messageHistory= channel.getHistory().retrievePast(amount).complete();
         List<Message> pinnedMessages = channel.getPinnedMessages().complete();
-        List<Message> newMessages = new ArrayList<>();
         int i = 0;
-        messageHistory.forEach(message -> {
+        List<Message> newMessages = new ArrayList<>(messageHistory.stream().filter(message -> !pinnedMessages.contains(message)).collect(Collectors.toList()));
+        /*messageHistory.forEach(message -> {
             if (!(pinnedMessages.contains(message))) {
                 newMessages.add(message);
             }
-        });
+        });*/
         // !mute Savvy 10s Hello Savvy!
         try {
+            i = newMessages.size();
             channel.deleteMessages(newMessages).queue();
-            i++;
         } catch (PermissionException ex) {
             if (ex.getPermission() == Permission.MESSAGE_MANAGE)
                 MessageFactory.create("I do not have permission to clear messages within this channel!").queue(channel);

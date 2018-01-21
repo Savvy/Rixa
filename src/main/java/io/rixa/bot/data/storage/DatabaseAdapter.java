@@ -2,6 +2,7 @@ package io.rixa.bot.data.storage;
 
 import io.rixa.bot.Rixa;
 import io.rixa.bot.data.config.Configuration;
+import io.rixa.bot.data.storage.enums.DatabaseTables;
 import io.rixa.bot.data.storage.enums.Statements;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 public class DatabaseAdapter {
@@ -35,7 +37,6 @@ public class DatabaseAdapter {
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         String url = String.format("jdbc:mysql://%s:%s/%s", config.getSqlCredentials().get("hostName"),
                 config.getSqlCredentials().get("port"), config.getSqlCredentials().get("databaseName"));
-        System.out.println(url);
         dataSource.setUrl(url);
         dataSource.setUsername(config.getSqlCredentials().get("userName"));
         dataSource.setPassword(config.getSqlCredentials().get("password"));

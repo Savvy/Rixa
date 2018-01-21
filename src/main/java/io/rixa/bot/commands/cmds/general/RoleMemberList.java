@@ -31,11 +31,11 @@ public class RoleMemberList extends Command {
             MessageFactory.create("Could not find any users with the role " + role.getName()).setColor(member.getColor()).queue(channel);
             return;
         }
-        StringBuilder builder = new StringBuilder("Users With Role `").append(role.getName()).append("`: ");
         List<String> membersWithRole = new ArrayList<>();
         roleMembers.forEach(roleMember -> membersWithRole.add(format(roleMember)));
-        builder.append(String.join(", ", membersWithRole));
-        MessageFactory.create(builder.toString().trim()).setColor(member.getColor()).queue(channel);
+        MessageFactory.create(String.join(", ", membersWithRole))
+                .setAuthor("Users with role: " + role.getName(), guild.getIconUrl()).setTimestamp()
+                .setColor(member.getColor()).queue(channel);
     }
 
     private String format(Member member) {

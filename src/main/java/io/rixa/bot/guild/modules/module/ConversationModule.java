@@ -25,19 +25,21 @@ public class ConversationModule implements RixaModule {
         this.description = description;
         this.enabled = true;
         this.guild = guild;
+        load();
     }
 
     @Override
     public void load() {
         setEnabled(DatabaseAdapter.getInstance().get().queryForObject
                 (Statements.SELECT_MODULE_STATUS.getStatement("{module_name}", getName()),
-                        new Object[]{name}, (resultSet, i) -> resultSet.getBoolean("enabled")));
+                        new Object[]{guild.getId()}, (resultSet, i) -> resultSet.getBoolean(getName())));
         reload();
     }
 
     @Override
     public void save() {
         // Check & Set if enabled;
+        DatabaseAdapter.getInstance().get().update("UPDATE `modules` SET `" + name + "` = ? WHERE `guild_id` = ?;", enabled, guild.getId());
     }
 
     @Override

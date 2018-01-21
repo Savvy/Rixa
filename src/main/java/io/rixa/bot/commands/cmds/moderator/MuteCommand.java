@@ -24,6 +24,7 @@ public class MuteCommand extends Command {
         Object[] objArray = DiscordUtils.memberSearchArray(guild, argumentString, false);
         if (objArray.length == 0) {
             MessageFactory.create("Could not find member!").setColor(member.getColor()).queue(channel);
+            return;
         }
         Member targetMember = (Member) objArray[1];
         String targetMemberName = String.valueOf(objArray[0]);
@@ -33,9 +34,14 @@ public class MuteCommand extends Command {
         }
         argumentString = argumentString.replaceFirst(targetMemberName, "").trim();
         args = argumentString.split(" ");
+        if (args[0].length() == 0) {
+            // Incorrect Usage
+            return;
+        }
         String time = args[0].trim();
         argumentString = String.join(" ", args).replaceFirst(time, "");
         long milliseconds = Utils.toMilliSec(time);
-        MessageFactory.create("Duration: " + time + "\nReason: " + argumentString + "\nDuration in Milliseconds: " + milliseconds).queue(channel);
+        MessageFactory.create("Duration: " + time + "\nReason: " + argumentString + "\nDuration in Milliseconds: " + milliseconds)
+                .queue(channel);
     }
 }

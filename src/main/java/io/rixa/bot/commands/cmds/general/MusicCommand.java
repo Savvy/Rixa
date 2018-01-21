@@ -22,10 +22,9 @@ import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
 import io.rixa.bot.guild.modules.module.MusicModule;
 import io.rixa.bot.guild.modules.module.music.MusicManager;
-import io.rixa.bot.pagination.QueuePagination;
+import io.rixa.bot.pagination.Pagination;
 import io.rixa.bot.utils.DiscordUtils;
 import io.rixa.bot.utils.MessageFactory;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
@@ -37,7 +36,6 @@ import org.apache.commons.lang3.StringUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class MusicCommand extends Command {
@@ -62,9 +60,15 @@ public class MusicCommand extends Command {
     @Override
     public void execute(String commandLabel, Guild guild, Member member, TextChannel channel, String[] args) {
         RixaGuild rixaGuild = GuildManager.getInstance().getGuild(guild);
+        MusicModule musicModule = (MusicModule) rixaGuild.getModule("Music");
+        if (musicModule.getMusicRole() != null && !member.getRoles().contains(musicModule.getMusicRole())) {
+            MessageFactory.create("You do not have the required music role (" + musicModule.getMusicRole().getName() +
+                    ") to use this command").setTimestamp().setColor(member.getColor()).queue(channel);
+            return;
+        }
         MusicManager musicManager = getMusicManager(rixaGuild);
         AudioPlayer player = musicManager.getPlayer();
-        QueuePagination queuePagination = musicManager.getScheduler().getQueuePagination();
+        Pagination queuePagination = musicManager.getScheduler().getQueuePagination();
         if (args.length == 1) {
             switch (args[0].toLowerCase()) {
                 case "leave":
@@ -117,7 +121,7 @@ public class MusicCommand extends Command {
                         MessageFactory.create("The audio queue is empty! Add a track to the queue first!").setColor(member.getColor()).queue(channel);
                         return;
                     }
-                    MessageFactory.create().setAuthor(audioTrack.getInfo().title, "https://i.imgur.com/lOoybhD.png")
+                    MessageFactory.create().setAuthor(audioTrack.getInfo().title, "https://i.imgur.com/AnaMjsH.png")
                             .addField("Author", audioTrack.getInfo().author, true)
                             .addField("Duration", getTimestamp(audioTrack.getInfo().length), true)
                             .addField("Position", getTimestamp(audioTrack.getPosition()), true).queue(channel);
@@ -129,7 +133,7 @@ public class MusicCommand extends Command {
                         MessageFactory.create("The audio queue is empty! Add a track to the queue first!").setColor(member.getColor()).queue(channel);
                         return;
                     }
-                    List<AudioTrack> firstPage = queuePagination.getPage(1);
+                    List<Object> firstPage = queuePagination.getPage(1);
                     if (firstPage == null || firstPage.isEmpty()) {
                         MessageFactory.create("The audio queue is empty! Add a track to the queue first!").setColor(member.getColor()).queue(channel);
                         return;
@@ -137,9 +141,13 @@ public class MusicCommand extends Command {
                     List<String> titles = new ArrayList<>();
                     for (int i = 0; i < firstPage.size(); i++) {
                         if (firstPage.get(i) == null) continue;
-                        titles.add("`" + (i + 1) + ")` " + firstPage.get(i).getInfo().title);
+                        titles.add("`" + (i + 1) + ")` " + ((AudioTrack) firstPage.get(i)).getInfo().title);
                     }
-                    MessageFactory.create(String.join("\n", titles)).setAuthor("Music Queue", "https://i.imgur.com/lOoybhD.png").queue(channel);
+                    MessageFactory.create(String.join("\n", titles)).setAuthor("Music Queue", "https://i.imgur.com/AnaMjsH.png")
+                            .queue(channel, message -> {
+                                message.addReaction("\u2B05").queue();
+                                message.addReaction("\u27A1").queue();
+                            });
                     break;
                 case "restart":
                     audioTrack = player.getPlayingTrack();
@@ -265,6 +273,10 @@ public class MusicCommand extends Command {
         try {
             channel.getGuild().getAudioManager().openAudioConnection(voiceChannel);
             MessageFactory.create("Entering Voice Channel: " + voiceChannel.getName()).setColor(member.getColor()).queue(channel);
+            if (voiceChannel.getGuild().getAudioManager().getSendingHandler() == null) {
+                voiceChannel.getGuild().getAudioManager().setSendingHandler
+                        (getMusicManager(GuildManager.getInstance().getGuild(voiceChannel.getGuild())).getSendHandler());
+            }
         } catch (PermissionException e) {
             if (e.getPermission() == Permission.VOICE_CONNECT) {
                 MessageFactory.create("I do not have permission to join the requested voice channel.").setColor(member.getColor()).queue(channel);

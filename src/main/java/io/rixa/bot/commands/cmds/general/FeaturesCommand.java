@@ -22,9 +22,8 @@ public class FeaturesCommand extends Command {
 
     @Override
     public void execute(String commandLabel, Guild guild, Member member, TextChannel channel, String[] args) {
-        RixaGuild rixaGuild = GuildManager.getInstance().getGuild(guild);
         MessageFactory.create((features == null || features.length == 0) ? "There are currently no features listed." :
-                "Rixa Features: " + String.join("\n", features
-                )).setColor(member.getColor()).queue(channel);
+                String.join("\n", features)).setAuthor("Rixa Features", guild.getIconUrl())
+                .setColor(member.getColor()).queue(channel);
     }
 }

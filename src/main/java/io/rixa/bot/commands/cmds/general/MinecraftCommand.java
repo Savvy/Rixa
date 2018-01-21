@@ -23,11 +23,11 @@ public class MinecraftCommand extends Command {
     @Override
     public void execute(String commandLabel, Guild guild, Member member, TextChannel channel, String[] args) {
         if (args.length == 0) {
-            MessageFactory.create("Incorrect Usage! Try " + args[0] + " {IP}:{PORT}").setColor(member.getColor()).queue(channel);
+            MessageFactory.create("Incorrect Usage! Try " + commandLabel + " {IP}:{PORT}").setColor(member.getColor()).queue(channel);
             return;
         }
 
-        String ipAddress = args[1];
+        String ipAddress = args[0];
 
         JSONObject object = get(ipAddress);
         if (object == null || !object.getBoolean("status")) {

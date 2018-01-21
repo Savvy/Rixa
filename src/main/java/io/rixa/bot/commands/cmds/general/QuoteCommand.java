@@ -20,13 +20,10 @@ public class QuoteCommand extends Command {
 
     @Override
     public void execute(String commandLabel, Guild guild, Member member, TextChannel channel, String[] args) {
-
-    }
-
-    public void execute(GuildMessageReceivedEvent event) {
         String[] quote = getAdvice();
-        MessageFactory.create(quote[0]).setTitle("Author: " + quote[1]).footer("Requested by: " + event.getMember().getEffectiveName(), event.getAuthor().getEffectiveAvatarUrl())
-                .setColor(event.getMember().getColor()).queue(event.getChannel());
+        MessageFactory.create(quote[0]).setTitle("Author: " + quote[1]).footer("Requested by: " + member.getEffectiveName(),
+                member.getUser().getEffectiveAvatarUrl()).setTimestamp()
+                .setColor(member.getColor()).queue(channel);
     }
 
     private String[] getAdvice() {

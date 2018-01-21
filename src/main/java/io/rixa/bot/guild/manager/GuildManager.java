@@ -38,6 +38,7 @@ public class GuildManager {
     }
 
     public RixaGuild addGuild(Guild guild) {
+        if (hasGuild(guild.getId())) return rixaGuildMap.get(guild.getId());
         if (!(DatabaseAdapter.getInstance().exists("core", "guild_id", guild.getId()))) {
             insert(guild);
         }

@@ -10,9 +10,12 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import java.awt.*;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 public class MessageFactory {
 
@@ -72,20 +75,37 @@ public class MessageFactory {
         return this;
     }
 
+    public MessageFactory setTimestamp() {
+        builder.setTimestamp(OffsetDateTime.now());
+        return this;
+    }
+
     public MessageFactory setAuthor(String name, String iconURL) {
         builder.setAuthor(name, iconURL, iconURL);
         return this;
     }
 
-    public void queue(TextChannel channel) {
+    public MessageFactory queue(TextChannel channel, Consumer<Message> success) {
         try {
-            message = channel.sendMessage(builder.build()).complete(true);
+            success.andThen(successMessage -> {
+                this.message = successMessage;
+                destroy();
+            });
+            channel.sendMessage(builder.build()).queue(success);
+        } catch (PermissionException ex) {
+            System.out.println("I do not have permission: " + ex.getPermission().getName() + " on server " + channel.getGuild().getName() + " in channel: " + channel.getName());
+        }
+        return this;
+    }
+
+    public MessageFactory queue(TextChannel channel) {
+        try {
+            channel.sendMessage(builder.build()).queue(successMessage -> this.message = successMessage);
             destroy();
         } catch (PermissionException ex) {
             System.out.println("I do not have permission: " + ex.getPermission().getName() + " on server " + channel.getGuild().getName() + " in channel: " + channel.getName());
-        } catch (RateLimitedException e) {
-            e.printStackTrace();
         }
+        return this;
     }
 
     public Message complete(TextChannel channel) {
@@ -104,8 +124,13 @@ public class MessageFactory {
         destroy();
     }
 
+    public void send(User member, Consumer<Message> success) {
+        success.andThen(message -> this.message = message);
+        member.openPrivateChannel().queue(s -> s.sendMessage(builder.build()).queue(success));
+    }
+
     public MessageFactory sendUser(User member) {
-        this.message = member.openPrivateChannel().complete().sendMessage(builder.build()).complete();
+        member.openPrivateChannel().complete().sendMessage(builder.build()).queue(message1 -> this.message = message1);
         destroy();
         return this;
     }
@@ -114,7 +139,7 @@ public class MessageFactory {
         if(message == null) {
             throw new NullPointerException("Message must not be null!");
         }
-        message.addReaction(reaction).complete();
+        message.addReaction(reaction).queue();
         return this;
     }
 
