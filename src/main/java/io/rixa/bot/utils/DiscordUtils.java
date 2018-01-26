@@ -11,16 +11,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DiscordUtils {
-
-    public static boolean isInt(String s) {
-        try {
-            Integer.parseInt(s);
-            return true;
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-    }
-
+    
     public static List<Member> memberSearch(Guild guild, String string, boolean bots) {
         List<Member> members = new ArrayList<>();
         String finalString = string.toLowerCase();
