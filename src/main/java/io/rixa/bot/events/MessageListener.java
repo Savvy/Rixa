@@ -26,9 +26,10 @@ public class MessageListener {
     }
     String message = event.getMessage().getContentRaw().trim();
     RixaGuild rixaGuild = GuildManager.getInstance().getGuild(event.getGuild());
-    if (message.startsWith("@" + event.getGuild().getSelfMember().getEffectiveName())) {
+    if (event.getMessage().getContentDisplay().startsWith("@" + event.getGuild().getSelfMember().getEffectiveName())) {
+      String chat = event.getMessage().getContentDisplay();
       chatter(rixaGuild, event.getChannel(),
-          message.replace("@" + event.getGuild().getSelfMember().getEffectiveName(), ""));
+          chat.replace("@" + event.getGuild().getSelfMember().getEffectiveName(), ""));
       return;
     }
     String prefix = rixaGuild.getSettings().getPrefix();
