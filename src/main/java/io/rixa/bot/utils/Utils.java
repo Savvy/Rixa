@@ -2,6 +2,15 @@ package io.rixa.bot.utils;
 
 public class Utils {
 
+    public static boolean isInt(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+    }
+
     public static boolean isInteger(String s) {
         return isInteger(s,10);
     }
