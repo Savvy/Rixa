@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Bot" />
         <module name="Rixa" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Bot" target="1.8" />
       <module name="Rixa" target="1.8" />
     </bytecodeTargetLevel>
   </component>

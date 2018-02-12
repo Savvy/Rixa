@@ -5,6 +5,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.rixa.bot.commands.cmds.admin.ConfigCommand;
 import io.rixa.bot.commands.cmds.admin.PMCommand;
 import io.rixa.bot.commands.cmds.general.*;
+import io.rixa.bot.commands.cmds.moderator.BanCommand;
 import io.rixa.bot.commands.cmds.moderator.ClearCommand;
 import io.rixa.bot.commands.cmds.moderator.MuteCommand;
 import io.rixa.bot.commands.cmds.other.ShutdownCommand;
@@ -113,6 +114,7 @@ public class Rixa {
     private void registerCommands() {
         this.commandHandler.registerCommands(
                 new AdviceCommand("advice", RixaPermission.NONE, "Receive advice from the great beyond..."),
+                new BanCommand("ban", RixaPermission.BAN_MEMBER, "Ban a player from your server."),
                 new ClearCommand("clear", RixaPermission.CLEAR_CHAT, "Clear Chat!", Arrays.asList("deleemessages", "cmessages")),
                 new ConfigCommand("config", RixaPermission.ACCESS_CONFIG, "Access the config menu"),
                 new FeaturesCommand("features", RixaPermission.NONE, "List Rixa's official features!"),
