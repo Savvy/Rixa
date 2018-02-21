@@ -27,6 +27,10 @@ public class UserListener {
           .selfDestruct(0).queue(rixaGuild.getSettings().getGreetings());
     }
     if (!rixaGuild.getSettings().isJoinVerification()) {
+      if (rixaGuild.getSettings().getDefaultRole() != null) {
+        event.getGuild().getController()
+            .addRolesToMember(event.getMember(), rixaGuild.getSettings().getDefaultRole()).queue();
+      }
       return;
     }
     if (!rixaGuild.getConfirmationUsers().contains(event.getUser().getId())) {
