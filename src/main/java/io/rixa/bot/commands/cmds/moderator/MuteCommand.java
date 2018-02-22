@@ -37,7 +37,7 @@ public class MuteCommand extends Command {
       MessageFactory.create("Could not find member!").setColor(member.getColor()).queue(channel);
       return;
     }
-    Member targetMember = (Member) objArray[1];
+    Member targetMember = (Member) objArray[0];
     String targetMemberName = String.valueOf(objArray[0]);
     if (targetMember == null) {
       MessageFactory.create("Could not find member!").setColor(member.getColor()).queue(channel);
