@@ -10,7 +10,8 @@ public class CommandHandler {
 
     private Map<String, Command> commandMap = new HashMap<>();
 
-    public void registerCommand(Command command) {
+    
+    private void registerCommand(Command command) {
        if (commandMap.containsKey(command.getCommand())) return;
        commandMap.put(command.getCommand(), command);
     }
