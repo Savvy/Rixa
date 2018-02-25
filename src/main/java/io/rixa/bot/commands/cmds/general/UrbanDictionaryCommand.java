@@ -2,6 +2,7 @@ package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.apis.UrbanDictionary;
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.utils.MessageFactory;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -15,8 +16,8 @@ import java.net.URLEncoder;
 
 public class UrbanDictionaryCommand extends Command {
 
-    public UrbanDictionaryCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public UrbanDictionaryCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override

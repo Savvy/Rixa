@@ -1,6 +1,7 @@
 package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
@@ -16,8 +17,8 @@ public class FeaturesCommand extends Command {
             "Role Management", "Fun Commands", "Custom Commands", "Games", "& more."
     };
 
-    public FeaturesCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public FeaturesCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override

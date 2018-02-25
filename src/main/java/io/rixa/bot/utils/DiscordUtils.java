@@ -1,8 +1,12 @@
 package io.rixa.bot.utils;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
@@ -126,5 +130,18 @@ public class DiscordUtils {
       xp -= getNeededXP(i);
     }
     return xp;
+  }
+
+  public static Role createMuteRole(Guild guild) {
+    Role role =
+        guild.getController().createRole().setName("Mute")
+            .setColor(Color.DARK_GRAY).setMentionable(false)
+            .complete();
+    guild.getTextChannels().forEach(textChannel ->
+        textChannel.createPermissionOverride(role).setPermissions(Arrays.asList(
+            Permission.MESSAGE_READ, Permission.MESSAGE_HISTORY),
+            Collections.singletonList(
+                Permission.MESSAGE_WRITE)).queue());
+    return role;
   }
 }

@@ -17,6 +17,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import io.rixa.bot.apis.YoutubeSearch;
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
@@ -43,8 +44,8 @@ public class MusicCommand extends Command {
     private final int DEFAULT_VOLUME = 35;
     private final AudioPlayerManager playerManager;
 
-    public MusicCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public MusicCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
         this.playerManager = new DefaultAudioPlayerManager();
         this.playerManager.registerSourceManager(new YoutubeAudioSourceManager());
         this.playerManager.registerSourceManager(new SoundCloudAudioSourceManager());

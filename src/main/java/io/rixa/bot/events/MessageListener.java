@@ -15,9 +15,15 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 public class MessageListener {
+
+  @SubscribeEvent
+  public void onReactionAdded(GuildMessageReactionAddEvent event) {
+    if (event.getUser().isBot()) return;
+  }
 
   @SubscribeEvent
   public void onMessage(GuildMessageReceivedEvent event) {
@@ -26,7 +32,8 @@ public class MessageListener {
     }
     String message = event.getMessage().getContentRaw().trim();
     RixaGuild rixaGuild = GuildManager.getInstance().getGuild(event.getGuild());
-    if (event.getMessage().getContentDisplay().startsWith("@" + event.getGuild().getSelfMember().getEffectiveName())) {
+    if (event.getMessage().getContentDisplay()
+        .startsWith("@" + event.getGuild().getSelfMember().getEffectiveName())) {
       String chat = event.getMessage().getContentDisplay();
       chatter(rixaGuild, event.getChannel(),
           chat.replace("@" + event.getGuild().getSelfMember().getEffectiveName(), ""));
@@ -62,7 +69,8 @@ public class MessageListener {
       //command.execute(event);
       event.getMessage().delete().queueAfter(3, TimeUnit.SECONDS);
       RixaGuild rixaGuild = GuildManager.getInstance().getGuild(event.getGuild());
-      if (command.getPermission() != null && command.getPermission() != RixaPermission.NONE &&
+      if (!event.getGuild().getOwner().getUser().getId().equalsIgnoreCase(event.getAuthor().getId())
+          && command.getPermission() != null && command.getPermission() != RixaPermission.NONE &&
           (!rixaGuild.hasPermission(event.getMember().getUser(), command.getPermission()))
           && (!Rixa.getInstance().getConfiguration().isBotAdmin(event.getAuthor().getId()))) {
         MessageFactory.create("Sorry! You do not have permission for this command!")

@@ -2,6 +2,7 @@ package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.apis.YoutubeSearch;
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.utils.MessageFactory;
 import net.dv8tion.jda.core.entities.Guild;
@@ -12,8 +13,8 @@ import java.io.IOException;
 
 public class YoutubeCommand extends Command {
 
-    public YoutubeCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public YoutubeCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override

@@ -31,4 +31,8 @@ public class CommandHandler {
         }
         throw new CommandNotFoundException("Could not find command");
     }
+
+  public Map<String, Command> getAllCommands() {
+    return this.commandMap;
+  }
 }

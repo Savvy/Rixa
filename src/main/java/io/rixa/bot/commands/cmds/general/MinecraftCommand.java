@@ -1,6 +1,7 @@
 package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.utils.MessageFactory;
 import io.rixa.bot.utils.WebUtil;
@@ -16,8 +17,8 @@ import java.util.List;
 
 public class MinecraftCommand extends Command {
 
-    public MinecraftCommand(String command, RixaPermission rixaPermission, String description, List<String>aliases) {
-        super(command, rixaPermission, description, aliases);
+    public MinecraftCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType, List<String>aliases) {
+        super(command, rixaPermission, description, commandType, aliases);
     }
 
     @Override

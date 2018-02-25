@@ -2,6 +2,7 @@ package io.rixa.bot.commands.cmds.moderator;
 
 import io.rixa.bot.Rixa;
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
@@ -25,9 +26,9 @@ public class ClearCommand extends Command {
   @Getter
   private RixaPermission rixaPermission;
 
-  public ClearCommand(String command, RixaPermission rixaPermission, String description,
+  public ClearCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType,
       List<String> aliases) {
-    super(command, rixaPermission, description, aliases);
+    super(command, rixaPermission, description, commandType, aliases);
     this.rixaPermission = rixaPermission;
   }
 

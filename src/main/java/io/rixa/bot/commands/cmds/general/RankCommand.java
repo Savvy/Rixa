@@ -1,32 +1,25 @@
 package io.rixa.bot.commands.cmds.general;
 
-import io.rixa.bot.Rixa;
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.data.storage.DatabaseAdapter;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
-import io.rixa.bot.guild.modules.module.LevelsModule;
-import io.rixa.bot.pagination.ObjectPagination;
 import io.rixa.bot.user.RixaUser;
 import io.rixa.bot.user.manager.UserManager;
 import io.rixa.bot.utils.DiscordUtils;
 import io.rixa.bot.utils.MessageFactory;
-import net.dv8tion.jda.core.MessageBuilder;
+import java.util.List;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-
 public class RankCommand extends Command {
 
-    public RankCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public RankCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override

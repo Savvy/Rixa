@@ -1,6 +1,7 @@
 package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
@@ -20,8 +21,8 @@ import java.util.List;
 
 public class LeaderboardsCommand extends Command {
 
-    public LeaderboardsCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public LeaderboardsCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override

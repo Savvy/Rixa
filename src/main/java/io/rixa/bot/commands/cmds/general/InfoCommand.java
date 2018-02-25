@@ -2,6 +2,7 @@ package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.Rixa;
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.utils.DiscordUtils;
 import io.rixa.bot.utils.MessageFactory;
@@ -20,8 +21,8 @@ import java.util.concurrent.TimeUnit;
 
 public class InfoCommand extends Command {
 
-    public InfoCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public InfoCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override

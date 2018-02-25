@@ -1,6 +1,7 @@
 package io.rixa.bot.commands.cmds.admin;
 
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
@@ -22,8 +23,8 @@ public class ConfigCommand extends Command {
 
   private Pagination pagination;
 
-  public ConfigCommand(String command, RixaPermission rixaPermission, String description) {
-    super(command, rixaPermission, description);
+  public ConfigCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+    super(command, rixaPermission, description, commandType);
 
     pagination = new Pagination(Arrays.asList(
         "%pconfig set greetings ; Set channel where greeting messages are announced!",

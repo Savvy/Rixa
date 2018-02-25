@@ -1,6 +1,7 @@
 package io.rixa.bot.commands.cmds.general;
 
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.utils.MessageFactory;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -14,8 +15,8 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 
 public class HelpCommand extends Command {
 
-    public HelpCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public HelpCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override

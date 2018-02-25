@@ -2,6 +2,7 @@ package io.rixa.bot.commands.cmds.other;
 
 import io.rixa.bot.Rixa;
 import io.rixa.bot.commands.Command;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
@@ -13,8 +14,8 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public class ShutdownCommand extends Command {
 
-    public ShutdownCommand(String command, RixaPermission rixaPermission, String description) {
-        super(command, rixaPermission, description);
+    public ShutdownCommand(String command, RixaPermission rixaPermission, String description, CommandType commandType) {
+        super(command, rixaPermission, description, commandType);
     }
 
     @Override
