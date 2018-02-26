@@ -82,6 +82,16 @@ public class DiscordUtils {
     });
     return roles;
   }
+  
+  public static boolean roleExists(Guild guild, String name) {
+      List<Role> roles = roleSearch(guild, name);
+      
+      return roles == null;
+  }
+  
+  public static boolean roleExists(Guild guild, Role role) {
+      return roleExists(guild, role.getName());
+  }
 
   public static Role getMentionedRole(Guild guild, String string) {
     Role mentionedRole = null;
@@ -143,5 +153,17 @@ public class DiscordUtils {
             Collections.singletonList(
                 Permission.MESSAGE_WRITE)).queue());
     return role;
+  }
+  
+  // Create this role is owner requests users must have permission for using music 
+  public static Role createMusicRole(Guild guild) {
+      // Don't need to do anything with permissions as we're assuming users have basic perms
+      Role musicRole = guild.getController().createRole().setName("Music").setColor(Color.BLACK).setMentionable(false).complete();
+
+      if(roleExists(guild, musicRole)) {
+          // Will probably remove this and check roleExists directly where it's needed
+          return null; // yeah yeah ik
+      }
+      return musicRole;
   }
 }
