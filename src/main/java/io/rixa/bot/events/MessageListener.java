@@ -1,28 +1,64 @@
 package io.rixa.bot.events;
 
+import com.mysql.jdbc.StringUtils;
 import io.rixa.bot.Rixa;
 import io.rixa.bot.commands.Command;
 import io.rixa.bot.commands.exceptions.CommandNotFoundException;
+import io.rixa.bot.commands.exceptions.ReactNotFoundException;
 import io.rixa.bot.commands.perms.RixaPermission;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
 import io.rixa.bot.guild.modules.module.ConversationModule;
+import io.rixa.bot.reactions.React;
 import io.rixa.bot.user.RixaUser;
 import io.rixa.bot.user.manager.UserManager;
 import io.rixa.bot.utils.DiscordUtils;
 import io.rixa.bot.utils.MessageFactory;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 public class MessageListener {
 
   @SubscribeEvent
-  public void onReactionAdded(GuildMessageReactionAddEvent event) {
-    if (event.getUser().isBot()) return;
+  public void onReactionAdded(MessageReactionAddEvent event) {
+    System.out.println("Reaction Event Triggered - 1");
+    if (event.getUser().isBot()) {
+      return;
+    }
+    event.getChannel().getMessageById(event.getMessageId()).queue(message -> {
+      React react = this.check(message);
+      if (react != null) {
+        react.onReact(event);
+      }
+    });
+  }
+
+  private React check(Message message) {
+      if (message == null || message.getEmbeds().isEmpty()) {
+        return null;
+      }
+      MessageEmbed messageEmbed = message.getEmbeds().get(0);
+      if (StringUtils.isNullOrEmpty(messageEmbed.getTitle())) {
+        return null;
+      }
+      String[] titleSplit = messageEmbed.getTitle().split(": ");
+      if (titleSplit[0].equalsIgnoreCase("Leaderboard")) {
+        return null; // Not sure if this is required anymore.
+      }
+      try {
+        React react = Rixa.getInstance().getReactManager().getReaction(titleSplit[0]);
+        if (react != null) {
+          return react;
+        }
+      } catch (ReactNotFoundException ignored) {
+      }
+      return null;
   }
 
   @SubscribeEvent

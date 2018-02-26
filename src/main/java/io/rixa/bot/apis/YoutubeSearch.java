@@ -37,7 +37,7 @@ public class YoutubeSearch {
         return items.getJSONObject(index).getJSONObject("id").getString("kind");
     }
 
-    public String getVideoId(int index) {
+    public String getVideoId(int index) throws JSONException {
         if (!hasVideoId(index)) {
             index++;
         }
@@ -45,7 +45,7 @@ public class YoutubeSearch {
     }
 
     public boolean hasVideoId(int index) {
-        return items.getJSONObject(index).getJSONObject("id").has("videoID");
+        return items.getJSONObject(index).getJSONObject("id").has("videoId");
     }
 
     public String getPublishedTime(int index) {

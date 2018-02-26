@@ -2,40 +2,56 @@ package io.rixa.bot.reactions.react;
 
 import io.rixa.bot.Rixa;
 import io.rixa.bot.commands.handler.CommandHandler;
+import io.rixa.bot.commands.handler.CommandType;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
 import io.rixa.bot.reactions.React;
 import net.dv8tion.jda.core.EmbedBuilder;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageEmbed;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.priv.react.PrivateMessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import org.intellij.lang.annotations.Subst;
 
-public class HelpReaction implements React {
+public class HelpReaction extends React {
+
+  public HelpReaction(String name) {
+    super(name);
+  }
 
   @Override
   @SubscribeEvent
-  public void onReact(GuildMessageReactionAddEvent event) {
+  public void onReact(MessageReactionAddEvent event) {
+    System.out.println("Help Triggered");
     if (event.getUser().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
       return;
     }
+    System.out.println("Not bot");
     Message message = event.getChannel().getMessageById(event.getMessageId()).complete();
+    this.execute(message, event.getReaction().getReactionEmote().getName(), event.getJDA());
+  }
+
+  private void execute(Message message, String emoteName, JDA jda) {
+    System.out.println("Executed");
     MessageEmbed messageEmbed = message.getEmbeds().get(0);
     if (!messageEmbed.getTitle().contains(": ")) {
       return;
     }
     String title = messageEmbed.getTitle().split(": ")[1];
-    RixaGuild rixaGuild = GuildManager.getInstance().getGuild(event.getJDA().getGuildById(title));
+    RixaGuild rixaGuild = GuildManager.getInstance().getGuild(jda.getGuildById(title));
     if (rixaGuild == null) {
       return;
     }
     String prefix = rixaGuild.getSettings().getPrefix();
     EmbedBuilder embedBuilder;
     try {
-      switch (event.getReaction().getReactionEmote().getName()) {
+      switch (emoteName) {
         case "\uD83D\uDDD1":// waste bin
-          if (message.getAuthor().getId().equalsIgnoreCase(event.getJDA().getSelfUser().getId())) {
+          if (message.getAuthor().getId().equalsIgnoreCase(jda.getSelfUser().getId())) {
             message.delete().complete();
           }
           break;
@@ -48,11 +64,12 @@ public class HelpReaction implements React {
           embedBuilder.setTitle(String.format("Help: %s", title));
           embedBuilder.setDescription(stringBuilder);
           Rixa.getInstance().getCommandHandler().getAllCommands().values()
+              .stream().filter(cmd -> cmd.getCommandType() == CommandType.USER)
               .forEach(cmd -> embedBuilder.addField(prefix + cmd.getCommand(),
                   cmd.getDescription(), false));
           message.editMessage(embedBuilder.build()).queue();
           break;
-        /*case "\u0032\u20E3": // two emoji
+        case "\u0032\u20E3": // two emoji
           embedBuilder = new EmbedBuilder();
           stringBuilder = "\u2753" +
               " **Staff Commands Help**" +
@@ -61,12 +78,11 @@ public class HelpReaction implements React {
           embedBuilder.setTitle(String.format("Help: %s", title));
           embedBuilder.setDescription(stringBuilder);
           Rixa.getInstance().getCommandHandler().getAllCommands().values().stream()
-              .filter(cmd -> cmd.getAnnotation().type() == CommandType.ADMIN
-                  || cmd.getAnnotation().type() == CommandType.MOD)
-              .forEach(cmd -> embedBuilder.addField(prefix + cmd.getAnnotation().mainCommand(),
-                  cmd.getAnnotation().description(), false));
+              .filter(cmd -> cmd.getCommandType() == CommandType.STAFF)
+              .forEach(cmd -> embedBuilder.addField(prefix + cmd.getCommand(),
+                  cmd.getDescription(), false));
           message.editMessage(embedBuilder.build()).queue();
-          break;*/
+          break;
         case "\u0033\u20E3": // three emoji
           embedBuilder = new EmbedBuilder();
           stringBuilder = "\u2753" +

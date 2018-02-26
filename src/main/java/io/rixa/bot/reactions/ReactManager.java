@@ -1,7 +1,5 @@
 package io.rixa.bot.reactions;
 
-import io.rixa.bot.commands.Command;
-import io.rixa.bot.commands.exceptions.CommandNotFoundException;
 import io.rixa.bot.commands.exceptions.ReactNotFoundException;
 import java.util.HashMap;
 import java.util.Map;

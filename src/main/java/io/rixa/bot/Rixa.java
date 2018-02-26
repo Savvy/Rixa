@@ -35,6 +35,8 @@ import io.rixa.bot.events.ReadyListener;
 import io.rixa.bot.events.UserListener;
 import io.rixa.bot.guild.RixaGuild;
 import io.rixa.bot.guild.manager.GuildManager;
+import io.rixa.bot.reactions.ReactManager;
+import io.rixa.bot.reactions.react.HelpReaction;
 import io.rixa.bot.user.RixaUser;
 import io.rixa.bot.user.manager.UserManager;
 import io.rixa.bot.utils.FileUtils;
@@ -63,6 +65,8 @@ public class Rixa {
   @Getter
   private CommandHandler commandHandler;
   @Getter
+  private ReactManager reactManager;
+  @Getter
   private Configuration configuration;
   @Getter
   private ObjectMapper objectMapper;
@@ -75,15 +79,17 @@ public class Rixa {
 
   private Rixa() {
     instance = this;
-    logger = Logger.getLogger(Rixa.class.getCanonicalName());
-    objectMapper = new ObjectMapper(new YAMLFactory());
-    defaultPath = new File("Rixa/");
-    commandHandler = new CommandHandler();
-    shardList = new ArrayList<>();
-    defaultPath.mkdirs();
-    loadConfiguration();
-    registerCommands();
-    loadJDA();
+    this.logger = Logger.getLogger(Rixa.class.getCanonicalName());
+    this.objectMapper = new ObjectMapper(new YAMLFactory());
+    this.defaultPath = new File("Rixa/");
+    this.commandHandler = new CommandHandler();
+    this.reactManager = new ReactManager();
+    this.shardList = new ArrayList<>();
+    this.defaultPath.mkdirs();
+    this.loadConfiguration();
+    this.registerCommands();
+    this.registerReactions();
+    this.loadJDA();
   }
 
   public static Rixa getInstance() {
@@ -126,6 +132,10 @@ public class Rixa {
           jdaInstance.shutdown();
         })));
     timeUp = System.currentTimeMillis();
+  }
+
+  private void registerReactions() {
+    this.reactManager.registerReact(new HelpReaction("Help"));
   }
 
   private void registerCommands() {

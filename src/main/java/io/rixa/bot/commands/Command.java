@@ -14,18 +14,10 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 public abstract class Command {
 
-  @Getter
-  @Setter
-  private String command, description;
-  @Getter
-  @Setter
-  private RixaPermission permission;
-  @Getter
-  @Setter
-  private List<String> aliases;
-  @Getter
-  @Setter
-  private CommandType commandType;
+  @Getter @Setter private String command, description;
+  @Getter @Setter private RixaPermission permission;
+  @Getter @Setter private List<String> aliases;
+  @Getter @Setter private CommandType commandType;
 
   public Command(String command) {
     this(command, RixaPermission.NONE, "Undefined", CommandType.USER, Collections.emptyList());
@@ -45,11 +37,11 @@ public abstract class Command {
 
   public Command(String command, RixaPermission rixaPermission, String description,
       CommandType commandType, List<String> aliases) {
-    setCommand(command);
-    setPermission(rixaPermission);
-    setDescription(description);
-    setAliases(aliases);
-    this.commandType = commandType;
+    this.setCommand(command);
+    this.setPermission(rixaPermission);
+    this.setDescription(description);
+    this.setAliases(aliases);
+    this.setCommandType(commandType);
   }
 
   //   public abstract void execute(GuildMessageReceivedEvent event);
