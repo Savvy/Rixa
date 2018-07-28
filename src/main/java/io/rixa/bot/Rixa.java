@@ -4,21 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import io.rixa.bot.commands.cmds.admin.ConfigCommand;
 import io.rixa.bot.commands.cmds.admin.PMCommand;
-import io.rixa.bot.commands.cmds.general.AdviceCommand;
-import io.rixa.bot.commands.cmds.general.FeaturesCommand;
-import io.rixa.bot.commands.cmds.general.HelpCommand;
-import io.rixa.bot.commands.cmds.general.InfoCommand;
-import io.rixa.bot.commands.cmds.general.LeaderboardsCommand;
-import io.rixa.bot.commands.cmds.general.MinecraftCommand;
-import io.rixa.bot.commands.cmds.general.ModulesCommand;
-import io.rixa.bot.commands.cmds.general.MusicCommand;
-import io.rixa.bot.commands.cmds.general.PingCommand;
-import io.rixa.bot.commands.cmds.general.QuoteCommand;
-import io.rixa.bot.commands.cmds.general.RankCommand;
-import io.rixa.bot.commands.cmds.general.RoleMemberList;
-import io.rixa.bot.commands.cmds.general.ServerInfoCommand;
-import io.rixa.bot.commands.cmds.general.UrbanDictionaryCommand;
-import io.rixa.bot.commands.cmds.general.YoutubeCommand;
+import io.rixa.bot.commands.cmds.general.*;
 import io.rixa.bot.commands.cmds.moderator.BanCommand;
 import io.rixa.bot.commands.cmds.moderator.ClearCommand;
 import io.rixa.bot.commands.cmds.moderator.MuteCommand;
@@ -103,7 +89,7 @@ public class Rixa {
   private void loadJDA() {
     JDABuilder jda = new JDABuilder(AccountType.BOT)
         .setToken(configuration.getToken())
-        .setGame(Game.of(GameType.WATCHING, configuration.getBotGame()))
+        .setGame(Game.of(GameType.DEFAULT, configuration.getBotGame()))
         .setEventManager(new AnnotatedEventManager())
         .addEventListener(new ReadyListener(), new BotJoinListener(), new MessageListener(),
             new UserListener())
@@ -155,6 +141,7 @@ public class Rixa {
         new MusicCommand("music", RixaPermission.NONE, "Listen to music right from discord!",
             CommandType.USER),
         new PingCommand("ping", RixaPermission.NONE, "Check Rixa's ping!", CommandType.USER),
+            new MsbCommand("msb", RixaPermission.NONE, "Create a mocking Spongebob meme", CommandType.USER),
         new ServerInfoCommand("serverinfo", RixaPermission.NONE,
             "Review information about the server!", CommandType.USER),
         new QuoteCommand("quote", RixaPermission.NONE,

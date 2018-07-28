@@ -32,7 +32,7 @@ public class MessageFactory {
 
     public MessageFactory() {
         this.builder = new EmbedBuilder();
-        selfDestruct = 20;
+        selfDestruct = 0;
     }
 
     public MessageFactory setTitle(String title, String url) {

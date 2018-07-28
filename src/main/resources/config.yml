@@ -1,13 +1,13 @@
-token: "YOUR_TOKEN_HERE"
-botGame: "Rixa 2.0 | http://rixa.io/invite"
+token: "kIWC67smb8Ysmxwj_Q1XaqWA4ciNQw2F"
+botGame: "Rixa 3.0 beta | Hosted by Mister_Fix"
 shards: 5
+
 botAdmins:
-- "YOUR_USER_ID_HERE"
-- "OTHER_ADMINS"
-- "REMOVE_IF_YOU_DONT_WANT"
+- "104695503358291968"
+
 sqlCredentials:
   hostName: "localhost"
   databaseName: "rixa"
-  userName: "rixa_users"
-  password: "password"
+  userName: "root"
+  password: ""
   port: "3306"

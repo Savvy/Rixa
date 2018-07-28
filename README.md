@@ -1,2 +1,0 @@
-# Rixa
-Rixa Discord Bot
