@@ -102,8 +102,6 @@ public class MessageListener {
     commandName = commandName.replaceFirst(prefix, "");
     try {
       Command command = Rixa.getInstance().getCommandHandler().getCommand(commandName);
-      //command.execute(event);
-      event.getMessage().delete().queueAfter(3, TimeUnit.SECONDS);
       RixaGuild rixaGuild = GuildManager.getInstance().getGuild(event.getGuild());
       if (!event.getGuild().getOwner().getUser().getId().equalsIgnoreCase(event.getAuthor().getId())
           && command.getPermission() != null && command.getPermission() != RixaPermission.NONE &&
